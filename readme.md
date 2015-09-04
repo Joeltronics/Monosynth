@@ -31,7 +31,7 @@ It doesn't work yet - there's no sound engine. The GUI controls are pretty much 
 
 These are all features I'm considering possibly adding in the future, but don't plan on implementing right away:
 
-* Built-in patch storage & management - in the meantime, most DAWs should support it
-* More monophony modes - I plan on supporting legato and retrigger, but initially just last-note priority
-* Arpeggiator and/or sequencer
-* Polyphony - I don't plan on implementing this for 1.0, but might implement it in the future.
+* Built-in patch storage & management - in the meantime, most DAWs should support it (once I implement state saving, anyway, which is planned for 1.0)
+* More monophony priority modes
+* Polyphony & unison
+* Sequencer & arpeggiator
