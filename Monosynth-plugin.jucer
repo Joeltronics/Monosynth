@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="iekxWR" name="Monosynth-plugin" projectType="audioplug" version="0.0.1"
+              bundleIdentifier="com.joeltronics.Monosynth" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
+              pluginName="Joeltronics Monosynth" pluginDesc="Monophonic analog modeling synthesizer"
+              pluginManufacturer="joeltronics" pluginManufacturerCode="Jtrn"
+              pluginCode="JMSy" pluginChannelConfigs="{0, 1}, {0, 2}" pluginIsSynth="1"
+              pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginSilenceInIsSilenceOut="0"
+              pluginEditorRequiresKeys="0" pluginAUExportPrefix="JoeltronicsMonosynthAU"
+              pluginRTASCategory="" aaxIdentifier="com.joeltronics.Monosynth"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.2.0">
+  <MAINGROUP id="bCKf4H" name="Monosynth-plugin">
+    <GROUP id="{8426121E-D963-B936-643E-F22052A12080}" name="Resources">
+      <FILE id="G9ewML" name="Muli-Regular.ttf" compile="0" resource="1"
+            file="Resources/Muli-Regular.ttf"/>
+      <FILE id="d98sqs" name="bigknob.png" compile="0" resource="1" file="Resources/bigknob.png"/>
+      <FILE id="TwDjNQ" name="bigknob88.png" compile="0" resource="1" file="Resources/bigknob88.png"/>
+      <FILE id="YXZ9Ha" name="knob24.png" compile="0" resource="1" file="Resources/knob24.png"/>
+      <FILE id="cbROyN" name="knob32.png" compile="0" resource="1" file="Resources/knob32.png"/>
+      <FILE id="Oqg9T2" name="knob48.png" compile="0" resource="1" file="Resources/knob48.png"/>
+      <FILE id="o3eItt" name="knob.png" compile="0" resource="1" file="Resources/knob.png"/>
+      <FILE id="UWO2e4" name="switch-h-center_32.png" compile="0" resource="1"
+            file="Resources/switch-h-center_32.png"/>
+      <FILE id="Jg8CO2" name="switch-h-left_32.png" compile="0" resource="1"
+            file="Resources/switch-h-left_32.png"/>
+      <FILE id="VNCUik" name="switch-h-right_32.png" compile="0" resource="1"
+            file="Resources/switch-h-right_32.png"/>
+      <FILE id="s3rYli" name="switch-v-center_32.png" compile="0" resource="1"
+            file="Resources/switch-v-center_32.png"/>
+      <FILE id="BngsU2" name="switch-v-down_32.png" compile="0" resource="1"
+            file="Resources/switch-v-down_32.png"/>
+      <FILE id="YtPsF5" name="switch-v-up_32.png" compile="0" resource="1"
+            file="Resources/switch-v-up_32.png"/>
+      <FILE id="t7XqFJ" name="slidercap_32.png" compile="0" resource="1"
+            file="Resources/slidercap_32.png"/>
+    </GROUP>
+    <GROUP id="{8D3ECD94-05C6-D943-A384-1E2A6490C030}" name="Source">
+      <GROUP id="{5579AD73-E26C-9C8A-A95D-D152B1D9B913}" name="Plugin">
+        <FILE id="qT9JVw" name="PluginEditor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginEditor.cpp"/>
+        <FILE id="GhNAOO" name="PluginEditor.h" compile="0" resource="0" file="Source/Plugin/PluginEditor.h"/>
+        <FILE id="y7BsRz" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="Source/Plugin/PluginProcessor.cpp"/>
+        <FILE id="biptVp" name="PluginProcessor.h" compile="0" resource="0"
+              file="Source/Plugin/PluginProcessor.h"/>
+      </GROUP>
+      <GROUP id="{8C2779D3-5FE1-42F9-B8CF-F22CA90C0107}" name="Utils">
+        <FILE id="XsOB8W" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
+        <FILE id="oohrkq" name="ApproxEqual.h" compile="0" resource="0" file="Source/Utils/ApproxEqual.h"/>
+        <FILE id="DPLJax" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
+        <FILE id="DwxQ59" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>
+        <FILE id="gsRLbx" name="OnePole.h" compile="0" resource="0" file="Source/Utils/OnePole.h"/>
+        <FILE id="zLvdpY" name="Resampling.cpp" compile="1" resource="0" file="Source/Utils/Resampling.cpp"/>
+        <FILE id="PHfwMv" name="Resampling.h" compile="0" resource="0" file="Source/Utils/Resampling.h"/>
+        <FILE id="AVHCTE" name="SlewFilter.cpp" compile="1" resource="0" file="Source/Utils/SlewFilter.cpp"/>
+        <FILE id="whusOH" name="SlewFilter.h" compile="0" resource="0" file="Source/Utils/SlewFilter.h"/>
+      </GROUP>
+      <GROUP id="{E938C894-F1B4-A05E-D3C6-249983BD5FF2}" name="Gui">
+        <FILE id="nyCpN9" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/Gui/LookAndFeel.cpp"/>
+        <FILE id="oZWn2e" name="LookAndFeel.h" compile="0" resource="0" file="Source/Gui/LookAndFeel.h"/>
+        <FILE id="kAT1tl" name="MainGui.cpp" compile="1" resource="0" file="Source/Gui/MainGui.cpp"/>
+        <FILE id="EK7wi6" name="MainGui.h" compile="0" resource="0" file="Source/Gui/MainGui.h"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="~/SDKs/vstsdk2.4" postbuildCommand="&#10;# This script takes the build product and copies it to the AU, VST, VST3, RTAS and AAX folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyVST3=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'GetPluginFactory' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AUDir=~/Library/Audio/Plug-Ins/Components&#10;  mkdir -p &quot;$AUDir&quot;&#10;  AU=$AUDir/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VSTDir=~/Library/Audio/Plug-Ins/VST&#10;  mkdir -p &quot;$VSTDir&quot;&#10;  VST=$VSTDir/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyVST3 -gt 0 ]; then&#10;  echo &quot;Copying to VST3 folder...&quot;&#10;  VST3Dir=~/Library/Audio/Plug-Ins/VST3&#10;  mkdir -p &quot;$VST3Dir&quot;&#10;  VST3=$VST3Dir/$PRODUCT_NAME.vst3&#10;  if [ -d &quot;$VST3&quot; ]; then &#10;    rm -r &quot;$VST3&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST3&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST3/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST3/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTASDir=/Library/Application\ Support/Digidesign/Plug-Ins&#10;  if [ -d &quot;$RTASDir&quot; ]; then&#10;    RTAS=$RTASDir/$PRODUCT_NAME.dpm&#10;    if [ -d &quot;$RTAS&quot; ]; then&#10;      rm -r &quot;$RTAS&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Applications/ProTools_3PDev/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -R -H &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -R -H &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1"
+                       headerPath="$(ProjectDir)"/>
+        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_events" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_video" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_opengl" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2015 targetFolder="Builds/VisualStudio2015" vstFolder="D:\Dev\Audio\Frameworks\VST3 SDK"
+            vst3Folder="D:\Dev\Audio\Frameworks\VST3 SDK">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1"
+                       headerPath="$(ProjectDir)"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_events" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_video" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../Frameworks/JUCE-OSX/modules"/>
+      </MODULEPATHS>
+    </VS2015>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="Monosynth" defines="_DEBUG=1" headerPath="$(ProjectDir)"/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
+                       targetName="Monosynth" headerPath="$(ProjectDir)"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_events" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_video" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../Frameworks/JUCE-OSX/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../Frameworks/JUCE-OSX/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_video" showAllCode="1" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+</JUCERPROJECT>

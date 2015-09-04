@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="PtZGrW" name="Monosynth-test" projectType="consoleapp" version="1.0.0"
+              bundleIdentifier="com.yourcompany.Monosynthtest" includeBinaryInAppConfig="1"
+              jucerVersion="3.2.0">
+  <MAINGROUP id="MOlkSB" name="Monosynth-test">
+    <GROUP id="{9833A35D-E2FA-D93F-DA49-BFD7590A00B4}" name="Source">
+      <GROUP id="{5020C285-D097-74F8-1820-88BC0BA3BBA7}" name="Test">
+        <FILE id="ksssdH" name="Main.cpp" compile="1" resource="0" file="Source/Test/Main.cpp"/>
+        <FILE id="OftYER" name="UnitTestRunner.h" compile="0" resource="0"
+              file="Source/Test/UnitTestRunner.h"/>
+        <FILE id="S6unvo" name="UnitTestRunner.cpp" compile="1" resource="0"
+              file="Source/Test/UnitTestRunner.cpp"/>
+      </GROUP>
+      <GROUP id="{92C9D643-A8A0-19E7-F1E1-F617FFD60680}" name="Utils">
+        <GROUP id="{F0BE6725-E4FC-E47F-00B9-C64A8F613844}" name="Test">
+          <FILE id="rnnQ3S" name="OnePoleTest.cpp" compile="1" resource="0" file="Source/Utils/Test/OnePoleTest.cpp"/>
+          <FILE id="vgzf0p" name="OnePoleTest.h" compile="0" resource="0" file="Source/Utils/Test/OnePoleTest.h"/>
+          <FILE id="aH92dp" name="ResamplingUnitTest.cpp" compile="1" resource="0"
+                file="Source/Utils/Test/ResamplingUnitTest.cpp"/>
+          <FILE id="sO931J" name="ResamplingUnitTest.h" compile="0" resource="0"
+                file="Source/Utils/Test/ResamplingUnitTest.h"/>
+          <FILE id="Rto1dG" name="SlewFilterUnitTest.cpp" compile="1" resource="0"
+                file="Source/Utils/Test/SlewFilterUnitTest.cpp"/>
+          <FILE id="JTZkVC" name="SlewFilterUnitTest.h" compile="0" resource="0"
+                file="Source/Utils/Test/SlewFilterUnitTest.h"/>
+          <FILE id="g2QLke" name="DspUtilsUnitTest.cpp" compile="1" resource="0"
+                file="Source/Utils/Test/DspUtilsUnitTest.cpp"/>
+          <FILE id="rIgRoD" name="DspUtilsUnitTest.h" compile="0" resource="0"
+                file="Source/Utils/Test/DspUtilsUnitTest.h"/>
+        </GROUP>
+        <FILE id="Sek1eA" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
+        <FILE id="p4I1Pt" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
+        <FILE id="LLYqSK" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>
+        <FILE id="ntwwza" name="OnePole.h" compile="0" resource="0" file="Source/Utils/OnePole.h"/>
+        <FILE id="K0EH0y" name="Resampling.cpp" compile="1" resource="0" file="Source/Utils/Resampling.cpp"/>
+        <FILE id="bmePWy" name="Resampling.h" compile="0" resource="0" file="Source/Utils/Resampling.h"/>
+        <FILE id="mALyyW" name="SlewFilter.cpp" compile="1" resource="0" file="Source/Utils/SlewFilter.cpp"/>
+        <FILE id="sWJidd" name="SlewFilter.h" compile="0" resource="0" file="Source/Utils/SlewFilter.h"/>
+        <FILE id="dKHBba" name="ApproxEqual.h" compile="0" resource="0" file="Source/Utils/ApproxEqual.h"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath=""/>
+        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath=""/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_events" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_video" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2015 targetFolder="Builds/VisualStudio2015">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_events" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_video" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+      </MODULEPATHS>
+    </VS2015>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="Monosynth-test" headerPath=""/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
+                       targetName="Monosynth-test" headerPath=""/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_events" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_video" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../Frameworks/JUCE-WINDOWS/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_video" showAllCode="1" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>
