@@ -15,6 +15,11 @@
 
 typedef float sample_t;
 
+namespace Utils {
+	// Constants:
+	sample_t const k_defaultApproxEqualThresh = 0.0001f;
+}
+
 #include "Buffer.h"
 
 #endif  // TYPES_H_INCLUDED

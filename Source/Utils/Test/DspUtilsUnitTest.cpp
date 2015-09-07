@@ -11,7 +11,6 @@
 #include "DspUtilsUnitTest.h"
 
 #include "ResamplingUnitTest.h"
-
 #include "Utils/Utils.h"
 
 namespace Test {
@@ -19,13 +18,13 @@ namespace Test {
     static bool ApproxEqualTest(double x, double y, bool expected) {
         bool passed = true;
         
-        bool ret = Utils::ApproxEqual<double>(x, y);
+        bool ret = Utils::ApproxEqual(x, y);
         if (ret != expected) {
             std::cout << "ApproxEqual<double>(" << x << "," << y << ") expected " << expected << ", returned " << ret << std::endl;
             passed = false;
         }
         
-        ret = Utils::ApproxEqual<float>(static_cast<float>(x),static_cast<float>(y));
+        ret = Utils::ApproxEqual(static_cast<float>(x),static_cast<float>(y));
         if (ret != expected) {
             std::cout << "ApproxEqual<float>(" << x << "," << y << ") expected " << expected << ", returned " << ret << std::endl;
             passed = false;
@@ -37,13 +36,13 @@ namespace Test {
     static bool ApproxEqualTest(double x, double y, double tol, bool expected) {
         bool passed = true;
         
-        bool ret = Utils::ApproxEqual<double>(x, y, tol);
+        bool ret = Utils::ApproxEqual(x, y, tol);
         if (ret != expected) {
             std::cout << "ApproxEqual<double>("<< x <<","<< y <<","<< tol <<") expected "<< expected <<", returned "<< ret << std::endl;
             passed = false;
         }
         
-        ret = Utils::ApproxEqual<float>(static_cast<float>(x),static_cast<float>(y), static_cast<float>(tol));
+        ret = Utils::ApproxEqual(static_cast<float>(x),static_cast<float>(y), static_cast<float>(tol));
         if (ret != expected) {
             std::cout << "ApproxEqual<float>("<< x <<","<< y <<","<< tol <<") expected "<< expected <<", returned "<< ret << std::endl;
             passed = false;
@@ -92,13 +91,13 @@ namespace Test {
         bool passed = true;
         
         double dRet = Utils::Interp<double>(v0, v1, x);
-        if (!Utils::ApproxEqual<double>(dRet, expected)) {
+        if (!Utils::ApproxEqual(dRet, expected)) {
             passed = false;
             std::cout << "Interp<double>("<< v0 <<","<< v1 <<","<< x <<") returned "<< dRet <<", expected " << expected << std::endl;
         }
         
         float fRet = Utils::Interp<float>(v0, v1, x);
-        if (!Utils::ApproxEqual<float>(fRet, expected)) {
+        if (!Utils::ApproxEqual(fRet, float(expected))) {
             passed = false;
             std::cout << "Interp<float>("<< v0 <<","<< v1 <<","<< x <<") returned "<< fRet <<", expected " << expected << std::endl;
         }

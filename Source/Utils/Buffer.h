@@ -45,8 +45,9 @@ public:
 	sample_t operator[](size_t idx); // get sample
 	sample_t* operator*(); // get pointer to sample buffer
 
-	// (approximate) equality
+	// (approximate) equality - uses Utils::ApproxEqual() internal
 	friend bool operator==(Buffer const& lhs, Buffer const& rhs);
+	friend bool operator!=(Buffer const& lhs, Buffer const& rhs);
 
 	// math in place
 	Buffer& operator+=(Buffer const& other);
@@ -186,6 +187,18 @@ inline sample_t Buffer::operator[](size_t idx) {
 
 inline sample_t* Buffer::operator*() {
 	return m_p;
+}
+
+// ***** Operators: (Approximate) equality *****
+
+#include "Utils/ApproxEqual.h"
+
+inline bool operator==(Buffer const& lhs, Buffer const& rhs) {
+	return Utils::ApproxEqual(lhs, rhs);
+}
+
+inline bool operator!=(Buffer const& lhs, Buffer const& rhs) {
+	return !Utils::ApproxEqual(lhs, rhs);
 }
 
 // ***** Operators: In-place math *****

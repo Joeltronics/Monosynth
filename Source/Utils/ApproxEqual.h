@@ -13,15 +13,15 @@
 
 #include "Types.h"
 #include "JuceHeader.h"
-//#include "DspUtils.h"
 
 namespace Utils {
-    
-sample_t const k_defaultApproxEqualThresh = 0.0001f;
 
-template <typename T>
-static inline bool ApproxEqual(T a, T b, T thresh = static_cast<T>(k_defaultApproxEqualThresh)) {
+static inline bool ApproxEqual(float a, float b, float thresh = k_defaultApproxEqualThresh) {
     return (std::fabs(a - b) <= thresh);
+}
+
+static inline bool ApproxEqual(double a, double b, double thresh = k_defaultApproxEqualThresh) {
+	return (std::fabs(a - b) <= thresh);
 }
 
 static inline bool ApproxEqual(sample_t const* a, sample_t const* b, uint32_t nValues, sample_t thresh = k_defaultApproxEqualThresh) {
@@ -35,13 +35,14 @@ static inline bool ApproxEqual(sample_t const* a, sample_t const* b, uint32_t nV
 #else
     bool bEq = true;
     for (uint32_t n = 0; n < nValues; ++n) {
-        bEq = bEq && ApproxEqual<sample_t>(a[n], b[n], thresh);
+        bEq = bEq && ApproxEqual(a[n], b[n], thresh);
     }
     return bEq;
 #endif
 }
 
 static inline bool ApproxEqual(Buffer const& a, Buffer const& b, float thresh = k_defaultApproxEqualThresh) {
+	if (a.GetLength() != b.GetLength()) return false;
 	return ApproxEqual(a.GetConst(), b.GetConst(), a.GetLength(), thresh);
 }
 

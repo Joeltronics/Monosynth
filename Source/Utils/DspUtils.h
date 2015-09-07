@@ -16,6 +16,7 @@
 #include "JuceHeader.h"
 
 #include "Debug.h"
+#include "Types.h"
 
 #include <algorithm>
 
@@ -259,7 +260,7 @@ namespace Utils
         }
     }
     
-    static float GenerateSine(float* outBuf, uint32_t nSamp, float freq, float phase) {
+    static float GenerateSine(float* outBuf, uint32_t nSamp, float freq, float phase = 0.0f) {
         // TODO: compare, see which is faster
 #if 1
         // Populate with phase
@@ -283,13 +284,10 @@ namespace Utils
         return phase;
     }
     
-    static inline float GenerateSine(float* outBuf, uint32_t nSamp, float freq)
-        { return GenerateSine(outBuf, nSamp, freq, 0.0f); }
-    
     // freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
     // phase = normalized, 0-1
     // returns phase value
-    static float GenerateSine(AudioSampleBuffer& outBuf, float freq, float phase) {
+    static float GenerateSine(AudioSampleBuffer& outBuf, float freq, float phase = 0.0f) {
         uint8_t const nChan = outBuf.getNumChannels();
         uint32_t const nSamp = outBuf.getNumSamples();
         
@@ -305,9 +303,15 @@ namespace Utils
         
         return phase;
     }
-    
-    static inline float GenerateSine(AudioSampleBuffer& outBuf, float freq)
-        { return GenerateSine(outBuf, freq, 0.0f); }
+
+	static float Rms(Buffer const& buf) {
+		Buffer squBuf = buf * buf;
+		float sum = 0.0f;
+		size_t nSamp = buf.GetLength();
+		sample_t const* p = squBuf.GetConst();
+		for (size_t n = 0; n < nSamp; ++n) sum += p[n];
+		return sqrtf(sum / float(nSamp));
+	}
 }
 
 #endif  // DSPUTILS_H_INCLUDED

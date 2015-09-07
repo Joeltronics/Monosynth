@@ -22,14 +22,8 @@ namespace  Utils {
     void ZeroPadUpsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nUpsamp, bool bScale);
     void NearestUpsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nUpsamp);
     
-    void NaiveDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale);
-    void AveragingDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale);
-
-    static inline void NaiveDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp)
-        { NaiveDownsample(outBuf, inBuf, nDownsamp, false); }
-    
-    static inline void AveragingDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp)
-        { AveragingDownsample(outBuf, inBuf, nDownsamp, false); }
+    void NaiveDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
+    void AveragingDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
     
     // ***** Resampling interface *****
     
@@ -136,9 +130,7 @@ namespace  Utils {
      */
     class NaiveDownsampler : public IResampler {
     public:
-        NaiveDownsampler(uint8_t nDownsamp) :
-            m_nDownsamp(nDownsamp), m_bScale(false) {}
-        NaiveDownsampler(uint8_t nDownsamp, bool bScale) :
+        NaiveDownsampler(uint8_t nDownsamp, bool bScale = false) :
             m_nDownsamp(nDownsamp), m_bScale(bScale) {}
         ~NaiveDownsampler() {}
         
@@ -158,9 +150,7 @@ namespace  Utils {
      */
     class AveragingDownsampler : public IResampler {
     public:
-        AveragingDownsampler(uint8_t nDownsamp) :
-            m_nDownsamp(nDownsamp), m_bScale(false) {}
-        AveragingDownsampler(uint8_t nDownsamp, bool bScale) :
+        AveragingDownsampler(uint8_t nDownsamp, bool bScale = false) :
             m_nDownsamp(nDownsamp), m_bScale(bScale) {}
         ~AveragingDownsampler() {}
         
