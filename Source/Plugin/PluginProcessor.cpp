@@ -13,65 +13,65 @@
 
 
 //==============================================================================
-AnalogModelingSynthAudioProcessor::AnalogModelingSynthAudioProcessor()
+MonosynthAudioProcessor::MonosynthAudioProcessor()
 {
 }
 
-AnalogModelingSynthAudioProcessor::~AnalogModelingSynthAudioProcessor()
+MonosynthAudioProcessor::~MonosynthAudioProcessor()
 {
 }
 
 //==============================================================================
-const String AnalogModelingSynthAudioProcessor::getName() const
+const String MonosynthAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-int AnalogModelingSynthAudioProcessor::getNumParameters()
+int MonosynthAudioProcessor::getNumParameters()
 {
     return 0;
 }
 
-float AnalogModelingSynthAudioProcessor::getParameter (int index)
+float MonosynthAudioProcessor::getParameter (int index)
 {
     return 0.0f;
 }
 
-void AnalogModelingSynthAudioProcessor::setParameter (int index, float newValue)
+void MonosynthAudioProcessor::setParameter (int index, float newValue)
 {
 }
 
-const String AnalogModelingSynthAudioProcessor::getParameterName (int index)
-{
-    return String();
-}
-
-const String AnalogModelingSynthAudioProcessor::getParameterText (int index)
+const String MonosynthAudioProcessor::getParameterName (int index)
 {
     return String();
 }
 
-const String AnalogModelingSynthAudioProcessor::getInputChannelName (int channelIndex) const
+const String MonosynthAudioProcessor::getParameterText (int index)
+{
+    return String();
+}
+
+const String MonosynthAudioProcessor::getInputChannelName (int channelIndex) const
 {
     return String (channelIndex + 1);
 }
 
-const String AnalogModelingSynthAudioProcessor::getOutputChannelName (int channelIndex) const
+const String MonosynthAudioProcessor::getOutputChannelName (int channelIndex) const
 {
     return String (channelIndex + 1);
 }
 
-bool AnalogModelingSynthAudioProcessor::isInputChannelStereoPair (int index) const
+bool MonosynthAudioProcessor::isInputChannelStereoPair (int index) const
 {
     return true;
 }
 
-bool AnalogModelingSynthAudioProcessor::isOutputChannelStereoPair (int index) const
+bool MonosynthAudioProcessor::isOutputChannelStereoPair (int index) const
 {
     return true;
 }
 
-bool AnalogModelingSynthAudioProcessor::acceptsMidi() const
+bool MonosynthAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -80,7 +80,7 @@ bool AnalogModelingSynthAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool AnalogModelingSynthAudioProcessor::producesMidi() const
+bool MonosynthAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -89,54 +89,53 @@ bool AnalogModelingSynthAudioProcessor::producesMidi() const
    #endif
 }
 
-bool AnalogModelingSynthAudioProcessor::silenceInProducesSilenceOut() const
+bool MonosynthAudioProcessor::silenceInProducesSilenceOut() const
 {
     return false;
 }
 
-double AnalogModelingSynthAudioProcessor::getTailLengthSeconds() const
+double MonosynthAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int AnalogModelingSynthAudioProcessor::getNumPrograms()
+int MonosynthAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int AnalogModelingSynthAudioProcessor::getCurrentProgram()
+int MonosynthAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void AnalogModelingSynthAudioProcessor::setCurrentProgram (int index)
+void MonosynthAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String AnalogModelingSynthAudioProcessor::getProgramName (int index)
+const String MonosynthAudioProcessor::getProgramName (int index)
 {
     return String();
 }
 
-void AnalogModelingSynthAudioProcessor::changeProgramName (int index, const String& newName)
+void MonosynthAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
 //==============================================================================
-void AnalogModelingSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MonosynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    engine.PrepareToPlay(sampleRate, samplesPerBlock);
 }
 
-void AnalogModelingSynthAudioProcessor::releaseResources()
+void MonosynthAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
-void AnalogModelingSynthAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+void MonosynthAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -155,28 +154,30 @@ void AnalogModelingSynthAudioProcessor::processBlock (AudioSampleBuffer& buffer,
 
         // ..do something to the data...
     }
+
+	engine.Process(buffer, midiMessages);
 }
 
 //==============================================================================
-bool AnalogModelingSynthAudioProcessor::hasEditor() const
+bool MonosynthAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* AnalogModelingSynthAudioProcessor::createEditor()
+AudioProcessorEditor* MonosynthAudioProcessor::createEditor()
 {
-    return new AnalogModelingSynthAudioProcessorEditor (*this);
+    return new MonosynthAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void AnalogModelingSynthAudioProcessor::getStateInformation (MemoryBlock& destData)
+void MonosynthAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void AnalogModelingSynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void MonosynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -186,5 +187,5 @@ void AnalogModelingSynthAudioProcessor::setStateInformation (const void* data, i
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new AnalogModelingSynthAudioProcessor();
+    return new MonosynthAudioProcessor();
 }

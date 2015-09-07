@@ -13,16 +13,17 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#include "Engine/Engine.h"
 
 //==============================================================================
 /**
 */
-class AnalogModelingSynthAudioProcessor  : public AudioProcessor
+class MonosynthAudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    AnalogModelingSynthAudioProcessor();
-    ~AnalogModelingSynthAudioProcessor();
+    MonosynthAudioProcessor();
+    ~MonosynthAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -67,7 +68,9 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogModelingSynthAudioProcessor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MonosynthAudioProcessor)
+
+	SynthEngine engine;
 };
 
 

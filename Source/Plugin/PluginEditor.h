@@ -18,11 +18,11 @@
 //==============================================================================
 /**
 */
-class AnalogModelingSynthAudioProcessorEditor  : public AudioProcessorEditor
+class MonosynthAudioProcessorEditor  : public AudioProcessorEditor
 {
 public:
-    AnalogModelingSynthAudioProcessorEditor (AnalogModelingSynthAudioProcessor&);
-    ~AnalogModelingSynthAudioProcessorEditor();
+    MonosynthAudioProcessorEditor (MonosynthAudioProcessor&);
+    ~MonosynthAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -31,11 +31,11 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    AnalogModelingSynthAudioProcessor& processor;
+    MonosynthAudioProcessor& processor;
 
 	Gui::MainGui mainGui;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogModelingSynthAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonosynthAudioProcessorEditor)
 };
 
 

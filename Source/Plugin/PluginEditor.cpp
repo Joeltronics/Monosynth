@@ -13,7 +13,7 @@
 
 
 //==============================================================================
-AnalogModelingSynthAudioProcessorEditor::AnalogModelingSynthAudioProcessorEditor (AnalogModelingSynthAudioProcessor& p)
+MonosynthAudioProcessorEditor::MonosynthAudioProcessorEditor (MonosynthAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // Make sure that before the constructor has finished, you've set the
@@ -24,12 +24,12 @@ AnalogModelingSynthAudioProcessorEditor::AnalogModelingSynthAudioProcessorEditor
 	addAndMakeVisible(&mainGui);
 }
 
-AnalogModelingSynthAudioProcessorEditor::~AnalogModelingSynthAudioProcessorEditor()
+MonosynthAudioProcessorEditor::~MonosynthAudioProcessorEditor()
 {
 }
 
 //==============================================================================
-void AnalogModelingSynthAudioProcessorEditor::paint (Graphics& g)
+void MonosynthAudioProcessorEditor::paint (Graphics& g)
 {
     g.fillAll (Colours::white);
 
@@ -38,7 +38,7 @@ void AnalogModelingSynthAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
 }
 
-void AnalogModelingSynthAudioProcessorEditor::resized()
+void MonosynthAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..

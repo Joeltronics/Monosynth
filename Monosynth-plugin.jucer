@@ -34,6 +34,13 @@
             file="Resources/slidercap_32.png"/>
     </GROUP>
     <GROUP id="{8D3ECD94-05C6-D943-A384-1E2A6490C030}" name="Source">
+      <GROUP id="{64F1D4CF-5AF8-19D8-7E95-D0070893A8A6}" name="Engine">
+        <FILE id="Vg7ac4" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
+        <FILE id="NkT6bs" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
+        <FILE id="h6ANdS" name="NoteAllocator.cpp" compile="1" resource="0"
+              file="Source/Engine/NoteAllocator.cpp"/>
+        <FILE id="gKYvYn" name="NoteAllocator.h" compile="0" resource="0" file="Source/Engine/NoteAllocator.h"/>
+      </GROUP>
       <GROUP id="{5579AD73-E26C-9C8A-A95D-D152B1D9B913}" name="Plugin">
         <FILE id="qT9JVw" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/Plugin/PluginEditor.cpp"/>
@@ -44,11 +51,11 @@
               file="Source/Plugin/PluginProcessor.h"/>
       </GROUP>
       <GROUP id="{8C2779D3-5FE1-42F9-B8CF-F22CA90C0107}" name="Utils">
-        <FILE id="xjTx1Q" name="Types.h" compile="0" resource="0" file="Source/Utils/Types.h"/>
         <FILE id="ZOzc0L" name="Utils.h" compile="0" resource="0" file="Source/Utils/Utils.h"/>
-        <FILE id="mJRmlN" name="Buffer.cpp" compile="1" resource="0" file="Source/Utils/Buffer.cpp"/>
-        <FILE id="zeiNaS" name="Buffer.h" compile="0" resource="0" file="Source/Utils/Buffer.h"/>
+        <FILE id="xjTx1Q" name="Types.h" compile="0" resource="0" file="Source/Utils/Types.h"/>
         <FILE id="XsOB8W" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
+        <FILE id="h3t4wL" name="Buffer.cpp" compile="1" resource="0" file="Source/Utils/Buffer.cpp"/>
+        <FILE id="zeiNaS" name="Buffer.h" compile="0" resource="0" file="Source/Utils/Buffer.h"/>
         <FILE id="oohrkq" name="ApproxEqual.h" compile="0" resource="0" file="Source/Utils/ApproxEqual.h"/>
         <FILE id="DPLJax" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
         <FILE id="DwxQ59" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>
