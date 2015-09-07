@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="iekxWR" name="Monosynth-plugin" projectType="audioplug" version="0.0.1"
-              bundleIdentifier="com.joeltronics.Monosynth" includeBinaryInAppConfig="1"
+              bundleIdentifier="com.joeltronics.Monosynth.plugin" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
               pluginName="Joeltronics Monosynth" pluginDesc="Monophonic analog modeling synthesizer"
               pluginManufacturer="joeltronics" pluginManufacturerCode="Jtrn"
@@ -12,8 +12,6 @@
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.2.0">
   <MAINGROUP id="bCKf4H" name="Monosynth-plugin">
     <GROUP id="{8426121E-D963-B936-643E-F22052A12080}" name="Resources">
-      <FILE id="G9ewML" name="Muli-Regular.ttf" compile="0" resource="1"
-            file="Resources/Muli-Regular.ttf"/>
       <FILE id="d98sqs" name="bigknob.png" compile="0" resource="1" file="Resources/bigknob.png"/>
       <FILE id="TwDjNQ" name="bigknob88.png" compile="0" resource="1" file="Resources/bigknob88.png"/>
       <FILE id="YXZ9Ha" name="knob24.png" compile="0" resource="1" file="Resources/knob24.png"/>
@@ -46,6 +44,10 @@
               file="Source/Plugin/PluginProcessor.h"/>
       </GROUP>
       <GROUP id="{8C2779D3-5FE1-42F9-B8CF-F22CA90C0107}" name="Utils">
+        <FILE id="xjTx1Q" name="Types.h" compile="0" resource="0" file="Source/Utils/Types.h"/>
+        <FILE id="ZOzc0L" name="Utils.h" compile="0" resource="0" file="Source/Utils/Utils.h"/>
+        <FILE id="mJRmlN" name="Buffer.cpp" compile="1" resource="0" file="Source/Utils/Buffer.cpp"/>
+        <FILE id="zeiNaS" name="Buffer.h" compile="0" resource="0" file="Source/Utils/Buffer.h"/>
         <FILE id="XsOB8W" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
         <FILE id="oohrkq" name="ApproxEqual.h" compile="0" resource="0" file="Source/Utils/ApproxEqual.h"/>
         <FILE id="DPLJax" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
@@ -69,9 +71,9 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
                        isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1"
-                       headerPath="$(ProjectDir)"/>
+                       headerPath=""/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)"/>
+                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="..\..\Frameworks\JUCE-WINDOWS\modules"/>
@@ -94,10 +96,11 @@
             vst3Folder="D:\Dev\Audio\Frameworks\VST3 SDK">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1"
-                       headerPath="$(ProjectDir)"/>
+                       isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1, _USE_MATH_DEFINES"
+                       headerPath="$(ProjectDir)../../Source"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)"/>
+                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)../../Source"
+                       defines="_USE_MATH_DEFINES"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-OSX/modules"/>
@@ -119,9 +122,9 @@
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="Monosynth" defines="_DEBUG=1" headerPath="$(ProjectDir)"/>
+                       targetName="Monosynth" defines="_DEBUG=1" headerPath=""/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
-                       targetName="Monosynth" headerPath="$(ProjectDir)"/>
+                       targetName="Monosynth" headerPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-OSX/modules"/>

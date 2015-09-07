@@ -10,10 +10,11 @@
 
 #include "OnePoleTest.h"
 
-#include "Utils/OnePole.h"
-#include "Utils/DspUtils.h"
-
 #include "JuceHeader.h"
+
+#include "ResamplingUnitTest.h"
+
+#include "Utils/Utils.h"
 
 #include <iostream>
 #include <fstream>
@@ -45,11 +46,10 @@ namespace Detail {
     }
     
     static float GetRmsPow(float const* pBuf, uint32_t nSamp, uint32_t startSamp) {
-        Utils::ScopedFloatBuffer squBuf(nSamp);
-        
-        float* pSquBuf = squBuf.Get();
-        
-        juce::FloatVectorOperations::multiply(pSquBuf, pBuf, pBuf, nSamp);
+        Buffer squBuf(nSamp);
+		float* pSquBuf = squBuf.Get();
+
+        juce::FloatVectorOperations::multiply(squBuf.Get(), pBuf, pBuf, nSamp);
         
         float sumSquPow = 0;
         for (uint32_t n = startSamp; n < nSamp; ++n) {
@@ -156,7 +156,7 @@ void OnePoleTest::FreqSweepTest_(std::string filename) {
         uint32_t const nSamp = std::round(period*nPeriods);
         uint32_t iPeriod = std::round(period);
     
-        Utils::ScopedFloatBuffer buf(nSamp);
+        Buffer buf(nSamp);
         float* pBuf = buf.Get();
     
         outFreqs[n] = freq;

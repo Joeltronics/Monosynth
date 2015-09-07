@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="PtZGrW" name="Monosynth-test" projectType="consoleapp" version="1.0.0"
-              bundleIdentifier="com.yourcompany.Monosynthtest" includeBinaryInAppConfig="1"
+<JUCERPROJECT id="PtZGrW" name="Monosynth-test" projectType="consoleapp" version="0.0.1"
+              bundleIdentifier="com.joeltronics.Monosynth.test" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0">
   <MAINGROUP id="MOlkSB" name="Monosynth-test">
     <GROUP id="{9833A35D-E2FA-D93F-DA49-BFD7590A00B4}" name="Source">
@@ -29,6 +29,9 @@
           <FILE id="rIgRoD" name="DspUtilsUnitTest.h" compile="0" resource="0"
                 file="Source/Utils/Test/DspUtilsUnitTest.h"/>
         </GROUP>
+        <FILE id="eKraC8" name="Utils.h" compile="0" resource="0" file="Source/Utils/Utils.h"/>
+        <FILE id="y6ERtn" name="Types.h" compile="0" resource="0" file="Source/Utils/Types.h"/>
+        <FILE id="Yh4Na5" name="Buffer.h" compile="0" resource="0" file="Source/Utils/Buffer.h"/>
         <FILE id="Sek1eA" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
         <FILE id="p4I1Pt" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
         <FILE id="LLYqSK" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>
@@ -45,9 +48,11 @@
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath=""/>
+                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath=""
+                       defines="_DEBUG=1, _CLI=1"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath=""/>
+                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath=""
+                       defines="_CLI=1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>
@@ -68,9 +73,11 @@
     <VS2015 targetFolder="Builds/VisualStudio2015">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"/>
+                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"
+                       defines="_DEBUG=1, _CLI=1, _USE_MATH_DEFINES"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"/>
+                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"
+                       defines="_CLI=1, _USE_MATH_DEFINES"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>
@@ -91,9 +98,9 @@
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="Monosynth-test" headerPath=""/>
+                       targetName="Monosynth-test" headerPath="" defines="_DEBUG=1, _CLI=1"/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
-                       targetName="Monosynth-test" headerPath=""/>
+                       targetName="Monosynth-test" headerPath="" defines="_CLI=1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-WINDOWS/modules"/>

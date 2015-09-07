@@ -12,7 +12,7 @@
 
 #include "JuceHeader.h"
 
-#include "../Utils/DspUtils.h"
+#include "Utils/DspUtils.h"
 
 #include <cmath>
 #include <vector>

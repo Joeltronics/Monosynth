@@ -11,14 +11,15 @@
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
 
+#define REQUIRE_SEMICOLON(X) \
+do { \
+    X;\
+} while(0)
 
 #if _DEBUG
 
 
-#define IF_DEBUG(X) \
-do { \
-    X;\
-} while(0)
+#define IF_DEBUG(X) REQUIRE_SEMICOLON(X)
 
 #else
 
@@ -53,14 +54,13 @@ typedef bool const DEBUG_BOOL;
 
 #if _CLI // Debug, CLI
 
-#define DEBUG_ASSERT(X) assert(X)
+#define DEBUG_ASSERT(X) jassert(X)
 
 #else // Debug, GUI
 
 #include "JuceHeader.h"
 
-#define DEBUG_ASSERT(X) \
-do { \
+#define DEBUG_ASSERT(X) REQUIRE_SEMICOLON( \
     if (!(X)) {\
         juce::NativeMessageBox::showOkCancelBox( \
                 juce::AlertWindow::WarningIcon, \
@@ -68,8 +68,8 @@ do { \
                 juce::String( __FILE__ "\n" #X ) \
                 ); \
     }\
-    jassert(X); \
-} while(0)
+    jassert(X);\
+)
 
 #endif
 

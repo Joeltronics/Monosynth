@@ -22,7 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
-#include "LookAndFeel.h"
+#include "Gui/LookAndFeel.h"
 
 namespace Gui {
 //[/Headers]

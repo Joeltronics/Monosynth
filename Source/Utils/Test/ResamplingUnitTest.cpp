@@ -8,11 +8,11 @@
   ==============================================================================
 */
 
+#include "ResamplingUnitTest.h"
+
 #include "JuceHeader.h"
 
-#include "ResamplingUnitTest.h"
-#include "Utils/Resampling.h"
-#include "Utils/DspUtils.h"
+#include "Utils/Utils.h"
 
 namespace Test {
 

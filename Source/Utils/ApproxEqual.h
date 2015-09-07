@@ -11,25 +11,23 @@
 #ifndef APPROXEQUAL_H_INCLUDED
 #define APPROXEQUAL_H_INCLUDED
 
-#include "DspUtils.h"
+#include "Types.h"
+#include "JuceHeader.h"
+//#include "DspUtils.h"
 
 namespace Utils {
     
-float const k_defaultApproxEqualThresh = 0.0001f;
+sample_t const k_defaultApproxEqualThresh = 0.0001f;
 
 template <typename T>
-static inline bool ApproxEqual(T a, T b, T thresh) {
+static inline bool ApproxEqual(T a, T b, T thresh = static_cast<T>(k_defaultApproxEqualThresh)) {
     return (std::fabs(a - b) <= thresh);
 }
 
-template <typename T>
-static inline bool ApproxEqual(T a, T b) {
-    return ApproxEqual<T>(a, b, static_cast<T>(k_defaultApproxEqualThresh));
-}
-
-static inline bool ApproxEqual(float const* a, float const* b, uint32_t nValues, float thresh) {
+static inline bool ApproxEqual(sample_t const* a, sample_t const* b, uint32_t nValues, sample_t thresh = k_defaultApproxEqualThresh) {
+	// TODO: test and see which is faster
 #if 1
-    float* p = ScopedFloatBuffer(nValues).Get();
+    sample_t* p = Buffer(nValues).Get();
     juce::FloatVectorOperations::subtract(p, a, b, nValues);
     juce::FloatVectorOperations::abs(p, p, nValues);
     float max = juce::FloatVectorOperations::findMaximum(p, nValues);
@@ -37,17 +35,17 @@ static inline bool ApproxEqual(float const* a, float const* b, uint32_t nValues,
 #else
     bool bEq = true;
     for (uint32_t n = 0; n < nValues; ++n) {
-        bEq = bEq && ApproxEqual<float>(a[n], b[n], thresh);
+        bEq = bEq && ApproxEqual<sample_t>(a[n], b[n], thresh);
     }
     return bEq;
 #endif
 }
 
-static inline bool ApproxEqual(float const* a, float const* b, uint32_t nValues) {
-    return ApproxEqual(a, b, nValues, k_defaultApproxEqualThresh);
+static inline bool ApproxEqual(Buffer const& a, Buffer const& b, float thresh = k_defaultApproxEqualThresh) {
+	return ApproxEqual(a.GetConst(), b.GetConst(), a.GetLength(), thresh);
 }
 
-static inline bool ApproxEqual(AudioSampleBuffer const& a, AudioSampleBuffer const& b, float thresh) {
+static inline bool ApproxEqual(juce::AudioSampleBuffer const& a, juce::AudioSampleBuffer const& b, float thresh = k_defaultApproxEqualThresh) {
     if (a.getNumChannels() != b.getNumChannels() || a.getNumSamples() != b.getNumSamples())
         return false;
     uint8_t const nChan = a.getNumChannels();
@@ -57,10 +55,6 @@ static inline bool ApproxEqual(AudioSampleBuffer const& a, AudioSampleBuffer con
         bEq = bEq && ApproxEqual(a.getReadPointer(chan), b.getReadPointer(chan), nSamp, thresh);
     }
     return bEq;
-}
-
-static inline bool ApproxEqual(AudioSampleBuffer const& a, AudioSampleBuffer const& b) {
-    return ApproxEqual(a, b, k_defaultApproxEqualThresh);
 }
 
 } // namespace Utils

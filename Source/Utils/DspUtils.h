@@ -1,27 +1,23 @@
 /*
   ==============================================================================
 
-    utils.h
+    dsputils.h
     Created: 16 Jul 2015 7:57:05pm
     Author:  Joel Geddert
 
   ==============================================================================
 */
 
-#ifndef UTILS_H_INCLUDED
-#define UTILS_H_INCLUDED
+#ifndef DSPUTILS_H_INCLUDED
+#define DSPUTILS_H_INCLUDED
 
 // Requires C++11 or higher
 
 #include "JuceHeader.h"
 
 #include "Debug.h"
-// more library includes at bottom
 
 #include <algorithm>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 namespace Utils
 {
@@ -41,18 +37,6 @@ namespace Utils
         return powf(10.0f, dB/10.0f);
     }
 
-    // RAII container for a float vector
-    class ScopedFloatBuffer {
-    public:
-        ScopedFloatBuffer(size_t n) { p = new float[n]; }
-        ~ScopedFloatBuffer() { delete[] p; }
-        float* Get() { return p; }
-        float const* GetConst() const { return p; }
-        
-    private:
-        float* p;
-    };
-    
     static inline void CopyAudioSampleBuffer(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf) {
         uint8_t const nChan = inBuf.getNumChannels();
         uint32_t const nSamp = inBuf.getNumSamples();
@@ -326,9 +310,4 @@ namespace Utils
         { return GenerateSine(outBuf, freq, 0.0f); }
 }
 
-#include "ApproxEqual.h"
-#include "OnePole.h"
-#include "SlewFilter.h"
-
-
-#endif  // UTILS_H_INCLUDED
+#endif  // DSPUTILS_H_INCLUDED

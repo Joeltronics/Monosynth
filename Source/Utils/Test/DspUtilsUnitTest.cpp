@@ -9,7 +9,10 @@
 */
 
 #include "DspUtilsUnitTest.h"
-#include "Utils/DspUtils.h"
+
+#include "ResamplingUnitTest.h"
+
+#include "Utils/Utils.h"
 
 namespace Test {
     
