@@ -32,6 +32,7 @@
         <FILE id="eKraC8" name="Utils.h" compile="0" resource="0" file="Source/Utils/Utils.h"/>
         <FILE id="y6ERtn" name="Types.h" compile="0" resource="0" file="Source/Utils/Types.h"/>
         <FILE id="Yh4Na5" name="Buffer.h" compile="0" resource="0" file="Source/Utils/Buffer.h"/>
+        <FILE id="qgEEI6" name="Buffer.cpp" compile="1" resource="0" file="Source/Utils/Buffer.cpp"/>
         <FILE id="Sek1eA" name="Debug.h" compile="0" resource="0" file="Source/Utils/Debug.h"/>
         <FILE id="p4I1Pt" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
         <FILE id="LLYqSK" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>

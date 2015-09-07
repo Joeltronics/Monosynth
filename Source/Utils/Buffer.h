@@ -14,7 +14,7 @@
 #include "Types.h"
 
 class Buffer {
-	// All member functions inlined below
+	// Most member functions inlined below
 public:
 
 	// ***** Constructors *****
@@ -51,7 +51,7 @@ public:
 	sample_t operator[](size_t idx); // get sample
 	sample_t* operator*(); // get pointer to sample buffer
 
-	// (approximate) equality - uses Utils::ApproxEqual() internal
+	// (approximate) equality - uses Utils::ApproxEqual() internally
 	friend bool operator==(Buffer const& lhs, Buffer const& rhs);
 	friend bool operator!=(Buffer const& lhs, Buffer const& rhs);
 
@@ -62,7 +62,7 @@ public:
 	Buffer& operator-=(sample_t val);
 	Buffer& operator*=(Buffer const& other);
 	Buffer& operator*=(sample_t val);
-	Buffer& operator/=(Buffer const& other); // warning: slower, because there's no juce::FloatVectorOperations::divide
+	Buffer& operator/=(Buffer const& other); /// warning: slower, because there's no juce::FloatVectorOperations::divide
 	Buffer& operator/=(sample_t val);
 
 	// math out of place
@@ -73,93 +73,17 @@ public:
 	friend Buffer operator-(Buffer const& lhs, sample_t rhs);
 	friend Buffer operator*(Buffer const& lhs, Buffer const& rhs);
 	friend Buffer operator*(Buffer const& lhs, sample_t rhs);
-	friend Buffer operator/(Buffer const& lhs, Buffer const& rhs); // warning: slower (see above)
+	friend Buffer operator/(Buffer const& lhs, Buffer const& rhs); /// warning: slower (see above)
 	friend Buffer operator/(Buffer const& lhs, sample_t rhs);
 
 private:
 	void Dealloc_();
 	void Realloc_(size_t len);
 
-	size_t m_len; // This could be const, but that prevents move operator
+	size_t m_len;
 	sample_t* m_p;
-	bool m_bOwnsBuf; // whether or not to delete on destruction/reallocation
+	bool m_bOwnsBuf; /// whether or not to delete on destruction/reallocation
 };
-
-// ***** Constructors *****
-
-// Unallocated constructor
-inline Buffer::Buffer() :
-	m_len(0),
-	m_p(0),
-	m_bOwnsBuf(false)
-{}
-
-// Uninitialized constructor
-inline Buffer::Buffer(size_t len) :
-	m_len(len),
-	m_p(new sample_t[len]),
-	m_bOwnsBuf(true)
-{}
-
-// Initialized constructor
-inline Buffer::Buffer(sample_t val, size_t len) :
-	m_len(len),
-	m_p(new sample_t[len]),
-	m_bOwnsBuf(true)
-{
-	if (val == 0.0f)
-		Clear();
-	else
-		Set(val);
-}
-
-// Move constructor
-inline Buffer::Buffer(Buffer && other) :
-	m_len(other.m_len),
-	m_p(other.m_p),
-	m_bOwnsBuf(true)
-{
-	other.m_len = 0;
-	other.m_p = 0;
-	other.m_bOwnsBuf = false;
-}
-
-// Copy constructor
-inline Buffer::Buffer(Buffer const& other) :
-	m_len(other.GetLength()),
-	m_p(new sample_t[m_len]),
-	m_bOwnsBuf(true)
-{
-	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
-}
-
-// Using preallocated block
-inline Buffer::Buffer(sample_t* buf, size_t len) :
-	m_len(len),
-	m_p(buf),
-	m_bOwnsBuf(false)
-{}
-
-// Destructor
-inline Buffer::~Buffer()
-	{ if (m_bOwnsBuf) delete[] m_p; }
-
-// ***** Private alloc functions *****
-
-inline void Buffer::Dealloc_() {
-	if (m_bOwnsBuf) delete[] m_p;
-	m_p = 0;
-	m_len = 0;
-	m_bOwnsBuf = false;
-}
-
-// Always reallocates - usually want to check if (m_len == newLen) first
-inline void Buffer::Realloc_(size_t newLen) {
-	Dealloc_();
-	m_len = newLen;
-	m_p = new sample_t[m_len];
-	m_bOwnsBuf = true;
-}
 
 // ***** Getters & setters *****
 
@@ -180,31 +104,12 @@ inline void Buffer::Set(sample_t val, size_t len) {
 	juce::FloatVectorOperations::fill(m_p, val, len);
 }
 
-inline void Buffer::Set(sample_t* buf, size_t len) {
-	Dealloc_();
-	m_p = buf;
-	m_len = len;
-	m_bOwnsBuf = false;
-}
-
-// same as operator=
-inline void Buffer::Move(Buffer && other) {
-	if (m_p == other.m_p) return;
-
-	Dealloc_();
-	m_len = other.m_len;
-	m_p = other.m_p;
-
-	m_bOwnsBuf = other.m_bOwnsBuf;
-	other.m_bOwnsBuf = false;
-}
-
 inline void Buffer::Copy(sample_t* buf, size_t len) {
 	if (m_len != len) Realloc_(len);
 	juce::FloatVectorOperations::copy(m_p, buf, m_len);
 }
 
-// same as operator=
+// same as operator=(Buffer)
 inline void Buffer::Copy(Buffer const& other) {
 	if (m_len != other.m_len) Realloc_(other.m_len);
 	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
@@ -216,22 +121,12 @@ inline size_t Buffer::GetLength() const
 // ***** Operators: Move & Copy *****
 
 inline Buffer& Buffer::operator=(Buffer && other) {
-	
-	if (m_p == other.m_p) return *this;
-
-	Dealloc_();
-	m_len = other.m_len;
-	m_p = other.m_p;
-
-	m_bOwnsBuf = other.m_bOwnsBuf;
-	other.m_bOwnsBuf = false;
-
+	Move(std::forward<Buffer>(other));
 	return *this;
 }
 
 inline Buffer& Buffer::operator=(Buffer const& other) {
-	if (m_len != other.m_len) Realloc_(other.m_len);
-	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
+	Copy(other);
 	return *this;
 }
 
@@ -244,16 +139,6 @@ inline sample_t Buffer::operator[](size_t idx) {
 
 inline sample_t* Buffer::operator*()
 	{ return m_p; }
-
-// ***** Operators: (Approximate) equality *****
-
-#include "Utils/ApproxEqual.h"
-
-inline bool operator==(Buffer const& lhs, Buffer const& rhs)
-	{ return Utils::ApproxEqual(lhs, rhs); }
-
-inline bool operator!=(Buffer const& lhs, Buffer const& rhs)
-	{ return !Utils::ApproxEqual(lhs, rhs); }
 
 // ***** Operators: In-place math *****
 
