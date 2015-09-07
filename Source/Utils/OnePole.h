@@ -11,7 +11,7 @@
 #ifndef ONEPOLE_H_INCLUDED
 #define ONEPOLE_H_INCLUDED
 
-#include "JuceHeader.h"
+#include "Types.h"
 
 #include <vector>
 
@@ -24,26 +24,26 @@ class OnePole
     // Interface is float, but uses doubles internally
     
 public:
-    OnePole(uint8_t nChannels);
-    OnePole(uint8_t nChannels, float wc);
+    OnePole();
+    OnePole(float wc);
 
     // Processing functions:
     
-    // AudioSampleBuffer - in-place and not
-    void ProcessLowpass  (AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/);
-    void ProcessHighpass (AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/);
-    void ProcessLowpass  (AudioSampleBuffer& /*inout*/);
-    void ProcessHighpass (AudioSampleBuffer& /*inout*/);
+    // Buffer - in-place and not
+    void ProcessLowpass  (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
+    void ProcessHighpass (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
+    void ProcessLowpass  (Buffer& /*inout*/);
+    void ProcessHighpass (Buffer& /*inout*/);
     
     // Raw buffer - in-place and not
-    void ProcessLowpass  (float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
-    void ProcessHighpass (float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
-    void ProcessLowpass  (float* buf /*inout*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
-    void ProcessHighpass (float* buf /*inout*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
+    void ProcessLowpass  (sample_t const* inBuf /*in*/, sample_t* outBuf /*out*/, size_t nSamp /*in*/);
+    void ProcessHighpass (sample_t const* inBuf /*in*/, sample_t* outBuf /*out*/, size_t nSamp /*in*/);
+    void ProcessLowpass  (sample_t* buf /*inout*/, uint32_t nSamp /*in*/);
+    void ProcessHighpass (sample_t* buf /*inout*/, uint32_t nSamp /*in*/);
     
     // Single sample
-    float ProcessLowpass  (float samp /*in*/, uint8_t channel /*in*/);
-    float ProcessHighpass (float samp /*in*/, uint8_t channel /*in*/);
+    float ProcessLowpass  (sample_t samp /*in*/);
+    float ProcessHighpass (sample_t samp /*in*/);
     
     // Other public functions:
     
@@ -54,17 +54,15 @@ public:
 protected:
     
     // Vectorized functions
-    void  ProcessBufLowpass_(float const* inBuf, float* outBuf, uint32_t nSamp, uint8_t chan);
-    void  ProcessBufHighpass_(float const* inBuf, float* outBuf, uint32_t nSamp, uint8_t chan);
-    void  ProcessBufLowpass_(AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/);
-    void  ProcessBufHighpass_(AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/);
+    void  ProcessBufLowpass_ (sample_t const* inBuf, sample_t* outBuf, size_t nSamp);
+    void  ProcessBufHighpass_(sample_t const* inBuf, sample_t* outBuf, size_t nSamp);
+    void  ProcessBufLowpass_ (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
+    void  ProcessBufHighpass_(Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
     
     // Coefficient calculation
-    void CalcCoeffs_(float wc);
+    void CalcCoeffs_(double wc);
 
-    uint8_t m_nChannels;
-    
-    std::vector<double> z1; // Memory (one per channel)
+    double z1; // Memory
     double a1; // FB Coeff
     double b0; // FF Coeff
 };

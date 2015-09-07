@@ -92,13 +92,13 @@ void OnePoleTest::BasicTest_(std::string filename) {
     for (uint8_t f = 0; f < nFreq; ++f) {
         float freq = fc[f] / sampleRate;
 		
-		Utils::OnePole filt(1, freq);
+		Utils::OnePole filt(freq);
         
         Utils::GenerateSine(buf.getWritePointer(3*f), nSamp, freq);
         
-        filt.ProcessLowpass(buf.getReadPointer(3*f), buf.getWritePointer(3*f+1), nSamp, 0);
+        filt.ProcessLowpass(buf.getReadPointer(3*f), buf.getWritePointer(3*f+1), nSamp);
         filt.Clear();
-        filt.ProcessHighpass(buf.getReadPointer(3*f), buf.getWritePointer(3*f+2), nSamp, 0);
+        filt.ProcessHighpass(buf.getReadPointer(3*f), buf.getWritePointer(3*f+2), nSamp);
         
         float const in_dB = Utils::AmpTodB(Detail::SinRmsToAmp(Detail::GetRmsPow(buf.getReadPointer(3*f), nSamp, 1000)));
         float const outLp_dB = Utils::AmpTodB(Detail::SinRmsToAmp(Detail::GetRmsPow(buf.getReadPointer(3*f+1), nSamp, 1000)));
@@ -145,7 +145,7 @@ void OnePoleTest::FreqSweepTest_(std::string filename) {
     float* outPows = outBuf.getWritePointer(1);
     float* outPhases = outBuf.getWritePointer(2);
     
-    Utils::OnePole filt(1, fc/sampleRate);
+    Utils::OnePole filt(fc/sampleRate);
     
     for (uint8_t n = 0; n < nFreq; ++n) {
     
@@ -165,7 +165,7 @@ void OnePoleTest::FreqSweepTest_(std::string filename) {
     
         Utils::GenerateSine(pBuf, nSamp, freq/sampleRate);
         
-        filt.ProcessLowpass(pBuf, nSamp, 0);
+        filt.ProcessLowpass(pBuf, nSamp);
         
         // Start after first period
         float amp = Detail::SinRmsToAmp(Detail::GetRmsPow(pBuf, nSamp, iPeriod));

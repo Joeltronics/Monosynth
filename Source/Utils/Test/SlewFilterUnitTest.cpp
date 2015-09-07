@@ -26,7 +26,7 @@ namespace Test {
     {
         beginTest("Testing SlewFilter, one sample at a time");
         {
-            Utils::SlewFilter filter(1, 0.25f);
+            Utils::SlewFilter filter(0.25f);
             
             float samp;
             std::vector<float> inVals;
@@ -70,7 +70,7 @@ namespace Test {
         
         beginTest("Testing SlewFilter with changing rate");
         {
-            Utils::SlewFilter filter(1, 0.25f);
+            Utils::SlewFilter filter(0.25f);
             
             float samp;
             std::vector<float> inVals;
@@ -92,7 +92,7 @@ namespace Test {
          
         beginTest("Testing SlewFilter on raw float* buffers");
         {
-            Utils::SlewFilter filter(2, 0.3f);
+            Utils::SlewFilter filter(0.3f);
             
             float inVals[6] = { -1.0f, -1.0f,  0.0f, 1.0f, 0.5f, 0.5f };
             float expVals[6] = { -0.3f, -0.6f, -0.3f, 0.0f, 0.3f, 0.5f };
@@ -101,8 +101,9 @@ namespace Test {
             float inPlaceVals[6];
             memcpy(inPlaceVals, inVals, 6*sizeof(float));
             
-            filter.Process(inVals, outVals, 6, 0);
-            filter.Process(inPlaceVals, 6, 1);
+            filter.Process(inVals, outVals, 6);
+			filter.Clear();
+            filter.Process(inPlaceVals, 6);
             
             for (size_t n = 0; n < 6; ++n) {
                 if (!Utils::ApproxEqual(outVals[n], expVals[n]))
@@ -115,11 +116,9 @@ namespace Test {
             }
         }
         
-        beginTest("Testing SlewFilter on AudioSampleBuffer");
+        beginTest("Testing SlewFilter on Buffer");
         {
-            juce::AudioSampleBuffer buf(3, 8);
-            
-            Utils::SlewFilter filter(3, 0.3f);
+            Utils::SlewFilter filter(0.3f);
             
             float inVals0[8]  = { -1.0f, -1.0f,  0.0f, 1.0f, 0.5f, 0.5f, 0.0f, 0.0f };
             float expVals0[8] = { -0.3f, -0.6f, -0.3f, 0.0f, 0.3f, 0.5f, 0.2f, 0.0f };
@@ -130,50 +129,51 @@ namespace Test {
             float inVals2[8]  = { -1.0f, 1.0f, 0.1f, -0.1f, 0.5f, 0.5f, 1.0f, 1.0f };
             float expVals2[8] = { -0.3f, 0.0f, 0.1f, -0.1f, 0.2f, 0.5f, 0.8f, 1.0f };
             
-            memcpy(buf.getWritePointer(0), inVals0, 8*sizeof(float));
-            memcpy(buf.getWritePointer(1), inVals1, 8*sizeof(float));
-            memcpy(buf.getWritePointer(2), inVals2, 8*sizeof(float));
-            
-            juce::AudioSampleBuffer inBuf = buf;
-            juce::AudioSampleBuffer outBuf(3, 8);
+			Buffer buf0(inVals0, 8);
+			Buffer buf1(inVals1, 8);
+			Buffer buf2(inVals2, 8);
 
-            filter.Process(inBuf, outBuf);
+			Buffer outBuf0(8);
+			Buffer outBuf1(8);
+			Buffer outBuf2(8);
+
+            filter.Process(buf0, outBuf0);
             filter.Clear();
-            filter.Process(inBuf);
+			filter.Process(buf1, outBuf1);
+			filter.Clear();
+			filter.Process(buf2, outBuf2);
+			filter.Clear();
+			filter.Process(buf0);
+			filter.Clear();
+			filter.Process(buf1);
+			filter.Clear();
+			filter.Process(buf2);
 
-            float const* ip0 = inBuf.getReadPointer(0);
-            float const* ip1 = inBuf.getReadPointer(1);
-            float const* ip2 = inBuf.getReadPointer(1);
-            
-            float const* op0 = outBuf.getReadPointer(0);
-            float const* op1 = outBuf.getReadPointer(1);
-            float const* op2 = outBuf.getReadPointer(2);
-            
             for (size_t n = 0; n < 8; ++n) {
                 
-                if (!Utils::ApproxEqual(op0[n], expVals0[n]))
-                    std::cout << "Out-of-place 0: In: " << inVals0[n] << ", expect: " << expVals0[n] << ", actual: " << op0[n] << std::endl;
-                expect(Utils::ApproxEqual(op0[n], expVals0[n]));
+                if (!Utils::ApproxEqual(outBuf0[n], expVals0[n]))
+                    std::cout << "Out-of-place 0: In: " << inVals0[n] << ", expect: " << expVals0[n] << ", actual: " << outBuf0[n] << std::endl;
+                expect(Utils::ApproxEqual(outBuf0[n], expVals0[n]));
                 
-                if (!Utils::ApproxEqual(op1[n], expVals1[n]))
-                    std::cout << "Out-of-place 1: In: " << inVals1[n] << ", expect: " << expVals1[n] << ", actual: " << op1[n] << std::endl;
-                expect(Utils::ApproxEqual(op1[n], expVals1[n]));
+                if (!Utils::ApproxEqual(outBuf1[n], expVals1[n]))
+                    std::cout << "Out-of-place 1: In: " << inVals1[n] << ", expect: " << expVals1[n] << ", actual: " << outBuf1[n] << std::endl;
+                expect(Utils::ApproxEqual(outBuf1[n], expVals1[n]));
                 
-                if (!Utils::ApproxEqual(op2[n], expVals2[n]))
-                    std::cout << "Out-of-place 2: In: " << inVals2[n] << ", expect: " << expVals2[n] << ", actual: " << op2[n] << std::endl;
-                expect(Utils::ApproxEqual(op2[n], expVals2[n]));
+                if (!Utils::ApproxEqual(outBuf2[n], expVals2[n]))
+                    std::cout << "Out-of-place 2: In: " << inVals2[n] << ", expect: " << expVals2[n] << ", actual: " << outBuf2[n] << std::endl;
+                expect(Utils::ApproxEqual(outBuf2[n], expVals2[n]));
                 
-                if (!Utils::ApproxEqual(ip0[n], expVals0[n]))
-                    std::cout << "In-Place 0:     In: " << inVals0[n] << ", expect: " << expVals0[n] << ", actual: " << ip0[n] << std::endl;
-                expect(Utils::ApproxEqual(ip0[n], expVals0[n]));
+                if (!Utils::ApproxEqual(buf0[n], expVals0[n]))
+                    std::cout << "In-Place 0:     In: " << inVals0[n] << ", expect: " << expVals0[n] << ", actual: " << buf0[n] << std::endl;
+                expect(Utils::ApproxEqual(buf0[n], expVals0[n]));
                 
-                if (!Utils::ApproxEqual(ip1[n], expVals1[n]))
-                    std::cout << "In-Place 1:     In: " << inVals1[n] << ", expect: " << expVals1[n] << ", actual: " << ip1[n] << std::endl;
-                expect(Utils::ApproxEqual(ip1[n], expVals1[n]));
+                if (!Utils::ApproxEqual(buf1[n], expVals1[n]))
+                    std::cout << "In-Place 1:     In: " << inVals1[n] << ", expect: " << expVals1[n] << ", actual: " << buf1[n] << std::endl;
+                expect(Utils::ApproxEqual(buf1[n], expVals1[n]));
                 
-                if (!Utils::ApproxEqual(ip2[n], expVals2[n]))
-                    std::cout << "In-Place 2:     In: " << inVals2[n] << ", expect: " << expVals2[n] << ", actual: " << ip2[n] << std::endl;
-                expect(Utils::ApproxEqual(ip2[n], expVals2[n]));
+                if (!Utils::ApproxEqual(buf2[n], expVals2[n]))
+                    std::cout << "In-Place 2:     In: " << inVals2[n] << ", expect: " << expVals2[n] << ", actual: " << buf2[n] << std::endl;
+                expect(Utils::ApproxEqual(buf2[n], expVals2[n]));
             }
         }
     }

@@ -28,15 +28,13 @@ namespace Detail
  
 // ***** Constructors *****
     
-SlewFilter::SlewFilter(uint8_t nChannels) :
-    m_nChannels(nChannels),
+SlewFilter::SlewFilter() :
     m_rate(1.0f)
 {
     Clear();
 }
     
-SlewFilter::SlewFilter(uint8_t nChannels, float rate) :
-    m_nChannels(nChannels),
+SlewFilter::SlewFilter(float rate) :
     m_rate(rate)
 {
     Clear();
@@ -45,74 +43,40 @@ SlewFilter::SlewFilter(uint8_t nChannels, float rate) :
 // ***** Process *****
 
 // Buffer
-void SlewFilter::Process(AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/)
-{
-    DEBUG_ASSERT(inBuf.getNumChannels() == outBuf.getNumChannels());
-    DEBUG_ASSERT(inBuf.getNumChannels() == m_nChannels);
-    DEBUG_ASSERT(inBuf.getNumSamples() == outBuf.getNumSamples());
-    
-    // TODO: invert loop order so iterating channels is on the inside
-    uint32_t const nSamp = inBuf.getNumSamples();
-    for(uint8_t chan = 0; chan < m_nChannels; ++chan) {
-        float* wp = outBuf.getWritePointer(chan);
-        float const* rp = inBuf.getReadPointer(chan);
-        Process(rp, wp, nSamp, chan);
-    }
+void SlewFilter::Process(Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/) {
+    DEBUG_ASSERT(inBuf.GetLength() == outBuf.GetLength());
+	Process(inBuf.GetConst(), outBuf.Get(), inBuf.GetLength());
 }
 
 // Buffer - in-place
-void SlewFilter::Process(AudioSampleBuffer& buf /*inout*/)
-{
-    DEBUG_ASSERT(buf.getNumChannels() == m_nChannels);
-    
-    // TODO: invert loop order so iterating channels is on the inside
-    uint32_t const nSamp = buf.getNumSamples();
-    for(uint8_t chan = 0; chan < m_nChannels; ++chan) {
-        float* wp = buf.getWritePointer(chan);
-        Process(wp, nSamp, chan);
-    }
-}
+void SlewFilter::Process(Buffer& buf /*inout*/)
+	{ Process(buf.Get(), buf.GetLength()); }
 
 // Raw buffer
-void SlewFilter::Process(float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/, uint8_t chan /*in*/)
-{
-    float z = z1[chan];
+void SlewFilter::Process(float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/) {
     for (uint32_t n=0; n < nSamp; n++) {
-        z = Detail::Process(inBuf[n], z, m_rate);
-        outBuf[n] = z;
+        z1 = Detail::Process(inBuf[n], z1, m_rate);
+        outBuf[n] = z1;
     }
-    z1[chan] = z;
 }
 
 // Raw buffer - in-place
-void SlewFilter::Process(float* buf /*inout*/, uint32_t nSamp /*in*/, uint8_t chan /*in*/)
-{
-    Process(buf, buf, nSamp, chan);
-}
+void SlewFilter::Process(float* buf /*inout*/, uint32_t nSamp /*in*/)
+	{ Process(buf, buf, nSamp); }
 
 // Single sample
 float SlewFilter::Process(float samp /*in*/, uint8_t chan /*in*/) {
-    float const out = Detail::Process(samp, z1[chan], m_rate);
-    z1[chan] = out;
+    float const out = Detail::Process(samp, z1, m_rate);
+    z1 = out;
     return out;
 }
 
 // ***** Other public functions *****
 
 void SlewFilter::SetRate(float rate)
-{
-    m_rate = rate;
-}
-    
-void SlewFilter::SetNumChannels(uint8_t nChan) {
-    if (nChan != m_nChannels) {
-        m_nChannels = nChan;
-        Clear();
-    }
-}
+	{ m_rate = rate; }
 
-void SlewFilter::Clear() {
-    z1.assign(m_nChannels, 0.0f);
-}
+void SlewFilter::Clear()
+	{ z1 = 0.0f; }
     
 } // namespace Engine

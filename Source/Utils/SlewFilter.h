@@ -11,7 +11,7 @@
 #ifndef SLEWFILTER_H_INCLUDED
 #define SLEWFILTER_H_INCLUDED
 
-#include "JuceHeader.h"
+#include "Utils/Buffer.h"
 
 #include <vector>
 
@@ -21,25 +21,24 @@ namespace Utils
 class SlewFilter
 {
 public:
-    SlewFilter(uint8_t nChannels);
-    SlewFilter(uint8_t nChannels, float rate);
+    SlewFilter();
+    SlewFilter(float rate);
     
     // Processing functions:
     
     // AudioSampleBuffer - in-place or not
-    void Process  (AudioSampleBuffer const& inBuf /*in*/, AudioSampleBuffer& outBuf /*out*/);
-    void Process  (AudioSampleBuffer& /*inout*/);
+    void Process  (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
+    void Process  (Buffer& /*inout*/);
     
     // float* - in-place or not
-    void Process  (float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
-    void Process  (float* buf /*inout*/, uint32_t nSamp /*in*/, uint8_t channel /*in*/);
+    void Process  (float const* inBuf /*in*/, float* outBuf /*out*/, uint32_t nSamp /*in*/);
+    void Process  (float* buf /*inout*/, uint32_t nSamp /*in*/);
     
     // Single sample
     float Process (float samp /*in*/, uint8_t channel /*in*/);
     
     // Other public functions:
     void SetRate(float rate);
-    void SetNumChannels(uint8_t nChan);
     void Clear();
     
     static inline float CalcRate(float rate_per_us, float sampleRate_Hz) {
@@ -49,8 +48,7 @@ public:
     
 protected:
     
-    uint8_t m_nChannels;
-    std::vector<float> z1;
+    float z1;
     float m_rate;
 };
     
