@@ -112,7 +112,6 @@ private:
     ScopedPointer<Label> label20;
     ScopedPointer<Slider> sli_filt_gain;
     ScopedPointer<Label> label21;
-    ScopedPointer<Label> label22;
     ScopedPointer<Slider> sli_pitchmod_amt;
     ScopedPointer<Label> label7;
     ScopedPointer<Label> label25;
@@ -246,6 +245,17 @@ private:
     ScopedPointer<Label> label112;
     ScopedPointer<Slider> swi_tune_type;
     ScopedPointer<Label> label113;
+    ScopedPointer<Label> label114;
+    ScopedPointer<Label> label115;
+    ScopedPointer<Label> label116;
+    ScopedPointer<Slider> swi_glide_type;
+    ScopedPointer<Label> label117;
+    ScopedPointer<Label> label118;
+    ScopedPointer<Slider> sli_tune_instab;
+    ScopedPointer<Slider> sli_shape_instab;
+    ScopedPointer<Label> label119;
+    ScopedPointer<Label> label120;
+    ScopedPointer<Label> label22;
 
 
     //==============================================================================

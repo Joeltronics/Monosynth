@@ -308,9 +308,8 @@ namespace Gui {
 
 	Typeface::Ptr DefaultLookAndFeel::getTypefaceForFont(const Font &f) {
 
-		// Default definition:
-
 		/*
+		// Default definition:
 		if (defaultSans.isNotEmpty() && f.getTypefaceName() == Font::getDefaultSansSerifFontName())
 		{
 			Font f(font);
@@ -321,13 +320,10 @@ namespace Gui {
 		return Font::getDefaultTypefaceForFont(font);
 		*/
 
-		/*
 		if (f.getTypefaceName() == Font::getDefaultSansSerifFontName())
 		{
 			return Typeface::createSystemTypefaceFor(BinaryData::MuliRegular_ttf, BinaryData::MuliRegular_ttfSize);
-			//return Typeface::Ptr(Typeface::createSystemTypefaceFor(BinaryData::MuliRegular_ttf, BinaryData::MuliRegular_ttfSize));
 		}
-		*/
 
 		return Font::getDefaultTypefaceForFont(f);
 	}

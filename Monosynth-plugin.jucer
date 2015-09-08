@@ -12,6 +12,8 @@
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.2.0">
   <MAINGROUP id="bCKf4H" name="Monosynth-plugin">
     <GROUP id="{8426121E-D963-B936-643E-F22052A12080}" name="Resources">
+      <FILE id="Q0U7Ua" name="Muli-Regular.ttf" compile="0" resource="1"
+            file="Resources/Muli-Regular.ttf"/>
       <FILE id="d98sqs" name="bigknob.png" compile="0" resource="1" file="Resources/bigknob.png"/>
       <FILE id="TwDjNQ" name="bigknob88.png" compile="0" resource="1" file="Resources/bigknob88.png"/>
       <FILE id="YXZ9Ha" name="knob24.png" compile="0" resource="1" file="Resources/knob24.png"/>
@@ -35,6 +37,7 @@
     </GROUP>
     <GROUP id="{8D3ECD94-05C6-D943-A384-1E2A6490C030}" name="Source">
       <GROUP id="{FDC8BF0F-21F5-0BAE-87E5-AB784F9B17A9}" name="Include">
+        <FILE id="K2O6Fr" name="Params.h" compile="0" resource="0" file="Source/Include/Params.h"/>
         <FILE id="G2sUNX" name="Types.h" compile="0" resource="0" file="Source/Include/Types.h"/>
       </GROUP>
       <GROUP id="{64F1D4CF-5AF8-19D8-7E95-D0070893A8A6}" name="Engine">
