@@ -30,6 +30,7 @@ public:
 	// ***** Getters & setters *****
 
 	void Clear(); // Sets all to zero
+	void Clear(size_t len);
 	void Set(sample_t val);
 	void Set(sample_t val, size_t len);
 	void Set(sample_t* buf, size_t len); // doesn't take ownership
@@ -95,6 +96,11 @@ inline sample_t const* Buffer::GetConst() const
 
 inline void Buffer::Clear()
 	{ juce::FloatVectorOperations::clear(m_p, m_len); }
+
+inline void Buffer::Clear(size_t len) {
+	if (m_len != len) Realloc_(len);
+	juce::FloatVectorOperations::clear(m_p, m_len);
+}
 
 inline void Buffer::Set(sample_t val)
 	{ juce::FloatVectorOperations::fill(m_p, val, m_len); }

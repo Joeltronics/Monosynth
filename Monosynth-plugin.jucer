@@ -34,12 +34,15 @@
             file="Resources/slidercap_32.png"/>
     </GROUP>
     <GROUP id="{8D3ECD94-05C6-D943-A384-1E2A6490C030}" name="Source">
+      <GROUP id="{FDC8BF0F-21F5-0BAE-87E5-AB784F9B17A9}" name="Include">
+        <FILE id="G2sUNX" name="Types.h" compile="0" resource="0" file="Source/Include/Types.h"/>
+      </GROUP>
       <GROUP id="{64F1D4CF-5AF8-19D8-7E95-D0070893A8A6}" name="Engine">
+        <FILE id="WTSyHd" name="MidiProcessor.cpp" compile="1" resource="0"
+              file="Source/Engine/MidiProcessor.cpp"/>
+        <FILE id="Hko8wF" name="MidiProcessor.h" compile="0" resource="0" file="Source/Engine/MidiProcessor.h"/>
         <FILE id="Vg7ac4" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
         <FILE id="NkT6bs" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
-        <FILE id="h6ANdS" name="NoteAllocator.cpp" compile="1" resource="0"
-              file="Source/Engine/NoteAllocator.cpp"/>
-        <FILE id="gKYvYn" name="NoteAllocator.h" compile="0" resource="0" file="Source/Engine/NoteAllocator.h"/>
       </GROUP>
       <GROUP id="{5579AD73-E26C-9C8A-A95D-D152B1D9B913}" name="Plugin">
         <FILE id="qT9JVw" name="PluginEditor.cpp" compile="1" resource="0"
@@ -104,10 +107,11 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
                        isDebug="1" optimisation="1" targetName="Monosynth" defines="_DEBUG=1, _USE_MATH_DEFINES"
-                       headerPath="$(ProjectDir)../../Source"/>
+                       headerPath="$(ProjectDir)../../Source&#10;$(ProjectDir)../../Source/Include"
+                       warningsAreErrors="0"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)../../Source"
-                       defines="_USE_MATH_DEFINES"/>
+                       isDebug="0" optimisation="3" targetName="Monosynth" headerPath="$(ProjectDir)../../Source&#10;$(ProjectDir)../../Source/Include"
+                       defines="_USE_MATH_DEFINES" warningsAreErrors="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../Frameworks/JUCE-OSX/modules"/>

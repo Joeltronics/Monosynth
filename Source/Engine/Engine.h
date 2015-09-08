@@ -13,6 +13,9 @@
 
 #include "JuceHeader.h"
 
+#include "Types.h"
+#include "MidiProcessor.h"
+
 class SynthEngine {
 public:
 	SynthEngine();
@@ -23,6 +26,8 @@ public:
 
 private:
 	double m_sampleRate;
+
+	Engine::MidiProcessor m_midiProc;
 };
 
 

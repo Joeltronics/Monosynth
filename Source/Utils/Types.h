@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#ifndef TYPES_H_INCLUDED
-#define TYPES_H_INCLUDED
+#ifndef UTILS_TYPES_H_INCLUDED
+#define UTILS_TYPES_H_INCLUDED
 
 #include "Debug.h"
 
@@ -22,4 +22,4 @@ namespace Utils {
 
 #include "Buffer.h"
 
-#endif  // TYPES_H_INCLUDED
+#endif  // UTILS_TYPES_H_INCLUDED

@@ -10,13 +10,44 @@
 
 #include "Engine.h"
 
+#include "JuceHeader.h"
+
+#include "Types.h"
 
 
 SynthEngine::SynthEngine() {}
 SynthEngine::~SynthEngine() {}
 
-void SynthEngine::Process(AudioSampleBuffer& buffer, MidiBuffer& midiMessages) {
+void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
+	
+	size_t nSamp = juceBuf.getNumSamples();
+	size_t nChan = juceBuf.getNumChannels();
 
+	Buffer buf(juceBuf.getWritePointer(0), nSamp);
+
+	// Process:
+	// 1. MIDI
+	// 2. Mod sources (Env/LFO)
+	// 3. Pitch
+	// 4. Oscillators
+	// 5. Mixer
+	// 6. Filter
+	// 7. Distortion
+	// 8. VCA
+	// 9. Effects
+
+
+
+	// 1. MIDI
+	//m_midiProc.Process(nSamp, midiMessages, noteBuf, gateBuf);
+
+	// MidiBuffer const& midiMessages,
+	// std::vector<Utils::timestampedMidiNote_t>& noteBuf
+
+
+	// If not mono, copy channel 0 to all others
+	for (size_t chan = 1; chan < nChan; ++chan)
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), juceBuf.getReadPointer(chan), nSamp);
 }
 
 void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
