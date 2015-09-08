@@ -45,3 +45,4 @@ These are all features I'm considering possibly adding in the future, but don't 
 * More monophony priority modes (besides last-note)
 * Polyphony & unison
 * Sequencer & arpeggiator
+* Filter feedback distortion - until then, there are 2 other kinds of distortion

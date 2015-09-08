@@ -256,6 +256,9 @@ private:
     ScopedPointer<Label> label119;
     ScopedPointer<Label> label120;
     ScopedPointer<Label> label22;
+    ScopedPointer<Label> label121;
+    ScopedPointer<Label> label122;
+    ScopedPointer<Slider> swi_filt_lfosrc2;
 
 
     //==============================================================================
