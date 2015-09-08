@@ -11,7 +11,7 @@
 #include "OnePole.h"
 
 #include "Debug.h"
-#include "Types.h"
+#include "Utils/Types.h"
 #include "DspUtils.h"
 
 #include <cmath>

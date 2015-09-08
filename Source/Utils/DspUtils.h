@@ -13,33 +13,26 @@
 
 // Requires C++11 or higher
 
-// Disable warning on unused function
-//#pragma warning (disable: 4505)
+// Disable "unreferenced local function has been removed"
+#pragma warning (disable: 4505)
 
 #include "JuceHeader.h"
 
 #include "Debug.h"
-#include "Types.h"
+#include "Utils/Types.h"
 
 #include <algorithm>
 
 namespace Utils
 {
-    static inline float AmpTodB(float amp) {
-        return 20.0f * log10f(amp);
-    }
-    
-    static inline float dBtoAmp(float dB) {
-        return powf(10.0f, dB/20.0f);
-    }
-    
-    static inline float PowTodB(float pow) {
-        return 10.0f * log10f(pow);
-    }
-    
-    static inline float dBtoPow(float dB) {
-        return powf(10.0f, dB/10.0f);
-    }
+    static inline float  AmpTodB(float  amp) {return 20.0f * log10f(amp);}
+	static inline double AmpTodB(double amp) {return 20.0  * log10 (amp);}
+	static inline float  PowTodB(float  pow) {return 10.0f * log10f(pow);}
+	static inline double PowTodB(double pow) {return 10.0  * log10 (pow);}
+	static inline float  dBtoAmp(float  dB)  {return powf(10.0f, dB/20.0f);}
+	static inline double dBtoAmp(double dB)  {return pow (10.0 , dB/20.0 );}
+	static inline float  dBtoPow(float  dB)  {return powf(10.0f, dB/10.0f);}
+	static inline double dBtoPow(double dB)  {return pow (10.0 , dB/10.0 );}
 
     static inline void CopyAudioSampleBuffer(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf) {
         size_t const nChan = inBuf.getNumChannels();

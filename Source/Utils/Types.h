@@ -13,9 +13,9 @@
 
 #include "Debug.h"
 
-typedef float sample_t;
-
 namespace Utils {
+	typedef float sample_t;
+
 	// Constants:
 	sample_t const k_defaultApproxEqualThresh = 0.0001f;
 }

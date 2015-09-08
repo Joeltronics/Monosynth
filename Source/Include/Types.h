@@ -20,6 +20,8 @@
 
 #include <vector>
 
+using sample_t = Utils::sample_t;
+using Buffer = Utils::Buffer;
 
 uint8_t const k_defaultMidiVel = 100;
 

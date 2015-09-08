@@ -11,7 +11,7 @@
 #ifndef APPROXEQUAL_H_INCLUDED
 #define APPROXEQUAL_H_INCLUDED
 
-#include "Types.h"
+#include "Utils/Types.h"
 #include "JuceHeader.h"
 
 namespace Utils {

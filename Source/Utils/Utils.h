@@ -13,17 +13,17 @@
 
 #include <math.h>
 
-#include "Debug.h"
-#include "Types.h"
+#include "Utils/Debug.h"
+#include "Utils/Types.h"
 
-#include "Buffer.h"
+#include "Utils/Buffer.h"
 
-#include "DspUtils.h"
-#include "ApproxEqual.h"
+#include "Utils/DspUtils.h"
+#include "Utils/ApproxEqual.h"
 
-#include "OnePole.h"
-#include "Resampling.h"
-#include "SlewFilter.h"
+#include "Utils/OnePole.h"
+#include "Utils/Resampling.h"
+#include "Utils/SlewFilter.h"
 
 
 

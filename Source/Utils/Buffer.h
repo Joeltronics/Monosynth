@@ -11,7 +11,9 @@
 #ifndef BUFFER_H_INCLUDED
 #define BUFFER_H_INCLUDED
 
-#include "Types.h"
+#include "Utils/Types.h"
+
+namespace Utils {
 
 class Buffer {
 	// Most member functions inlined below
@@ -89,13 +91,19 @@ private:
 // ***** Getters & setters *****
 
 inline sample_t* Buffer::Get()
-	{ return m_p; }
+{
+	return m_p;
+}
 
 inline sample_t const* Buffer::GetConst() const
-	{ return m_p; }
+{
+	return m_p;
+}
 
 inline void Buffer::Clear()
-	{ juce::FloatVectorOperations::clear(m_p, m_len); }
+{
+	juce::FloatVectorOperations::clear(m_p, m_len);
+}
 
 inline void Buffer::Clear(size_t len) {
 	if (m_len != len) Realloc_(len);
@@ -103,7 +111,9 @@ inline void Buffer::Clear(size_t len) {
 }
 
 inline void Buffer::Set(sample_t val)
-	{ juce::FloatVectorOperations::fill(m_p, val, m_len); }
+{
+	juce::FloatVectorOperations::fill(m_p, val, m_len);
+}
 
 inline void Buffer::Set(sample_t val, size_t len) {
 	if (m_len != len) Realloc_(len);
@@ -122,7 +132,9 @@ inline void Buffer::Copy(Buffer const& other) {
 }
 
 inline size_t Buffer::GetLength() const
-	{ return m_len; }
+{
+	return m_len;
+}
 
 // ***** Operators: Move & Copy *****
 
@@ -144,7 +156,9 @@ inline sample_t Buffer::operator[](size_t idx) {
 }
 
 inline sample_t* Buffer::operator*()
-	{ return m_p; }
+{
+	return m_p;
+}
 
 // ***** Operators: In-place math *****
 
@@ -243,8 +257,10 @@ inline Buffer operator/(Buffer const& lhs, Buffer const& rhs) {
 }
 inline Buffer operator/(Buffer const& lhs, sample_t rhs) {
 	Buffer newBuf(lhs.m_len);
-	juce::FloatVectorOperations::copyWithMultiply(newBuf.m_p, lhs.m_p, sample_t(1.0)/rhs, lhs.m_len);
+	juce::FloatVectorOperations::copyWithMultiply(newBuf.m_p, lhs.m_p, sample_t(1.0) / rhs, lhs.m_len);
 	return newBuf;
 }
+
+} // namespace Utils
 
 #endif  // BUFFER_H_INCLUDED

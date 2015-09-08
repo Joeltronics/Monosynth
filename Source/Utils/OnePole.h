@@ -11,7 +11,7 @@
 #ifndef ONEPOLE_H_INCLUDED
 #define ONEPOLE_H_INCLUDED
 
-#include "Types.h"
+#include "Utils/Types.h"
 
 #include <vector>
 

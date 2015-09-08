@@ -12,6 +12,7 @@
 
 #include "Utils/ApproxEqual.h"
 
+namespace Utils {
 
 // Most member functions are inlined in Buffer.h
 
@@ -123,3 +124,4 @@ bool operator==(Buffer const& lhs, Buffer const& rhs)
 bool operator!=(Buffer const& lhs, Buffer const& rhs)
 	{ return !Utils::ApproxEqual(lhs, rhs); }
 
+} // namespace Utils
