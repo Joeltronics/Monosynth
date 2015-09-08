@@ -19,8 +19,8 @@
 
 namespace Gui {
 
-	static inline int ToInt(float f) { return static_cast<int>(std::round(f)); }
-	static inline int ToInt(double d) { return static_cast<int>(std::round(d)); }
+	static inline int ToInt(float f) { return Utils::RoundToInt(f); }
+	static inline int ToInt(double d) { return Utils::RoundToInt(d); }
 
 	static inline float GetX_(float centerX, float radius, float angle) {
 		return centerX + radius*cosf(angle);

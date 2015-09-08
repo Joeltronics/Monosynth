@@ -25,6 +25,9 @@
 
 namespace Utils
 {
+	static inline int RoundToInt(float f) { return static_cast<int>(std::round(f)); }
+	static inline int RoundToInt(double d) { return static_cast<int>(std::round(d)); }
+
     static inline float  AmpTodB(float  amp) {return 20.0f * log10f(amp);}
 	static inline double AmpTodB(double amp) {return 20.0  * log10 (amp);}
 	static inline float  PowTodB(float  pow) {return 10.0f * log10f(pow);}
