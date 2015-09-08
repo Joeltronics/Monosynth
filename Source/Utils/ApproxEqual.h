@@ -49,8 +49,8 @@ static inline bool ApproxEqual(Buffer const& a, Buffer const& b, float thresh = 
 static inline bool ApproxEqual(juce::AudioSampleBuffer const& a, juce::AudioSampleBuffer const& b, float thresh = k_defaultApproxEqualThresh) {
     if (a.getNumChannels() != b.getNumChannels() || a.getNumSamples() != b.getNumSamples())
         return false;
-    uint8_t const nChan = a.getNumChannels();
-    uint32_t const nSamp = a.getNumSamples();
+    size_t const nChan = a.getNumChannels();
+    size_t const nSamp = a.getNumSamples();
     bool bEq = true;
     for (uint8_t chan = 0; chan < nChan; ++chan) {
         bEq = bEq && ApproxEqual(a.getReadPointer(chan), b.getReadPointer(chan), nSamp, thresh);

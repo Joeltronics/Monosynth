@@ -19,9 +19,8 @@
 
 namespace Gui {
 
-	static inline int ToInt(float f) {
-		return static_cast<int>(std::round(f));
-	}
+	static inline int ToInt(float f) { return static_cast<int>(std::round(f)); }
+	static inline int ToInt(double d) { return static_cast<int>(std::round(d)); }
 
 	static inline float GetX_(float centerX, float radius, float angle) {
 		return centerX + radius*cosf(angle);
@@ -83,8 +82,8 @@ namespace Gui {
 
 		// Angles coming in seem to be clockwise starting at the top
 		// We want these in Cartesian coordinates (counterclockwise starting to the right)
-		rotaryStartAngle = M_PI_2 - rotaryStartAngle;
-		rotaryEndAngle = M_PI_2 - rotaryEndAngle;
+		rotaryStartAngle = float(M_PI_2) - rotaryStartAngle;
+		rotaryEndAngle = float(M_PI_2) - rotaryEndAngle;
 		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
 		
 		// Mouseover
@@ -101,13 +100,13 @@ namespace Gui {
 		Image img;
 		float r1, r2, tickWidth;
 
-		float minVal = sl.getMinimum();
-		float maxVal = sl.getMaximum();
-		float range = maxVal - minVal;
+		float minVal = float(sl.getMinimum());
+		float maxVal = float(sl.getMaximum());
+		//float range = maxVal - minVal;
 
-		int32_t intMinVal = std::ceil(minVal);
-		int32_t intMaxVal = std::floor(maxVal);
-		int32_t intRange = intMaxVal - intMinVal;
+		int32_t intMinVal = int32_t(std::ceil(minVal));
+		int32_t intMaxVal = int32_t(std::floor(maxVal));
+		//int32_t intRange = intMaxVal - intMinVal;
 
 		if (minDim >= 88) {
 			img = ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
@@ -163,15 +162,12 @@ namespace Gui {
 			DrawTick_(g, cx, cy, r2, maxRadius, *it);
 		}
 
-		if (true)
-		{
-			// Draw knob image
-			DrawImageCentered_(g, img, cx, cy, w, h);
+		// Draw knob image
+		DrawImageCentered_(g, img, cx, cy, w, h);
 
-			// Draw knob indicator
-			g.setColour(Colours::whitesmoke);
-			DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
-		}
+		// Draw knob indicator
+		g.setColour(Colours::whitesmoke);
+		DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
 	}
 	
 	// returns true if successful
@@ -224,9 +220,9 @@ namespace Gui {
 		Graphics& g,
 		int const x, int const y,
 		int const w, int const h,
-		float const sliderPos,
-		float const minSliderPos,
-		float const maxSliderPos,
+		float const /*sliderPos*/,
+		float const /*minSliderPos*/,
+		float const /*maxSliderPos*/,
 		Slider::SliderStyle const style,
 		Slider& sl)
 	{
@@ -237,7 +233,6 @@ namespace Gui {
 		// Mouseover
 		bool const bIsMouseOver = sl.isEnabled() && sl.isMouseOverOrDragging();
 
-		uint32_t val;
 		bool bIsVert = false;
 
 		switch (style) {
@@ -287,28 +282,28 @@ namespace Gui {
 		}
 
 		g.setColour(Colours::black);
-		g.drawLine(minx, miny, maxx, maxy, 2.0f);
+		g.drawLine(float(minx), float(miny), float(maxx), float(maxy), 2.0f);
 
 		// Draw cap
 
 		// TODO: figure out why this one doesn't work when the other does
 		// (what values are sliderPos anyway?)
 		//float pos = Utils::ReverseInterp(minSliderPos, maxSliderPos, sliderPos);
-		float pos = Utils::ReverseInterp(sl.getMinimum(), sl.getMaximum(), sl.getValue());
+		double pos = Utils::ReverseInterp(sl.getMinimum(), sl.getMaximum(), sl.getValue());
 
 		int imgx, imgy;
 		if (bIsVert) {
 			imgx = ToInt(cx);
-			imgy = ToInt(Utils::Interp(float(y + h), float(y), pos));
+			imgy = ToInt(Utils::Interp(double(y + h), double(y), pos));
 		}
 		else {
-			imgx = ToInt(Utils::Interp(float(x), float(x + w), pos));
+			imgx = ToInt(Utils::Interp(double(x), double(x + w), pos));
 			imgy = ToInt(cy);
 		}
 
 		Image img = ImageCache::getFromMemory(BinaryData::slidercap_32_png, BinaryData::slidercap_32_pngSize);
 		
-		DrawImageCentered_(g, img, imgx, imgy, w, h);
+		DrawImageCentered_(g, img, float(imgx), float(imgy), w, h);
 	}
 
 	Typeface::Ptr DefaultLookAndFeel::getTypefaceForFont(const Font &f) {

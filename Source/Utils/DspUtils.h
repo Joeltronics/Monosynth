@@ -13,6 +13,9 @@
 
 // Requires C++11 or higher
 
+// Disable warning on unused function
+//#pragma warning (disable: 4505)
+
 #include "JuceHeader.h"
 
 #include "Debug.h"
@@ -38,12 +41,12 @@ namespace Utils
         return powf(10.0f, dB/10.0f);
     }
 
-    static inline void CopyAudioSampleBuffer(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf) {
-        uint8_t const nChan = inBuf.getNumChannels();
-        uint32_t const nSamp = inBuf.getNumSamples();
+    static inline void CopyAudioSampleBuffer(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf) {
+        size_t const nChan = inBuf.getNumChannels();
+        size_t const nSamp = inBuf.getNumSamples();
         
-        DEBUG_ASSERT(outBuf.getNumChannels() == nChan);
-        DEBUG_ASSERT(outBuf.getNumSamples() == nSamp);
+        DEBUG_ASSERT(size_t(outBuf.getNumChannels()) == nChan);
+        DEBUG_ASSERT(size_t(outBuf.getNumSamples()) == nSamp);
         
         for (uint8_t chan = 0; chan < nChan; ++chan) {
             float* wp = outBuf.getWritePointer(chan);
@@ -53,10 +56,10 @@ namespace Utils
         }
     }
     
-    static inline AudioSampleBuffer CreateAudioSampleBufferDeepCopy(AudioSampleBuffer const& otherBuf) {
-        uint8_t const nChan = otherBuf.getNumChannels();
-        uint32_t const nSamp = otherBuf.getNumSamples();
-        AudioSampleBuffer newBuf(nChan, nSamp);
+    static inline juce::AudioSampleBuffer CreateAudioSampleBufferDeepCopy(juce::AudioSampleBuffer const& otherBuf) {
+        size_t const nChan = otherBuf.getNumChannels();
+        size_t const nSamp = otherBuf.getNumSamples();
+        juce::AudioSampleBuffer newBuf(nChan, nSamp);
         
         CopyAudioSampleBuffer(otherBuf, newBuf);
         
@@ -90,15 +93,15 @@ namespace Utils
     /**
      * Calculates RC filter cutoff (in kohms and farads)
      */
-    static inline float RcCutoff(float r_kohm, float c_farad) {
-        return 1.0f / (M_2_PI * r_kohm * 1000.0f * c_farad);
+    static inline double RcCutoff(double r_kohm, double c_farad) {
+        return 1.0 / (M_2_PI * r_kohm * 1000.0 * c_farad);
     }
     
     /**
      * Calculates RC filter cutoff (in kohms and microfarads)
      */
-    static inline float RcCutoff_uF(float r_kohm, float c_uFarad) {
-        return 1000.0f / (M_2_PI * r_kohm * c_uFarad);
+    static inline double RcCutoff_uF(double r_kohm, double c_uFarad) {
+        return 1000.0 / (M_2_PI * r_kohm * c_uFarad);
     }
     
     /*
@@ -136,12 +139,12 @@ namespace Utils
         return std::max(std::min(val, maxThresh), minThresh);
     }
     
-    static void Clip(AudioSampleBuffer& buf, float thresh)
+    static void Clip(juce::AudioSampleBuffer& buf, float thresh)
     {
-        uint32_t const nSamp = buf.getNumSamples();
-        uint8_t const nChan = buf.getNumChannels();
+        size_t const nSamp = buf.getNumSamples();
+        size_t const nChan = buf.getNumChannels();
         
-        AudioSampleBuffer tempBuf = buf;
+        juce::AudioSampleBuffer tempBuf = buf;
         
         for(uint8_t chan = 0; chan < nChan; ++chan) {
             float* pWriteBuf = buf.getWritePointer(chan);
@@ -149,7 +152,7 @@ namespace Utils
             juce::FloatVectorOperations::clip(pWriteBuf, pReadBuf, -thresh, thresh, nSamp);
         }
     }
-    static void Clip(AudioSampleBuffer& buf, float minThresh, float maxThresh)
+    static void Clip(juce::AudioSampleBuffer& buf, float minThresh, float maxThresh)
     {
         for(uint8_t chan = 0; chan < buf.getNumChannels(); ++chan) {
             float* pBuf = buf.getWritePointer(chan);
@@ -223,15 +226,15 @@ namespace Utils
         juce::FloatVectorOperations::addWithMultiply(pOut, pVal1, x, nSamp);
     }
     
-    static void Interp(AudioSampleBuffer const& val0, AudioSampleBuffer const& val1, AudioSampleBuffer& outBuf, float x)
+    static void Interp(juce::AudioSampleBuffer const& val0, juce::AudioSampleBuffer const& val1, juce::AudioSampleBuffer& outBuf, float x)
     {
-        uint8_t const nChan = outBuf.getNumChannels();
-        uint32_t const nSamp = outBuf.getNumSamples();
+        size_t const nChan = outBuf.getNumChannels();
+        size_t const nSamp = outBuf.getNumSamples();
         
-        DEBUG_ASSERT(val0.getNumSamples() == nSamp);
-        DEBUG_ASSERT(val1.getNumSamples() == nSamp);
-        DEBUG_ASSERT(val0.getNumChannels() == nChan);
-        DEBUG_ASSERT(val1.getNumChannels() == nChan);
+        DEBUG_ASSERT(size_t(val0.getNumSamples()) == nSamp);
+        DEBUG_ASSERT(size_t(val1.getNumSamples()) == nSamp);
+        DEBUG_ASSERT(size_t(val0.getNumChannels()) == nChan);
+        DEBUG_ASSERT(size_t(val1.getNumChannels()) == nChan);
         
         for(uint8_t chan = 0; chan < nChan; ++chan) {
             Interp(
@@ -243,13 +246,13 @@ namespace Utils
         }
     }
     
-    static void InterpInPlace(AudioSampleBuffer& val0out, AudioSampleBuffer const& val1, float x)
+    static void InterpInPlace(juce::AudioSampleBuffer& val0out, juce::AudioSampleBuffer const& val1, float x)
     {
-        uint8_t const nChan = val0out.getNumChannels();
-        uint32_t const nSamp = val0out.getNumSamples();
+        size_t const nChan = val0out.getNumChannels();
+        size_t const nSamp = val0out.getNumSamples();
         
-        DEBUG_ASSERT(val1.getNumSamples() == nSamp);
-        DEBUG_ASSERT(val1.getNumChannels() == nChan);
+        DEBUG_ASSERT(size_t(val1.getNumSamples()) == nSamp);
+        DEBUG_ASSERT(size_t(val1.getNumChannels()) == nChan);
         
         for(uint8_t chan = 0; chan < nChan; ++chan) {
             InterpInPlace(
@@ -268,7 +271,7 @@ namespace Utils
             outBuf[n] = phase;
             phase += freq;
         }
-        juce::FloatVectorOperations::multiply(outBuf, 2.0f*M_PI, nSamp);
+        juce::FloatVectorOperations::multiply(outBuf, float(2.0*M_PI), nSamp);
         
         // Then take sine
         for (uint32_t n = 0; n < nSamp; ++n) {
@@ -287,9 +290,9 @@ namespace Utils
     // freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
     // phase = normalized, 0-1
     // returns phase value
-    static float GenerateSine(AudioSampleBuffer& outBuf, float freq, float phase = 0.0f) {
-        uint8_t const nChan = outBuf.getNumChannels();
-        uint32_t const nSamp = outBuf.getNumSamples();
+    static float GenerateSine(juce::AudioSampleBuffer& outBuf, float freq, float phase = 0.0f) {
+        size_t const nChan = outBuf.getNumChannels();
+        size_t const nSamp = outBuf.getNumSamples();
         
         // Generate only on first channel
         float* wp = outBuf.getWritePointer(0);

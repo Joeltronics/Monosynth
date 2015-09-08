@@ -17,14 +17,14 @@
 #define SETUP_UPSAMP(N) \
 DEBUG_ASSERT(inBuf.getNumChannels() == outBuf.getNumChannels()); \
 DEBUG_ASSERT(outBuf.getNumSamples() == inBuf.getNumSamples() * (N)); \
-uint8_t const nChan = std::min(inBuf.getNumChannels(),outBuf.getNumChannels()); \
-uint32_t const nSamp = inBuf.getNumSamples()
+size_t const nChan = std::min(inBuf.getNumChannels(),outBuf.getNumChannels()); \
+size_t const nSamp = inBuf.getNumSamples()
 
 #define SETUP_DOWNSAMP(N) \
 DEBUG_ASSERT(inBuf.getNumChannels() == outBuf.getNumChannels()); \
 DEBUG_ASSERT(inBuf.getNumSamples() == outBuf.getNumSamples() * (N)); \
-uint8_t const nChan = std::min(inBuf.getNumChannels(),outBuf.getNumChannels()); \
-uint32_t const nSamp = outBuf.getNumSamples()
+size_t const nChan = std::min(inBuf.getNumChannels(),outBuf.getNumChannels()); \
+size_t const nSamp = outBuf.getNumSamples()
 
 namespace  Utils {
     

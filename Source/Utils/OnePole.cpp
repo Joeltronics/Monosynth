@@ -14,7 +14,6 @@
 #include "Types.h"
 #include "DspUtils.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 //#include <math.h>
 
@@ -73,7 +72,7 @@ void OnePole::ProcessHighpass(float const* inBuf, float* outBuf /*out*/, uint32_
     
 float OnePole::ProcessLowpass(float samp) {
 	z1 = b0*double(samp) + a1*z1;
-	return z1;
+	return float(z1);
 }
 
 float OnePole::ProcessHighpass(float samp) {
@@ -97,7 +96,7 @@ http://dsp.stackexchange.com/questions/1075/how-can-i-vectorize-the-computations
 void OnePole::ProcessBufLowpass_(float const* inBuf, float* outBuf, uint32_t nSamp) {
 	for (uint32_t n=0; n < nSamp; n++) {
 		z1 = b0*double(inBuf[n]) + a1*z1;
-		outBuf[n] = z1;
+		outBuf[n] = float(z1);
 	}
 }
 

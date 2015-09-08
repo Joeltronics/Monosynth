@@ -36,21 +36,20 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// 8. VCA
 	// 9. Effects
 
-
+	eventBuf_t<gateEvent_t> gateEvents;
+	eventBuf_t<uint8_t> noteEvents;
+	eventBuf_t<uint8_t> velEvents;
+	eventBuf_t<int> pitchBendEvents;
 
 	// 1. MIDI
-	//m_midiProc.Process(nSamp, midiMessages, noteBuf, gateBuf);
-
-	// MidiBuffer const& midiMessages,
-	// std::vector<Utils::timestampedMidiNote_t>& noteBuf
-
+	m_midiProc.Process( nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
 	// If not mono, copy channel 0 to all others
 	for (size_t chan = 1; chan < nChan; ++chan)
 		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), juceBuf.getReadPointer(chan), nSamp);
 }
 
-void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
+void SynthEngine::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
 	m_sampleRate = sampleRate;
 }
 

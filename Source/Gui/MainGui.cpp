@@ -19,7 +19,6 @@
 
 //[Headers] You can add your own extra header files here...
 
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 //[/Headers]
@@ -1479,8 +1478,8 @@ MainGui::MainGui ()
 
     //[UserPreSize]
 
-    sli_lfo1_sh->setRotaryParameters(-2.5f*M_PI/6.0, 2.5f*M_PI/6.0, true);
-    sli_lfo2_sh->setRotaryParameters(-3.5f*M_PI/6.0, 3.5f*M_PI/6.0, true);
+    sli_lfo1_sh->setRotaryParameters(float(-2.5*M_PI/6.0), float(2.5*M_PI/6.0), true);
+    sli_lfo2_sh->setRotaryParameters(float(-3.5*M_PI/6.0), float(3.5*M_PI/6.0), true);
 
     LookAndFeel::setDefaultLookAndFeel(&defaultLookAndFeel);
 

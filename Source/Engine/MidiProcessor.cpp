@@ -91,7 +91,7 @@ void MidiProcessor::Clear() {
 }
 
 void MidiProcessor::Process(
-	/*in*/ size_t nSamp,
+	/*in*/ size_t /*nSamp*/,
 	/*inOut*/ juce::MidiBuffer& midiMessages,
 	/*out*/ eventBuf_t<gateEvent_t>& gateEvents,
 	/*out*/ eventBuf_t<uint8_t>& noteEvents,

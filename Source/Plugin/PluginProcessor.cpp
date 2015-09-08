@@ -32,21 +32,21 @@ int MonosynthAudioProcessor::getNumParameters()
     return 0;
 }
 
-float MonosynthAudioProcessor::getParameter (int index)
+float MonosynthAudioProcessor::getParameter (int /*index*/)
 {
     return 0.0f;
 }
 
-void MonosynthAudioProcessor::setParameter (int index, float newValue)
+void MonosynthAudioProcessor::setParameter (int /*index*/, float /*newValue*/)
 {
 }
 
-const String MonosynthAudioProcessor::getParameterName (int index)
+const String MonosynthAudioProcessor::getParameterName (int /*index*/)
 {
     return String();
 }
 
-const String MonosynthAudioProcessor::getParameterText (int index)
+const String MonosynthAudioProcessor::getParameterText (int /*index*/)
 {
     return String();
 }
@@ -61,12 +61,12 @@ const String MonosynthAudioProcessor::getOutputChannelName (int channelIndex) co
     return String (channelIndex + 1);
 }
 
-bool MonosynthAudioProcessor::isInputChannelStereoPair (int index) const
+bool MonosynthAudioProcessor::isInputChannelStereoPair (int /*index*/) const
 {
     return true;
 }
 
-bool MonosynthAudioProcessor::isOutputChannelStereoPair (int index) const
+bool MonosynthAudioProcessor::isOutputChannelStereoPair (int /*index*/) const
 {
     return true;
 }
@@ -110,23 +110,23 @@ int MonosynthAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void MonosynthAudioProcessor::setCurrentProgram (int index)
+void MonosynthAudioProcessor::setCurrentProgram (int /*index*/)
 {
 }
 
-const String MonosynthAudioProcessor::getProgramName (int index)
+const String MonosynthAudioProcessor::getProgramName (int /*index*/)
 {
     return String();
 }
 
-void MonosynthAudioProcessor::changeProgramName (int index, const String& newName)
+void MonosynthAudioProcessor::changeProgramName (int /*index*/, const String& /*newName*/)
 {
 }
 
 //==============================================================================
-void MonosynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MonosynthAudioProcessor::prepareToPlay (double sampleRate_, int samplesPerBlock)
 {
-    engine.PrepareToPlay(sampleRate, samplesPerBlock);
+    engine.PrepareToPlay(sampleRate_, samplesPerBlock);
 }
 
 void MonosynthAudioProcessor::releaseResources()
@@ -137,6 +137,7 @@ void MonosynthAudioProcessor::releaseResources()
 
 void MonosynthAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+#if 0
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -154,6 +155,7 @@ void MonosynthAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffe
 
         // ..do something to the data...
     }
+#endif
 
 	engine.Process(buffer, midiMessages);
 }
@@ -170,14 +172,14 @@ AudioProcessorEditor* MonosynthAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void MonosynthAudioProcessor::getStateInformation (MemoryBlock& destData)
+void MonosynthAudioProcessor::getStateInformation (MemoryBlock& /*destData*/)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void MonosynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void MonosynthAudioProcessor::setStateInformation (const void* /*data*/, int /*sizeInBytes*/)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.

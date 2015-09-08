@@ -65,7 +65,7 @@ void SlewFilter::Process(float* buf /*inout*/, uint32_t nSamp /*in*/)
 	{ Process(buf, buf, nSamp); }
 
 // Single sample
-float SlewFilter::Process(float samp /*in*/, uint8_t chan /*in*/) {
+float SlewFilter::Process(float samp /*in*/) {
     float const out = Detail::Process(samp, z1, m_rate);
     z1 = out;
     return out;

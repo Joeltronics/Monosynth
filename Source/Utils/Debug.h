@@ -11,10 +11,11 @@
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
 
+// (0,0) is to prevent compiler warning "conditional expression is constant"
 #define REQUIRE_SEMICOLON(X) \
 do { \
     X;\
-} while(0)
+} while(0,0)
 
 #if _DEBUG
 

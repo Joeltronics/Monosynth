@@ -67,13 +67,4 @@ struct midiNote_t {
 	}
 };
 
-struct timedMidiNote_t {
-	size_t time;
-	midiNote_t note;
-
-	timedMidiNote_t(size_t time_, midiNote_t note_) :
-		time(time_), note(note_) {}
-};
-
-
 #endif  // TYPES_H_INCLUDED

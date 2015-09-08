@@ -35,14 +35,14 @@ public:
     void Process  (float* buf /*inout*/, uint32_t nSamp /*in*/);
     
     // Single sample
-    float Process (float samp /*in*/, uint8_t channel /*in*/);
+    float Process (float samp /*in*/);
     
     // Other public functions:
     void SetRate(float rate);
     void Clear();
     
-    static inline float CalcRate(float rate_per_us, float sampleRate_Hz) {
-        float const period_us = 1.0E6 / sampleRate_Hz;
+    static inline double CalcRate(double rate_per_us, double sampleRate_Hz) {
+        double const period_us = 1.0E6 / sampleRate_Hz;
         return rate_per_us * period_us;
     }
     
