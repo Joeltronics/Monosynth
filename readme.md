@@ -13,14 +13,24 @@ The main goal is for this to be super accessible and easy to get a good sound ou
 ## Synthesis Features
 
 * 2 Oscillators + sub
-* Variable oscillator shape: pulse width modulation for square wave, and some sort of other similar timbral control for saw & tri waves
-* Analog imperfections: slight tuning instability, slightly imperfect oscillator waveforms
-* Dirtiness: ring mod, filter overdrive, post-filter distortion
-* High quality: anti-aliased oscillators, zero-delay feedback filter, upsampling
+* Variable oscillator shape:
+  * Pulse width modulation for square wave
+  * Some sort of other similar timbral control for saw & tri waves
+* Analog imperfections:
+  * Slight tuning instability
+  * Imperfect oscillator waveforms
+* Dirtiness:
+  * Ring mod
+  * Filter overdrive
+  * Post-filter distortion
+* High quality:
+  * Anti-aliased oscillators
+  * Zero-delay feedback filter(s)
+  * Upsampling
 
 ## Status
 
-It doesn't work yet - there's no sound engine. The GUI controls are pretty much all there, but none of them are hooked up yet, and the GUI is currently really quite and possibly a bit confusing; I plan on fixing this eventually.
+It doesn't work yet - there's no sound engine. The GUI controls are pretty much all there, but none of them are hooked up yet, and the GUI is currently really quite messy and possibly a bit confusing; I plan on fixing this eventually.
 
 ## Plugin features planned for 1.0
 
@@ -32,6 +42,6 @@ It doesn't work yet - there's no sound engine. The GUI controls are pretty much 
 These are all features I'm considering possibly adding in the future, but don't plan on implementing right away:
 
 * Built-in patch storage & management - in the meantime, most DAWs should support it (once I implement state saving, anyway, which is planned for 1.0)
-* More monophony priority modes
+* More monophony priority modes (besides last-note)
 * Polyphony & unison
 * Sequencer & arpeggiator
