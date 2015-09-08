@@ -22,6 +22,8 @@
 
 using sample_t = Utils::sample_t;
 using Buffer = Utils::Buffer;
+template<typename T> using timedEvent_t = Utils::timedEvent_t<T>;
+template<typename T> using eventBuf_t = Utils::eventBuf_t<T>;
 
 uint8_t const k_defaultMidiVel = 100;
 
@@ -32,17 +34,6 @@ enum gateEvent_t {
 	gateEvent_legato,
 	gateEvent_retrig,
 };
-
-template<typename E>
-struct timedEvent_t {
-	size_t time;
-	E ev;
-
-	timedEvent_t(size_t time_, E ev_) :
-		time(time_), ev(ev_) {}
-};
-
-template<class T> using eventBuf_t = std::vector<timedEvent_t<T>>;
 
 // MIDI types:
 

@@ -11,7 +11,7 @@
 #ifndef UTILS_TYPES_H_INCLUDED
 #define UTILS_TYPES_H_INCLUDED
 
-#include "Debug.h"
+#include "Utils/Debug.h"
 
 namespace Utils {
 	typedef float sample_t;
@@ -20,6 +20,7 @@ namespace Utils {
 	sample_t const k_defaultApproxEqualThresh = 0.0001f;
 }
 
-#include "Buffer.h"
+#include "Utils/Buffer.h"
+#include "Utils/TimestampedEvent.h"
 
 #endif  // UTILS_TYPES_H_INCLUDED

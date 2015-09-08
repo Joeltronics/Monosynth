@@ -18,6 +18,8 @@
 
 #include "Utils/Buffer.h"
 
+#include "Utils/TimestampedEvent.h"
+
 #include "Utils/DspUtils.h"
 #include "Utils/ApproxEqual.h"
 
