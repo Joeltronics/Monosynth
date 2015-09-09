@@ -66,8 +66,6 @@
         <FILE id="DPLJax" name="DspUtils.h" compile="0" resource="0" file="Source/Utils/DspUtils.h"/>
         <FILE id="divs1Z" name="TimestampedEvent.h" compile="0" resource="0"
               file="Source/Utils/TimestampedEvent.h"/>
-        <FILE id="AGWS6n" name="TimestampedEvent.cpp" compile="1" resource="0"
-              file="Source/Utils/TimestampedEvent.cpp"/>
         <FILE id="DwxQ59" name="OnePole.cpp" compile="1" resource="0" file="Source/Utils/OnePole.cpp"/>
         <FILE id="gsRLbx" name="OnePole.h" compile="0" resource="0" file="Source/Utils/OnePole.h"/>
         <FILE id="zLvdpY" name="Resampling.cpp" compile="1" resource="0" file="Source/Utils/Resampling.cpp"/>

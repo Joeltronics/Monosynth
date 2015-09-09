@@ -12,6 +12,7 @@
 #define TIMESTAMPEDEVENT_H_INCLUDED
 
 #include <vector>
+#include <functional>
 
 namespace Utils {
 
@@ -33,8 +34,24 @@ Tin EventBufToBuf(
 	/*in*/ eventBuf_t<Tin> const& inBuf,
 	/*in*/ size_t length,
 	/*out*/ Tout* outBuf,
-	/*in*/ Tout scale = static_cast<Tout>(1),
-	/*in*/ Tout offset = static_cast<Tout>(0));
+	std::function<Tout(Tin)> mappingFunc = [](auto x) {return static_cast<Tout>(x);})
+{
+	Tin inVal = startVal;
+	Tout outVal = mappingFunc(inVal);
+
+	size_t n = 0;
+	for (eventBuf_t<Tin>::const_iterator it = inBuf.begin(); it != inBuf.end(); ++it)
+	{
+		size_t eventTime = it->time;
+		while (n < eventTime) outBuf[n++] = outVal;
+		inVal = it->ev;
+		outVal = mappingFunc(inVal);
+	}
+
+	while (n < length) outBuf[n++] = outVal;
+
+	return inVal;
+}
 
 } // namespace Utils
 
