@@ -11,10 +11,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "Utils/Logger.h"
 
 //==============================================================================
 MonosynthAudioProcessor::MonosynthAudioProcessor()
 {
+	Utils::SetupLogger("monosynth.log");
 }
 
 MonosynthAudioProcessor::~MonosynthAudioProcessor()
