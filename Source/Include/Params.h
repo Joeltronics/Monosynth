@@ -71,6 +71,9 @@ SETUP_DEBUG_PARAMS()
 
 // ***** Param *****
 
+// Class Param is in range 0-1, as are all overridden virtual methods
+// However, some param types optionally have their own ranges, with values
+// in these ranges exposed in non-virtual functions
 class Param :
 	public juce::AudioProcessorParameter,
 	public juce::SliderListener
@@ -193,7 +196,7 @@ public:
 		bool bIsMeta = false) :
 		m_val(defaultParamValue),
 		m_range(paramRange),
-		Param(paramName, unitName, defaultParamValue, bIsInverted, bIsAutomatable, bIsMeta)
+		Param(paramName, unitName, ActualToHost_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
 	{}
 
 	// AudioProcessorParameter functions
@@ -205,7 +208,7 @@ public:
 		{ SetActualValue(HostToActual_(newValue)); }
 
 	float getValueForText(const juce::String& text) const override
-		{ return ActualToHost_(text.getFloatValue()); }
+		{ return ActualToHost_(Utils::RoundTo<int>(text.getFloatValue())); }
 
 	juce::String getText(float value, int /*maximumStringLength*/) const override
 		{ return juce::String(HostToActual_(value)); }
@@ -229,11 +232,11 @@ private:
 
 	int HostToActual_(float hostVal) const {
 		hostVal = Utils::Clip(hostVal, 0.0f, 1.0f);
-		return Utils::RoundTo<int>(Utils::Interp<float>(m_range.min, m_range.max, hostVal));
+		return Utils::RoundTo<int>(Utils::Interp(float(m_range.min), float(m_range.max), hostVal));
 	}
 
 	float ActualToHost_(int actualVal) const
-		{ return Utils::ReverseInterp<float>(m_range.min, m_range.max, actualVal); }
+		{ return Utils::ReverseInterp(float(m_range.min), float(m_range.max), float(actualVal)); }
 
 	juce::Atomic<int> m_val;
 	Utils::Range_t<int> m_range;
