@@ -24,6 +24,12 @@
 #include "JuceHeader.h"
 #include "Gui/LookAndFeel.h"
 
+#include "Plugin/PluginProcessor.h"
+
+#include "Params.h"
+
+#include <map>
+
 namespace Gui {
 //[/Headers]
 
@@ -42,7 +48,7 @@ class MainGui  : public Component,
 {
 public:
     //==============================================================================
-    MainGui ();
+    MainGui (MonosynthAudioProcessor& p);
     ~MainGui();
 
     //==============================================================================
@@ -58,6 +64,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	DefaultLookAndFeel defaultLookAndFeel;
+	MonosynthAudioProcessor& processor;
     //[/UserVariables]
 
     //==============================================================================

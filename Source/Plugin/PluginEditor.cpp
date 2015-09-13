@@ -10,18 +10,24 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include "Utils/Logger.h"
 
 //==============================================================================
 MonosynthAudioProcessorEditor::MonosynthAudioProcessorEditor (MonosynthAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p), mainGui (p)
 {
-    // Make sure that before the constructor has finished, you've set the
+	LOG("Constructing AudioProcessorEditor");
+	
+	// Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     //setSize (400, 300);
 	setSize(mainGui.getWidth(), mainGui.getHeight());
 
+	LOG("Adding MainGui");
+
 	addAndMakeVisible(&mainGui);
+
+	LOG("Constructing AudioProcessorEditor complete");
 }
 
 MonosynthAudioProcessorEditor::~MonosynthAudioProcessorEditor()

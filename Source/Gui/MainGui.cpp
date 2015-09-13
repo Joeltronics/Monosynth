@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 
 #include <math.h>
+#include "Utils/Logger.h"
 
 //[/Headers]
 
@@ -33,9 +34,11 @@ namespace Gui {
 //[/MiscUserDefs]
 
 //==============================================================================
-MainGui::MainGui ()
+MainGui::MainGui (MonosynthAudioProcessor& p)
+    : processor(p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+	LOG("Constructing MainGui");
     //[/Constructor_pre]
 
     addAndMakeVisible (groupComponent13 = new GroupComponent ("new group",
@@ -58,13 +61,13 @@ MainGui::MainGui ()
     groupComponent11->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
     groupComponent11->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (swi_filt_envpol = new Slider ("new slider"));
+    addAndMakeVisible (swi_filt_envpol = new Slider ("Filter Env Polarity"));
     swi_filt_envpol->setRange (-1, 1, 2);
     swi_filt_envpol->setSliderStyle (Slider::LinearHorizontal);
     swi_filt_envpol->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_filt_envpol->addListener (this);
 
-    addAndMakeVisible (swi_filt_poles = new Slider ("new slider"));
+    addAndMakeVisible (swi_filt_poles = new Slider ("Filter Poles"));
     swi_filt_poles->setRange (2, 4, 2);
     swi_filt_poles->setSliderStyle (Slider::LinearHorizontal);
     swi_filt_poles->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -107,31 +110,31 @@ MainGui::MainGui ()
     sli_o2_sh->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_o2_sh->addListener (this);
 
-    addAndMakeVisible (sli_mix_o1 = new Slider ("new slider"));
+    addAndMakeVisible (sli_mix_o1 = new Slider ("Osc 1 Mix"));
     sli_mix_o1->setRange (0, 10, 0);
     sli_mix_o1->setSliderStyle (Slider::LinearVertical);
     sli_mix_o1->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mix_o1->addListener (this);
 
-    addAndMakeVisible (sli_mix_o2 = new Slider ("new slider"));
+    addAndMakeVisible (sli_mix_o2 = new Slider ("Osc 2 Mix"));
     sli_mix_o2->setRange (0, 10, 0);
     sli_mix_o2->setSliderStyle (Slider::LinearVertical);
     sli_mix_o2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mix_o2->addListener (this);
 
-    addAndMakeVisible (sli_mix_sub = new Slider ("new slider"));
+    addAndMakeVisible (sli_mix_sub = new Slider ("Sub Mix"));
     sli_mix_sub->setRange (0, 10, 0);
     sli_mix_sub->setSliderStyle (Slider::LinearVertical);
     sli_mix_sub->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mix_sub->addListener (this);
 
-    addAndMakeVisible (sli_mix_ring = new Slider ("new slider"));
+    addAndMakeVisible (sli_mix_ring = new Slider ("Ring Mod Mix"));
     sli_mix_ring->setRange (0, 10, 0);
     sli_mix_ring->setSliderStyle (Slider::LinearVertical);
     sli_mix_ring->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mix_ring->addListener (this);
 
-    addAndMakeVisible (sli_mix_noise = new Slider ("new slider"));
+    addAndMakeVisible (sli_mix_noise = new Slider ("Noise Mix"));
     sli_mix_noise->setRange (0, 10, 0);
     sli_mix_noise->setSliderStyle (Slider::LinearVertical);
     sli_mix_noise->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -197,7 +200,7 @@ MainGui::MainGui ()
     label8->setColour (TextEditor::textColourId, Colours::black);
     label8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_freq = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_freq = new Slider ("Filter Freq"));
     sli_filt_freq->setRange (0, 10, 0);
     sli_filt_freq->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_freq->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -212,25 +215,25 @@ MainGui::MainGui ()
     label13->setColour (TextEditor::textColourId, Colours::black);
     label13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_res = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_res = new Slider ("Filter Resonance"));
     sli_filt_res->setRange (0, 10, 0);
     sli_filt_res->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_res->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_res->addListener (this);
 
-    addAndMakeVisible (sli_filt_env = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_env = new Slider ("Filter Env Amount"));
     sli_filt_env->setRange (0, 10, 0);
     sli_filt_env->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_env->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_env->addListener (this);
 
-    addAndMakeVisible (sli_filt_lfo = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_lfo = new Slider ("Filter LFO Amount"));
     sli_filt_lfo->setRange (0, 10, 0);
     sli_filt_lfo->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_lfo->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_lfo->addListener (this);
 
-    addAndMakeVisible (sli_drive = new Slider ("new slider"));
+    addAndMakeVisible (sli_drive = new Slider ("Overdrive"));
     sli_drive->setRange (0, 10, 0);
     sli_drive->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_drive->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -248,7 +251,7 @@ MainGui::MainGui ()
     sli_o1_mod->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_o1_mod->addListener (this);
 
-    addAndMakeVisible (sli_o2_finetune = new Slider ("new slider"));
+    addAndMakeVisible (sli_o2_finetune = new Slider ("Osc 2 Fine Tune"));
     sli_o2_finetune->setRange (-1, 1, 0);
     sli_o2_finetune->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_o2_finetune->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -336,7 +339,7 @@ MainGui::MainGui ()
     groupComponent7->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
     groupComponent7->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (sli_fenv_att = new Slider ("new slider"));
+    addAndMakeVisible (sli_fenv_att = new Slider ("Filt Env Attack"));
     sli_fenv_att->setRange (0, 10, 0);
     sli_fenv_att->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fenv_att->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -378,7 +381,7 @@ MainGui::MainGui ()
     label20->setColour (TextEditor::textColourId, Colours::black);
     label20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_gain = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_gain = new Slider ("Pre-Filter Gain"));
     sli_filt_gain->setRange (0, 10, 0);
     sli_filt_gain->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_gain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -457,7 +460,7 @@ MainGui::MainGui ()
     label28->setColour (TextEditor::textColourId, Colours::black);
     label28->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_lfo2_freq = new Slider ("new slider"));
+    addAndMakeVisible (sli_lfo2_freq = new Slider ("LFO 2 Freq"));
     sli_lfo2_freq->setRange (0, 10, 0);
     sli_lfo2_freq->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_lfo2_freq->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -496,7 +499,7 @@ MainGui::MainGui ()
     label30->setColour (TextEditor::textColourId, Colours::black);
     label30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_vel = new Slider ("new slider"));
+    addAndMakeVisible (sli_filt_vel = new Slider ("Filter Vel Amount"));
     sli_filt_vel->setRange (0, 10, 0);
     sli_filt_vel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_vel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -508,43 +511,43 @@ MainGui::MainGui ()
     sli_filt_resbass->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_resbass->addListener (this);
 
-    addAndMakeVisible (sli_fenv_dec = new Slider ("new slider"));
+    addAndMakeVisible (sli_fenv_dec = new Slider ("Filt Env Decay"));
     sli_fenv_dec->setRange (0, 10, 0);
     sli_fenv_dec->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fenv_dec->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_fenv_dec->addListener (this);
 
-    addAndMakeVisible (sli_fenv_sus = new Slider ("new slider"));
+    addAndMakeVisible (sli_fenv_sus = new Slider ("Filt Env Sustain"));
     sli_fenv_sus->setRange (0, 10, 0);
     sli_fenv_sus->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fenv_sus->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_fenv_sus->addListener (this);
 
-    addAndMakeVisible (sli_fenv_rel = new Slider ("new slider"));
+    addAndMakeVisible (sli_fenv_rel = new Slider ("Filt Env Release"));
     sli_fenv_rel->setRange (0, 10, 0);
     sli_fenv_rel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fenv_rel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_fenv_rel->addListener (this);
 
-    addAndMakeVisible (sli_aenv_att = new Slider ("new slider"));
+    addAndMakeVisible (sli_aenv_att = new Slider ("Amp Env Attack"));
     sli_aenv_att->setRange (0, 10, 0);
     sli_aenv_att->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_aenv_att->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_aenv_att->addListener (this);
 
-    addAndMakeVisible (sli_aenv_dec = new Slider ("new slider"));
+    addAndMakeVisible (sli_aenv_dec = new Slider ("Amp Env Decay"));
     sli_aenv_dec->setRange (0, 10, 0);
     sli_aenv_dec->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_aenv_dec->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_aenv_dec->addListener (this);
 
-    addAndMakeVisible (sli_aenv_sus = new Slider ("new slider"));
+    addAndMakeVisible (sli_aenv_sus = new Slider ("Amp Env Sustain"));
     sli_aenv_sus->setRange (0, 10, 0);
     sli_aenv_sus->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_aenv_sus->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_aenv_sus->addListener (this);
 
-    addAndMakeVisible (sli_aenv_rel = new Slider ("new slider"));
+    addAndMakeVisible (sli_aenv_rel = new Slider ("Amp Env Release"));
     sli_aenv_rel->setRange (0, 10, 0);
     sli_aenv_rel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_aenv_rel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -574,13 +577,13 @@ MainGui::MainGui ()
     label24->setColour (TextEditor::textColourId, Colours::black);
     label24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_fenv_vel = new Slider ("new slider"));
+    addAndMakeVisible (sli_fenv_vel = new Slider ("Filt Env Velocity"));
     sli_fenv_vel->setRange (0, 10, 0);
     sli_fenv_vel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fenv_vel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_fenv_vel->addListener (this);
 
-    addAndMakeVisible (sli_aenv_vel = new Slider ("new slider"));
+    addAndMakeVisible (sli_aenv_vel = new Slider ("Amp Env Velocity"));
     sli_aenv_vel->setRange (0, 10, 0);
     sli_aenv_vel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_aenv_vel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -751,7 +754,7 @@ MainGui::MainGui ()
     label49->setColour (TextEditor::textColourId, Colours::black);
     label49->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_lfo1_freq = new Slider ("new slider"));
+    addAndMakeVisible (sli_lfo1_freq = new Slider ("LFO 1 Freq"));
     sli_lfo1_freq->setRange (0, 10, 0);
     sli_lfo1_freq->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_lfo1_freq->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -853,19 +856,19 @@ MainGui::MainGui ()
     swi_o1_lfosrc->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_o1_lfosrc->addListener (this);
 
-    addAndMakeVisible (swi_o1_sh = new Slider ("Osc 1 Shape"));
+    addAndMakeVisible (swi_o1_sh = new Slider ("Osc 1 Wave"));
     swi_o1_sh->setRange (0, 2, 1);
     swi_o1_sh->setSliderStyle (Slider::LinearVertical);
     swi_o1_sh->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_o1_sh->addListener (this);
 
-    addAndMakeVisible (swi_sub_sh = new Slider ("Sub Shape"));
+    addAndMakeVisible (swi_sub_sh = new Slider ("Sub Osc Wave"));
     swi_sub_sh->setRange (0, 2, 1);
     swi_sub_sh->setSliderStyle (Slider::LinearVertical);
     swi_sub_sh->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_sub_sh->addListener (this);
 
-    addAndMakeVisible (swi_sub_oct = new Slider ("Sub Octave"));
+    addAndMakeVisible (swi_sub_oct = new Slider ("Sub Osc Octave"));
     swi_sub_oct->setRange (-2, -1, 1);
     swi_sub_oct->setSliderStyle (Slider::LinearVertical);
     swi_sub_oct->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1018,13 +1021,13 @@ MainGui::MainGui ()
     label75->setColour (TextEditor::textColourId, Colours::black);
     label75->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_filt_lfosrc = new Slider ("new slider"));
+    addAndMakeVisible (swi_filt_lfosrc = new Slider ("Filter LFO Select"));
     swi_filt_lfosrc->setRange (0, 1, 1);
     swi_filt_lfosrc->setSliderStyle (Slider::LinearHorizontal);
     swi_filt_lfosrc->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_filt_lfosrc->addListener (this);
 
-    addAndMakeVisible (swi_filt_kb = new Slider ("new slider"));
+    addAndMakeVisible (swi_filt_kb = new Slider ("Filter KB Track"));
     swi_filt_kb->setRange (0, 1, 1);
     swi_filt_kb->setSliderStyle (Slider::LinearHorizontal);
     swi_filt_kb->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1141,7 +1144,7 @@ MainGui::MainGui ()
     label86->setColour (TextEditor::textColourId, Colours::black);
     label86->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_o2_sh = new Slider ("Osc 2 Shape"));
+    addAndMakeVisible (swi_o2_sh = new Slider ("Osc 2 Wave"));
     swi_o2_sh->setRange (0, 2, 1);
     swi_o2_sh->setSliderStyle (Slider::LinearVertical);
     swi_o2_sh->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1372,7 +1375,7 @@ MainGui::MainGui ()
     label104->setColour (TextEditor::textColourId, Colours::black);
     label104->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_filt_model = new Slider ("new slider"));
+    addAndMakeVisible (swi_filt_model = new Slider ("Filter Model"));
     swi_filt_model->setRange (0, 2, 1);
     swi_filt_model->setSliderStyle (Slider::LinearVertical);
     swi_filt_model->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1593,6 +1596,95 @@ MainGui::MainGui ()
 
 
     //[Constructor] You can add your own custom stuff here..
+
+	/* TODO:
+	 * Make this section not hacky:
+	 *   - dynamic_cast is a bad way to do things
+	 *   - An O(n^2) complexity is unnecessary
+	 *   - Use iterators if possible
+	 *   - Make it work if param name is longer than 30 characters
+	 *
+	 * The problem is, there isn't really any way to do this without either a ton of manual
+	 * repetitive code writing (that could break if ever making Introjucer changes) or using
+	 * some sort of code generation script (which is a pain because you have to re-run it any
+	 * time you make an Introjucer change)
+	 *
+	 * This will have to do for now. I'll fix it eventually.
+	 */
+
+	OwnedArray<AudioProcessorParameter> const& paramList = processor.getParameters();
+	size_t nParams = paramList.size();
+
+	size_t nChildren = this->getNumChildComponents();
+
+	uint32_t numNewSlider = 0;
+
+	for (size_t n = 0; n < nChildren; ++n) {
+		Component* pComp = this->getChildComponent(n);
+		DEBUG_ASSERT(pComp);
+
+		// Cast to Slider - if it returns null, the component isn't a Slider
+		Slider* pSlider = dynamic_cast<Slider*>(pComp);
+		if (!pSlider) continue;
+
+		// At this point we know it's a slider
+
+		String const& sliName = pSlider->getName();
+
+		if (sliName.compare("new slider") == 0)
+		{
+			numNewSlider++;
+			continue;
+		}
+
+		SliderListener* pListener = 0;
+
+		for (size_t m = 0; m < nParams; ++m) {
+			DEBUG_ASSERT(paramList[m]);
+			// Item will be juce::AudioProcessorParameter, cast to my Param class
+			Param* pParam = dynamic_cast<Param*>(paramList[m]);
+
+			String const& paramName = pParam->getName(30);
+
+			if (!pParam) {
+				// The only way this should happen is if an AudioProcessorParameter
+				// that isn't a Param got into the list somehow
+
+				LOG(String("dynamic_cast of AudioProcessorParameter to Param failed for param ") + paramName);
+				continue;
+			}
+
+			if (sliName.compare(paramName) == 0) {
+				// We've found the param that goes with this slider
+
+				// Register param as a listener
+				pListener = pParam;
+
+				// And set slider to param value (which should be default)
+				float val = Utils::Interp(float(pSlider->getMinimum()), float(pSlider->getMaximum()), pParam->getValue());
+				pSlider->setValue(val);
+				
+				// TODO: when I have different log levels, re-add this (but make it lower level)
+				//LOG(String("Found param matching slider ") + sliName + String(", setting slider to ") + String(val));
+				break;
+			}
+		}
+
+		if (pListener)
+		{
+			pSlider->addListener(pListener);
+		}
+		else
+		{
+			LOG(String("Could not find param named ") + sliName);
+		}
+	}
+
+	if (numNewSlider)
+	{
+		LOG(String::formatted("%u sliders named \"new slider\"", numNewSlider));
+	}
+
     //[/Constructor]
 }
 
@@ -1823,7 +1915,7 @@ void MainGui::resized()
     //[/UserPreResize]
 
     groupComponent13->setBounds (1400, -128, 240, 80);
-    groupComponent12->setBounds (536, 296, 296, 96);
+    groupComponent12->setBounds (628, 258, 216, 136);
     groupComponent3->setBounds (462, 0, 136, 296);
     groupComponent11->setBounds (147, 200, 112, 192);
     swi_filt_envpol->setBounds (469, 270, 40, 16);
@@ -1884,11 +1976,11 @@ void MainGui::resized()
     label28->setBounds (286, 216, 56, 14);
     sli_lfo2_freq->setBounds (286, 328, 56, 48);
     label29->setBounds (286, 314, 56, 14);
-    sli_lfo2_att->setBounds (454, 328, 56, 48);
-    label31->setBounds (454, 312, 56, 14);
+    sli_lfo2_att->setBounds (452, 328, 56, 48);
+    label31->setBounds (452, 312, 56, 14);
     label30->setBounds (509, 223, 40, 16);
     sli_filt_vel->setBounds (509, 239, 40, 32);
-    sli_filt_resbass->setBounds (768, 330, 48, 32);
+    sli_filt_resbass->setBounds (780, 332, 48, 32);
     sli_fenv_dec->setBounds (670, 32, 56, 48);
     sli_fenv_sus->setBounds (726, 32, 56, 48);
     sli_fenv_rel->setBounds (782, 32, 56, 48);
@@ -1978,18 +2070,18 @@ void MainGui::resized()
     label92->setBounds (176, 286, 40, 10);
     label93->setBounds (176, 302, 40, 10);
     swi_pitchmod_src->setBounds (160, 263, 20, 56);
-    label94->setBounds (492, 374, 38, 10);
-    label95->setBounds (443, 374, 26, 10);
-    swi_lfo2_att->setBounds (461, 370, 40, 16);
-    label96->setBounds (320, 277, 38, 10);
-    swi_lfo1_kb->setBounds (288, 274, 40, 16);
+    label94->setBounds (490, 375, 38, 10);
+    label95->setBounds (441, 375, 26, 10);
+    swi_lfo2_att->setBounds (459, 371, 40, 16);
+    label96->setBounds (320, 279, 24, 10);
+    swi_lfo1_kb->setBounds (288, 276, 40, 16);
     label50->setBounds (209, 174, 20, 16);
     label52->setBounds (249, 174, 24, 16);
     label47->setBounds (144, 133, 16, 16);
-    label97->setBounds (607, 362, 30, 10);
-    label98->setBounds (549, 362, 34, 10);
-    swi_noise_color->setBounds (575, 359, 40, 16);
-    label99->setBounds (573, 349, 40, 10);
+    label97->setBounds (803, 290, 30, 10);
+    label98->setBounds (745, 290, 34, 10);
+    swi_noise_color->setBounds (771, 287, 40, 16);
+    label99->setBounds (769, 277, 40, 10);
     label100->setBounds (48, 112, 56, 14);
     label101->setBounds (48, 14, 56, 14);
     label102->setBounds (550, 133, 32, 10);
@@ -2002,24 +2094,24 @@ void MainGui::resized()
     label108->setBounds (70, 307, 24, 16);
     label109->setBounds (74, 297, 24, 16);
     label110->setBounds (144, 46, 32, 16);
-    label111->setBounds (607, 330, 30, 10);
-    label112->setBounds (549, 330, 34, 10);
-    swi_tune_type->setBounds (575, 327, 40, 16);
-    label113->setBounds (549, 317, 88, 10);
-    label114->setBounds (654, 328, 35, 10);
-    label115->setBounds (654, 344, 40, 10);
-    label116->setBounds (654, 360, 40, 10);
-    swi_glide_type->setBounds (640, 321, 19, 56);
-    label117->setBounds (638, 314, 48, 10);
-    label118->setBounds (684, 310, 75, 20);
-    sli_tune_instab->setBounds (693, 328, 24, 24);
-    sli_shape_instab->setBounds (693, 350, 24, 24);
-    label119->setBounds (714, 327, 48, 24);
-    label120->setBounds (714, 350, 48, 24);
-    label22->setBounds (752, 310, 75, 20);
-    label121->setBounds (777, 376, 49, 10);
-    label122->setBounds (713, 376, 39, 10);
-    swi_filt_lfosrc2->setBounds (745, 373, 40, 16);
+    label111->setBounds (691, 290, 30, 10);
+    label112->setBounds (633, 290, 34, 10);
+    swi_tune_type->setBounds (659, 287, 40, 16);
+    label113->setBounds (633, 277, 88, 10);
+    label114->setBounds (666, 330, 35, 10);
+    label115->setBounds (666, 346, 40, 10);
+    label116->setBounds (666, 362, 40, 10);
+    swi_glide_type->setBounds (652, 323, 19, 56);
+    label117->setBounds (650, 316, 48, 10);
+    label118->setBounds (696, 312, 75, 20);
+    sli_tune_instab->setBounds (705, 330, 24, 24);
+    sli_shape_instab->setBounds (705, 352, 24, 24);
+    label119->setBounds (726, 329, 48, 24);
+    label120->setBounds (726, 352, 48, 24);
+    label22->setBounds (764, 312, 75, 20);
+    label121->setBounds (789, 378, 49, 10);
+    label122->setBounds (725, 378, 39, 10);
+    swi_filt_lfosrc2->setBounds (757, 375, 40, 16);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -2368,15 +2460,16 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainGui" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="850" initialHeight="400">
+                 parentClasses="public Component" constructorParams="MonosynthAudioProcessor&amp; p"
+                 variableInitialisers="processor(p)" snapPixels="8" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="850"
+                 initialHeight="400">
   <BACKGROUND backgroundColour="ff1c1c1c"/>
   <GROUPCOMPONENT name="new group" id="4290aa3f94cba83c" memberName="groupComponent13"
                   virtualName="" explicitFocusOrder="0" pos="1400 -128 240 80"
                   outlinecol="66ffffff" textcol="ffffffff" title="Effects"/>
   <GROUPCOMPONENT name="new group" id="4103dc6d46aab854" memberName="groupComponent12"
-                  virtualName="" explicitFocusOrder="0" pos="536 296 296 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="628 258 216 136" outlinecol="66ffffff"
                   textcol="ffffffff" title="Controls to go under the hood"/>
   <GROUPCOMPONENT name="new group" id="b5f4751ee1ed8057" memberName="groupComponent3"
                   virtualName="" explicitFocusOrder="0" pos="462 0 136 296" outlinecol="66ffffff"
@@ -2384,11 +2477,11 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="new group" id="303c96ba3a6d7786" memberName="groupComponent11"
                   virtualName="" explicitFocusOrder="0" pos="147 200 112 192" outlinecol="66ffffff"
                   textcol="ffffffff" title="Pitch Mod"/>
-  <SLIDER name="new slider" id="8f6056ff4a7bba0f" memberName="swi_filt_envpol"
+  <SLIDER name="Filter Env Polarity" id="8f6056ff4a7bba0f" memberName="swi_filt_envpol"
           virtualName="" explicitFocusOrder="0" pos="469 270 40 16" min="-1"
           max="1" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="9366d7598a118d48" memberName="swi_filt_poles"
+  <SLIDER name="Filter Poles" id="9366d7598a118d48" memberName="swi_filt_poles"
           virtualName="" explicitFocusOrder="0" pos="538 199 40 16" min="2"
           max="4" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2415,23 +2508,23 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="47 126 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="746c27abdb30c3f3" memberName="sli_mix_o1"
+  <SLIDER name="Osc 1 Mix" id="746c27abdb30c3f3" memberName="sli_mix_o1"
           virtualName="" explicitFocusOrder="0" pos="286 16 24 88" min="0"
           max="10" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="ce7d24772767eab2" memberName="sli_mix_o2"
+  <SLIDER name="Osc 2 Mix" id="ce7d24772767eab2" memberName="sli_mix_o2"
           virtualName="" explicitFocusOrder="0" pos="318 16 24 88" min="0"
           max="10" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="c473607e8321130a" memberName="sli_mix_sub"
+  <SLIDER name="Sub Mix" id="c473607e8321130a" memberName="sli_mix_sub"
           virtualName="" explicitFocusOrder="0" pos="350 16 24 88" min="0"
           max="10" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="3da0d3c7747b8bc" memberName="sli_mix_ring"
+  <SLIDER name="Ring Mod Mix" id="3da0d3c7747b8bc" memberName="sli_mix_ring"
           virtualName="" explicitFocusOrder="0" pos="382 16 24 88" min="0"
           max="10" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="a0d38f18199b6967" memberName="sli_mix_noise"
+  <SLIDER name="Noise Mix" id="a0d38f18199b6967" memberName="sli_mix_noise"
           virtualName="" explicitFocusOrder="0" pos="414 16 24 88" min="0"
           max="10" int="0" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2469,7 +2562,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Tuning" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="922a8512e459ea78" memberName="sli_filt_freq"
+  <SLIDER name="Filter Freq" id="922a8512e459ea78" memberName="sli_filt_freq"
           virtualName="" explicitFocusOrder="0" pos="478 32 104 88" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2478,19 +2571,19 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Frequency" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="4e819dd141ad6884" memberName="sli_filt_res"
+  <SLIDER name="Filter Resonance" id="4e819dd141ad6884" memberName="sli_filt_res"
           virtualName="" explicitFocusOrder="0" pos="470 138 55 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="bf7ee7b16a44fd46" memberName="sli_filt_env"
+  <SLIDER name="Filter Env Amount" id="bf7ee7b16a44fd46" memberName="sli_filt_env"
           virtualName="" explicitFocusOrder="0" pos="469 239 40 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="b500af110555c914" memberName="sli_filt_lfo"
+  <SLIDER name="Filter LFO Amount" id="b500af110555c914" memberName="sli_filt_lfo"
           virtualName="" explicitFocusOrder="0" pos="549 239 40 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="3be38c3ceff9b1f2" memberName="sli_drive"
+  <SLIDER name="Overdrive" id="3be38c3ceff9b1f2" memberName="sli_drive"
           virtualName="" explicitFocusOrder="0" pos="382 144 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2502,7 +2595,7 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="23 39 24 24" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="d9194a49db24b17e" memberName="sli_o2_finetune"
+  <SLIDER name="Osc 2 Fine Tune" id="d9194a49db24b17e" memberName="sli_o2_finetune"
           virtualName="" explicitFocusOrder="0" pos="211 136 56 48" min="-1"
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2552,7 +2645,7 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="new group" id="8e4a429367bb6ed1" memberName="groupComponent7"
                   virtualName="" explicitFocusOrder="0" pos="606 0 240 112" outlinecol="66ffffff"
                   textcol="ffffffff" title="Filter Envelope"/>
-  <SLIDER name="new slider" id="9256184baa5e0e12" memberName="sli_fenv_att"
+  <SLIDER name="Filt Env Attack" id="9256184baa5e0e12" memberName="sli_fenv_att"
           virtualName="" explicitFocusOrder="0" pos="614 32 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2576,7 +2669,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Release" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="d11eaf494d445128" memberName="sli_filt_gain"
+  <SLIDER name="Pre-Filter Gain" id="d11eaf494d445128" memberName="sli_filt_gain"
           virtualName="" explicitFocusOrder="0" pos="294 144 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2623,7 +2716,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Freq" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="320ebe3eb3fc4ddf" memberName="sli_lfo2_freq"
+  <SLIDER name="LFO 2 Freq" id="320ebe3eb3fc4ddf" memberName="sli_lfo2_freq"
           virtualName="" explicitFocusOrder="0" pos="286 328 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2633,11 +2726,11 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="adf7d9bbe7bedc02" memberName="sli_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="454 328 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="452 328 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="677e03b32f7824b6" memberName="label31" virtualName=""
-         explicitFocusOrder="0" pos="454 312 56 14" textCol="ffffffff"
+         explicitFocusOrder="0" pos="452 312 56 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -2646,39 +2739,39 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Vel" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="2e1b5981e8fb0e0d" memberName="sli_filt_vel"
+  <SLIDER name="Filter Vel Amount" id="2e1b5981e8fb0e0d" memberName="sli_filt_vel"
           virtualName="" explicitFocusOrder="0" pos="509 239 40 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="785b4bba36ddbb84" memberName="sli_filt_resbass"
-          virtualName="" explicitFocusOrder="0" pos="768 330 48 32" min="0"
+          virtualName="" explicitFocusOrder="0" pos="780 332 48 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="22d76f58418fb20b" memberName="sli_fenv_dec"
+  <SLIDER name="Filt Env Decay" id="22d76f58418fb20b" memberName="sli_fenv_dec"
           virtualName="" explicitFocusOrder="0" pos="670 32 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="19781c82024cb700" memberName="sli_fenv_sus"
+  <SLIDER name="Filt Env Sustain" id="19781c82024cb700" memberName="sli_fenv_sus"
           virtualName="" explicitFocusOrder="0" pos="726 32 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="e6a3be71b101f31f" memberName="sli_fenv_rel"
+  <SLIDER name="Filt Env Release" id="e6a3be71b101f31f" memberName="sli_fenv_rel"
           virtualName="" explicitFocusOrder="0" pos="782 32 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="dac47d415aa0bf10" memberName="sli_aenv_att"
+  <SLIDER name="Amp Env Attack" id="dac47d415aa0bf10" memberName="sli_aenv_att"
           virtualName="" explicitFocusOrder="0" pos="614 147 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="234deadfde669bd9" memberName="sli_aenv_dec"
+  <SLIDER name="Amp Env Decay" id="234deadfde669bd9" memberName="sli_aenv_dec"
           virtualName="" explicitFocusOrder="0" pos="670 147 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="85b78793c1f55edf" memberName="sli_aenv_sus"
+  <SLIDER name="Amp Env Sustain" id="85b78793c1f55edf" memberName="sli_aenv_sus"
           virtualName="" explicitFocusOrder="0" pos="726 147 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="1f5ac524168b0366" memberName="sli_aenv_rel"
+  <SLIDER name="Amp Env Release" id="1f5ac524168b0366" memberName="sli_aenv_rel"
           virtualName="" explicitFocusOrder="0" pos="782 147 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2696,11 +2789,11 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Vel -&gt; Time"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="ccc08de89b923d42" memberName="sli_fenv_vel"
+  <SLIDER name="Filt Env Velocity" id="ccc08de89b923d42" memberName="sli_fenv_vel"
           virtualName="" explicitFocusOrder="0" pos="651 75 40 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="52f95a0d1dc63936" memberName="sli_aenv_vel"
+  <SLIDER name="Amp Env Velocity" id="52f95a0d1dc63936" memberName="sli_aenv_vel"
           virtualName="" explicitFocusOrder="0" pos="650 189 40 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2797,7 +2890,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="+12" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="b473ed648319c3c5" memberName="sli_lfo1_freq"
+  <SLIDER name="LFO 1 Freq" id="b473ed648319c3c5" memberName="sli_lfo1_freq"
           virtualName="" explicitFocusOrder="0" pos="286 232 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2855,15 +2948,15 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="16 73 40 16" min="1"
           max="2" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="Osc 1 Shape" id="e145a51361506cda" memberName="swi_o1_sh"
+  <SLIDER name="Osc 1 Wave" id="e145a51361506cda" memberName="swi_o1_sh"
           virtualName="" explicitFocusOrder="0" pos="98 22 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="Sub Shape" id="38673bb6b3afd895" memberName="swi_sub_sh"
+  <SLIDER name="Sub Osc Wave" id="38673bb6b3afd895" memberName="swi_sub_sh"
           virtualName="" explicitFocusOrder="0" pos="219 24 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="Sub Octave" id="9ad005c2310e0623" memberName="swi_sub_oct"
+  <SLIDER name="Sub Osc Octave" id="9ad005c2310e0623" memberName="swi_sub_oct"
           virtualName="" explicitFocusOrder="0" pos="196 24 20 56" min="-2"
           max="-1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -2950,11 +3043,11 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
-  <SLIDER name="new slider" id="b3c11c5568020657" memberName="swi_filt_lfosrc"
+  <SLIDER name="Filter LFO Select" id="b3c11c5568020657" memberName="swi_filt_lfosrc"
           virtualName="" explicitFocusOrder="0" pos="549 270 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="3aff6026701ab6fc" memberName="swi_filt_kb"
+  <SLIDER name="Filter KB Track" id="3aff6026701ab6fc" memberName="swi_filt_kb"
           virtualName="" explicitFocusOrder="0" pos="482 199 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3021,7 +3114,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Tri" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="Osc 2 Shape" id="3b884ec8bb678763" memberName="swi_o2_sh"
+  <SLIDER name="Osc 2 Wave" id="3b884ec8bb678763" memberName="swi_o2_sh"
           virtualName="" explicitFocusOrder="0" pos="98 119 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3073,26 +3166,26 @@ BEGIN_JUCER_METADATA
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="a2306d3d8ea34037" memberName="label94" virtualName=""
-         explicitFocusOrder="0" pos="492 374 38 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="490 375 38 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Dec" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="b4a33df58cfc9de2" memberName="label95" virtualName=""
-         explicitFocusOrder="0" pos="443 374 26 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="441 375 26 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Att" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="6fafdb6bff2e60aa" memberName="swi_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="461 370 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="459 371 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="5fbafef03a41acb0" memberName="label96" virtualName=""
-         explicitFocusOrder="0" pos="320 277 38 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="320 279 24 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="KB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="75250b340aecdcc1" memberName="swi_lfo1_kb"
-          virtualName="" explicitFocusOrder="0" pos="288 274 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="288 276 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="f3faafa75c7a3881" memberName="label50" virtualName=""
@@ -3111,21 +3204,21 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="7d04b59c36e446b2" memberName="label97" virtualName=""
-         explicitFocusOrder="0" pos="607 362 30 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="803 290 30 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="White" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="5fe6882c9a7e7367" memberName="label98" virtualName=""
-         explicitFocusOrder="0" pos="549 362 34 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="745 290 34 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Pink" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="b3bfb5605ac16f1d" memberName="swi_noise_color"
-          virtualName="" explicitFocusOrder="0" pos="575 359 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="771 287 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="4caec774c496eca" memberName="label99" virtualName=""
-         explicitFocusOrder="0" pos="573 349 40 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="769 277 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Noise" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -3154,7 +3247,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Diode" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="a8d08e23f18a2b9e" memberName="swi_filt_model"
+  <SLIDER name="Filter Model" id="a8d08e23f18a2b9e" memberName="swi_filt_model"
           virtualName="" explicitFocusOrder="0" pos="536 125 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3189,88 +3282,88 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="f7d41627cbc579bd" memberName="label111"
-         virtualName="" explicitFocusOrder="0" pos="607 330 30 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="691 290 30 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="ea554e618021a2b2" memberName="label112"
-         virtualName="" explicitFocusOrder="0" pos="549 330 34 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="633 290 34 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Cents" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="a6b0788b80c26159" memberName="swi_tune_type"
-          virtualName="" explicitFocusOrder="0" pos="575 327 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="659 287 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="69e8630ce6b29c9c" memberName="label113"
-         virtualName="" explicitFocusOrder="0" pos="549 317 88 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="633 277 88 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 2 Fine Tune"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="f31a739f49e54751" memberName="label114"
-         virtualName="" explicitFocusOrder="0" pos="654 328 35 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 330 35 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Exp" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="85de66ed3dc33db1" memberName="label115"
-         virtualName="" explicitFocusOrder="0" pos="654 344 40 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 346 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Time" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="382734bd47b507ef" memberName="label116"
-         virtualName="" explicitFocusOrder="0" pos="654 360 40 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 362 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Rate" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="f4c8dfa89b2d9239" memberName="swi_glide_type"
-          virtualName="" explicitFocusOrder="0" pos="640 321 19 56" min="0"
+          virtualName="" explicitFocusOrder="0" pos="652 323 19 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="bef16673747564c4" memberName="label117"
-         virtualName="" explicitFocusOrder="0" pos="638 314 48 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="650 316 48 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Glide" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="61723174b32dc750" memberName="label118"
-         virtualName="" explicitFocusOrder="0" pos="684 310 75 20" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="696 312 75 20" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Instability" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="37aafb176850241e" memberName="sli_tune_instab"
-          virtualName="" explicitFocusOrder="0" pos="693 328 24 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="705 330 24 24" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="93127b2857ac305e" memberName="sli_shape_instab"
-          virtualName="" explicitFocusOrder="0" pos="693 350 24 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="705 352 24 24" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="fb39f80023ca0a29" memberName="label119"
-         virtualName="" explicitFocusOrder="0" pos="714 327 48 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="726 329 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Tuning" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="7700c713c66972b4" memberName="label120"
-         virtualName="" explicitFocusOrder="0" pos="714 350 48 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="726 352 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Shape" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="be2f453c2cf64201" memberName="label22" virtualName=""
-         explicitFocusOrder="0" pos="752 310 75 20" textCol="ffffffff"
+         explicitFocusOrder="0" pos="764 312 75 20" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Res. Bass" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="637cab065add0171" memberName="label121"
-         virtualName="" explicitFocusOrder="0" pos="777 376 49 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="789 378 49 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Bypass" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="44da9a19304bc250" memberName="label122"
-         virtualName="" explicitFocusOrder="0" pos="713 376 39 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="725 378 39 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Drive" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="3a62912dcdeb23ff" memberName="swi_filt_lfosrc2"
-          virtualName="" explicitFocusOrder="0" pos="745 373 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="757 375 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
 </JUCER_COMPONENT>

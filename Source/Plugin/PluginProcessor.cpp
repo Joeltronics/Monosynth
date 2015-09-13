@@ -13,10 +13,13 @@
 
 #include "Utils/Logger.h"
 
+#include "Params.h"
+
 //==============================================================================
 MonosynthAudioProcessor::MonosynthAudioProcessor()
 {
 	Utils::SetupLogger("monosynth.log");
+	SETUP_PARAMS();
 }
 
 MonosynthAudioProcessor::~MonosynthAudioProcessor()
