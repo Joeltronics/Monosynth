@@ -61,12 +61,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     groupComponent11->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
     groupComponent11->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (swi_filt_envpol = new Slider ("Filter Env Polarity"));
-    swi_filt_envpol->setRange (-1, 1, 2);
-    swi_filt_envpol->setSliderStyle (Slider::LinearHorizontal);
-    swi_filt_envpol->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_filt_envpol->addListener (this);
-
     addAndMakeVisible (swi_filt_poles = new Slider ("Filter Poles"));
     swi_filt_poles->setRange (2, 4, 2);
     swi_filt_poles->setSliderStyle (Slider::LinearHorizontal);
@@ -222,13 +216,13 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     sli_filt_res->addListener (this);
 
     addAndMakeVisible (sli_filt_env = new Slider ("Filter Env Amount"));
-    sli_filt_env->setRange (0, 10, 0);
+    sli_filt_env->setRange (-1, 1, 0);
     sli_filt_env->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_env->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_env->addListener (this);
 
     addAndMakeVisible (sli_filt_lfo = new Slider ("Filter LFO Amount"));
-    sli_filt_lfo->setRange (0, 10, 0);
+    sli_filt_lfo->setRange (0, 1, 0);
     sli_filt_lfo->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_lfo->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_lfo->addListener (this);
@@ -500,7 +494,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (sli_filt_vel = new Slider ("Filter Vel Amount"));
-    sli_filt_vel->setRange (0, 10, 0);
+    sli_filt_vel->setRange (0, 1, 0);
     sli_filt_vel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_vel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_vel->addListener (this);
@@ -1041,24 +1035,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label78->setColour (Label::textColourId, Colours::white);
     label78->setColour (TextEditor::textColourId, Colours::black);
     label78->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label76 = new Label ("new label",
-                                            TRANS("+")));
-    label76->setFont (Font (12.00f, Font::plain));
-    label76->setJustificationType (Justification::centredLeft);
-    label76->setEditable (false, false, false);
-    label76->setColour (Label::textColourId, Colours::white);
-    label76->setColour (TextEditor::textColourId, Colours::black);
-    label76->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label77 = new Label ("new label",
-                                            TRANS("-")));
-    label77->setFont (Font (12.00f, Font::plain));
-    label77->setJustificationType (Justification::centredRight);
-    label77->setEditable (false, false, false);
-    label77->setColour (Label::textColourId, Colours::white);
-    label77->setColour (TextEditor::textColourId, Colours::black);
-    label77->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider41 = new Slider ("new slider"));
     slider41->setRange (0, 1, 1);
@@ -1663,7 +1639,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 				// And set slider to param value (which should be default)
 				float val = Utils::Interp(float(pSlider->getMinimum()), float(pSlider->getMaximum()), pParam->getValue());
 				pSlider->setValue(val);
-				
+
 				// TODO: when I have different log levels, re-add this (but make it lower level)
 				//LOG(String("Found param matching slider ") + sliName + String(", setting slider to ") + String(val));
 				break;
@@ -1697,7 +1673,6 @@ MainGui::~MainGui()
     groupComponent12 = nullptr;
     groupComponent3 = nullptr;
     groupComponent11 = nullptr;
-    swi_filt_envpol = nullptr;
     swi_filt_poles = nullptr;
     groupComponent4 = nullptr;
     groupComponent = nullptr;
@@ -1826,8 +1801,6 @@ MainGui::~MainGui()
     swi_filt_lfosrc = nullptr;
     swi_filt_kb = nullptr;
     label78 = nullptr;
-    label76 = nullptr;
-    label77 = nullptr;
     slider41 = nullptr;
     label79 = nullptr;
     label80 = nullptr;
@@ -1918,7 +1891,6 @@ void MainGui::resized()
     groupComponent12->setBounds (628, 258, 216, 136);
     groupComponent3->setBounds (462, 0, 136, 296);
     groupComponent11->setBounds (147, 200, 112, 192);
-    swi_filt_envpol->setBounds (469, 270, 40, 16);
     swi_filt_poles->setBounds (538, 199, 40, 16);
     groupComponent4->setBounds (8, 98, 264, 102);
     groupComponent->setBounds (8, 0, 136, 96);
@@ -2047,8 +2019,6 @@ void MainGui::resized()
     swi_filt_lfosrc->setBounds (549, 270, 40, 16);
     swi_filt_kb->setBounds (482, 199, 40, 16);
     label78->setBounds (471, 189, 56, 10);
-    label76->setBounds (501, 274, 24, 10);
-    label77->setBounds (460, 274, 16, 10);
     slider41->setBounds (111, 179, 40, 16);
     label79->setBounds (143, 182, 32, 10);
     label80->setBounds (189, 242, 32, 8);
@@ -2121,12 +2091,7 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == swi_filt_envpol)
-    {
-        //[UserSliderCode_swi_filt_envpol] -- add your slider handling code here..
-        //[/UserSliderCode_swi_filt_envpol]
-    }
-    else if (sliderThatWasMoved == swi_filt_poles)
+    if (sliderThatWasMoved == swi_filt_poles)
     {
         //[UserSliderCode_swi_filt_poles] -- add your slider handling code here..
         //[/UserSliderCode_swi_filt_poles]
@@ -2477,10 +2442,6 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="new group" id="303c96ba3a6d7786" memberName="groupComponent11"
                   virtualName="" explicitFocusOrder="0" pos="147 200 112 192" outlinecol="66ffffff"
                   textcol="ffffffff" title="Pitch Mod"/>
-  <SLIDER name="Filter Env Polarity" id="8f6056ff4a7bba0f" memberName="swi_filt_envpol"
-          virtualName="" explicitFocusOrder="0" pos="469 270 40 16" min="-1"
-          max="1" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filter Poles" id="9366d7598a118d48" memberName="swi_filt_poles"
           virtualName="" explicitFocusOrder="0" pos="538 199 40 16" min="2"
           max="4" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
@@ -2576,12 +2537,12 @@ BEGIN_JUCER_METADATA
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filter Env Amount" id="bf7ee7b16a44fd46" memberName="sli_filt_env"
-          virtualName="" explicitFocusOrder="0" pos="469 239 40 32" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          virtualName="" explicitFocusOrder="0" pos="469 239 40 32" min="-1"
+          max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filter LFO Amount" id="b500af110555c914" memberName="sli_filt_lfo"
           virtualName="" explicitFocusOrder="0" pos="549 239 40 32" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Overdrive" id="3be38c3ceff9b1f2" memberName="sli_drive"
           virtualName="" explicitFocusOrder="0" pos="382 144 56 48" min="0"
@@ -2741,7 +2702,7 @@ BEGIN_JUCER_METADATA
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="Filter Vel Amount" id="2e1b5981e8fb0e0d" memberName="sli_filt_vel"
           virtualName="" explicitFocusOrder="0" pos="509 239 40 32" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="785b4bba36ddbb84" memberName="sli_filt_resbass"
           virtualName="" explicitFocusOrder="0" pos="780 332 48 32" min="0"
@@ -3056,16 +3017,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="KB Track" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="53ff3af6edd20edb" memberName="label76" virtualName=""
-         explicitFocusOrder="0" pos="501 274 24 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="+" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="d436d4fa06e00fe9" memberName="label77" virtualName=""
-         explicitFocusOrder="0" pos="460 274 16 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="-" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="1dfe389adfa42abd" memberName="slider41"
           virtualName="" explicitFocusOrder="0" pos="111 179 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"

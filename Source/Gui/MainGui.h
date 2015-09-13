@@ -72,7 +72,6 @@ private:
     ScopedPointer<GroupComponent> groupComponent12;
     ScopedPointer<GroupComponent> groupComponent3;
     ScopedPointer<GroupComponent> groupComponent11;
-    ScopedPointer<Slider> swi_filt_envpol;
     ScopedPointer<Slider> swi_filt_poles;
     ScopedPointer<GroupComponent> groupComponent4;
     ScopedPointer<GroupComponent> groupComponent;
@@ -201,8 +200,6 @@ private:
     ScopedPointer<Slider> swi_filt_lfosrc;
     ScopedPointer<Slider> swi_filt_kb;
     ScopedPointer<Label> label78;
-    ScopedPointer<Label> label76;
-    ScopedPointer<Label> label77;
     ScopedPointer<Slider> slider41;
     ScopedPointer<Label> label79;
     ScopedPointer<Label> label80;

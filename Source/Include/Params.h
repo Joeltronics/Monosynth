@@ -13,7 +13,9 @@
 
 #include "JuceHeader.h"
 
+#include "Utils/Types.h"
 #include "Utils/DspUtils.h"
+#include "Utils/Debug.h"
 
 #include <vector>
 #include <array>
@@ -32,9 +34,8 @@
 #define SETUP_PARAMS() \
 addParameter(new EnumParam("Osc 1 Wave", {"Tri","Rect","Saw"}, 2)); \
 addParameter(new FloatParam("Osc 1 Shape")); \
-addParameter(new EnumParam("Osc 2 Wave", {"Tri","Rect","Saw"}, 2)); \
-addParameter(new FloatParam("Osc 2 Shape")); \
-addParameter(new FloatParam("Osc 2 Fine Tune", 0.5f)); \
+addParameter(new IntParam("Osc 2 Coarse Tune", 0, {-7,19})); \
+addParameter(new FloatParam("Osc 2 Fine Tune", 0.0f, {-1.0f,1.0f})); \
 addParameter(new EnumParam("Sub Osc Octave", {"-2","-1"}, 1)); \
 addParameter(new EnumParam("Sub Osc Wave", {"Tri","Square","Pulse"}, 0)); \
 addParameter(new FloatParam("Osc 1 Mix", 1.0f)); \
@@ -42,13 +43,12 @@ addParameter(new FloatParam("Osc 2 Mix")); \
 addParameter(new FloatParam("Sub Mix")); \
 addParameter(new FloatParam("Ring Mod Mix")); \
 addParameter(new FloatParam("Noise Mix")); \
-addParameter(new FloatParam("Filter Frequency")); \
+addParameter(new FloatParam("Filter Frequency")); /*TODO: range*/ \
 addParameter(new FloatParam("Filter Resonance")); \
 addParameter(new EnumParam("Filter Model", {"IC","Transistor","Diode"}, 0)); \
 addParameter(new BoolParam("Filter KB Track")); \
 addParameter(new EnumParam("Filter Poles", {"2","4"}, 0)); \
-addParameter(new FloatParam("Filter Env Amount")); \
-addParameter(new EnumParam("Filter Env Polarity", {"-","+"}, 1)); \
+addParameter(new FloatParam("Filter Env Amount", 0.0f, {-1.0f,1.0f})); \
 addParameter(new FloatParam("Filter Vel Amount")); \
 addParameter(new FloatParam("Filter LFO Amount")); \
 addParameter(new EnumParam("Filter LFO Select", {"LFO 1","LFO 2"}, 0)); \
@@ -68,9 +68,6 @@ addParameter(new FloatParam("LFO 2 Freq", 0.5f)); \
 addParameter(new EnumParam("LFO 2 Shape", {"Squ","Tri","+Saw","-Saw","S&H","+Env","-Env"})); \
 addParameter(new FloatParam("LFO 2 Attack")); \
 SETUP_DEBUG_PARAMS()
-
-
-
 
 // ***** Param *****
 
@@ -117,30 +114,129 @@ protected:
 
 // ***** FloatParam *****
 
+// "Host value" = in range 0 to 1
+// "Actual value" = in whatever range is set (though the default is also 0 to 1)
+
 class FloatParam : public Param
 {
 public:
+	// All constructor args are in terms of actual values
+	// (Though if no range given, actual will have same range as host)
 	FloatParam(const juce::String& paramName,
 			float defaultParamValue = 0.0f,
+			Utils::Range_t<float> paramRange = {0.0f, 1.0f},
 			juce::String const& unitName = juce::String(""),
 			bool bIsInverted = false,
 			bool bIsAutomatable = true,
 			bool bIsMeta = false) :
 		m_val(defaultParamValue),
+		m_range(paramRange),
 		Param(paramName, unitName, defaultParamValue, bIsInverted, bIsAutomatable, bIsMeta)
 	{}
 
+	// AudioProcessorParameter functions
+
 	float getValue() const override
-		{ return m_val.get(); }
+		{ return ActualToHost_(GetActualValue()); }
 
 	void setValue(float newValue) override
-		{ m_val.set(newValue); }
+		{ SetActualValue(HostToActual_(newValue)); }
 
 	float getValueForText(const juce::String& text) const override
-		{ return text.getFloatValue(); }
+		{ return ActualToHost_(text.getFloatValue()); }
+
+	juce::String getText(float value, int /*maximumStringLength*/) const override
+		{ return juce::String(HostToActual_(value)); }
+
+	// New functions
+	
+	void SetActualValue(float newValue) {
+		newValue = m_range.Clip(newValue);
+		m_val.set(newValue);
+	}
+
+	float GetActualValue() const { return m_val.get(); }
+	float GetMin() const { return m_range.min; }
+	float GetMax() const { return m_range.max; }
+	Utils::Range_t<float> GetRange() const { return m_range; }
 
 private:
+
+	float HostToActual_(float hostVal) const {
+		hostVal = Utils::Clip(hostVal, 0.0f, 1.0f);
+		return Utils::Interp(m_range.min, m_range.max, hostVal);
+	}
+
+	float ActualToHost_(float actualVal) const
+		{ return Utils::ReverseInterp(m_range.min, m_range.max, actualVal); }
+
 	juce::Atomic<float> m_val;
+	Utils::Range_t<float> m_range;
+};
+
+// ***** IntParam *****
+
+// "Host value" = in range 0 to 1
+// "Actual value" = in whatever range is set (though the default is also 0 to 1)
+
+class IntParam : public Param
+{
+public:
+	// All constructor args are in terms of actual values
+	// (Though if no range given, actual will have same range as host)
+	IntParam(const juce::String& paramName,
+		int defaultParamValue = 0,
+		Utils::Range_t<int> paramRange = { 0, 1 },
+		juce::String const& unitName = juce::String(""),
+		bool bIsInverted = false,
+		bool bIsAutomatable = true,
+		bool bIsMeta = false) :
+		m_val(defaultParamValue),
+		m_range(paramRange),
+		Param(paramName, unitName, defaultParamValue, bIsInverted, bIsAutomatable, bIsMeta)
+	{}
+
+	// AudioProcessorParameter functions
+
+	float getValue() const override
+		{ return ActualToHost_(GetActualValue()); }
+
+	void setValue(float newValue) override
+		{ SetActualValue(HostToActual_(newValue)); }
+
+	float getValueForText(const juce::String& text) const override
+		{ return ActualToHost_(text.getFloatValue()); }
+
+	juce::String getText(float value, int /*maximumStringLength*/) const override
+		{ return juce::String(HostToActual_(value)); }
+
+	int getNumSteps() const override
+		{ return (m_range.max - m_range.min + 1); }
+
+	// New functions
+
+	void SetActualValue(int newValue) {
+		newValue = m_range.Clip(newValue);
+		m_val.set(newValue);
+	}
+
+	int GetActualValue() const { return m_val.get(); }
+	int GetMin() const { return m_range.min; }
+	int GetMax() const { return m_range.max; }
+	Utils::Range_t<int> GetRange() const { return m_range; }
+
+private:
+
+	int HostToActual_(float hostVal) const {
+		hostVal = Utils::Clip(hostVal, 0.0f, 1.0f);
+		return Utils::RoundTo<int>(Utils::Interp<float>(m_range.min, m_range.max, hostVal));
+	}
+
+	float ActualToHost_(int actualVal) const
+		{ return Utils::ReverseInterp<float>(m_range.min, m_range.max, actualVal); }
+
+	juce::Atomic<int> m_val;
+	Utils::Range_t<int> m_range;
 };
 
 // ***** BoolParam *****
@@ -160,8 +256,10 @@ public:
 		Param(paramName, unitName, float(bDefaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
 	{}
 
+	// AudioProcessorParameter functions
+
 	float getValue() const override
-		{ return float(m_val.get()); }
+		{ return (m_val.get() ? 1.0f : 0.0f); }
 
 	void setValue(float newValue) override
 		{ m_val.set(newValue >= 0.5f); }
@@ -175,8 +273,11 @@ public:
 	juce::String getText(float value, int /*maximumStringLength*/) const override
 		{ return mk_names[value >= 0.5f]; }
 
-	int getNumSteps() const override
-		{ return 2; }
+	int getNumSteps() const override { return 2; }
+
+	// New functions
+
+	bool GetBool() const { return !!m_val.get(); }
 
 private:
 	juce::Atomic<size_t> m_val;
@@ -185,7 +286,6 @@ private:
 
 // ***** EnumParam *****
 
-// Max 256 values
 class EnumParam : public Param
 {
 public:
@@ -201,6 +301,8 @@ public:
 		m_val(defaultParamValue),
 		Param(paramName, unitName, IntToFloatVal_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
 	{}
+
+	// AudioProcessorParameter functions
 
 	float getValue() const override
 		{ return IntToFloatVal_(m_val.get()); }
@@ -224,6 +326,11 @@ public:
 		size_t intVal = FloatToIntVal_(value);
 		return (intVal < mk_nVals) ? mk_enums[intVal] : juce::String(value);
 	}
+
+	// New functions
+
+	size_t GetActualValue() const { return m_val.get(); }
+	size_t GetNumVals() const { return mk_nVals; }
 
 private:
 
