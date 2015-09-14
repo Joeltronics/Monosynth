@@ -108,7 +108,7 @@ public:
 	void sliderValueChanged(juce::Slider* slider) override { 
 		DEBUG_ASSERT(slider);
 		
-		setValueNotifyingHost(float(Utils::ReverseInterp(slider->getMinimum(), slider->getMaximum(), slider->getValue())));
+		setValueNotifyingHost(float(slider->valueToProportionOfLength(slider->getValue())));
 
 		// This would be better (doesn't need to convert to host range & back), but won't notify host:
 		//SetActualValue(float(slider->getValue()));
