@@ -28,7 +28,7 @@
 
 #include "Params.h"
 
-#include <map>
+#include <typeinfo>
 
 namespace Gui {
 //[/Headers]
@@ -63,6 +63,11 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
+	// ...and private methods!
+	void SetSliderIDs_();
+	void BindParamsToSliders_();
+
 	DefaultLookAndFeel defaultLookAndFeel;
 	MonosynthAudioProcessor& processor;
     //[/UserVariables]
@@ -244,7 +249,6 @@ private:
     ScopedPointer<Label> label107;
     ScopedPointer<Label> label108;
     ScopedPointer<Label> label109;
-    ScopedPointer<Label> label110;
     ScopedPointer<Label> label111;
     ScopedPointer<Label> label112;
     ScopedPointer<Slider> swi_tune_type;
@@ -263,6 +267,9 @@ private:
     ScopedPointer<Label> label121;
     ScopedPointer<Label> label122;
     ScopedPointer<Slider> swi_filt_lfosrc2;
+    ScopedPointer<Label> label76;
+    ScopedPointer<Label> label77;
+    ScopedPointer<Label> label123;
 
 
     //==============================================================================

@@ -16,6 +16,7 @@
 #include "Utils/Types.h"
 #include "Utils/DspUtils.h"
 #include "Utils/Debug.h"
+#include "Utils/Logger.h"
 
 #include <vector>
 #include <array>
@@ -34,6 +35,8 @@
 #define SETUP_PARAMS() \
 addParameter(new EnumParam("Osc 1 Wave", {"Tri","Rect","Saw"}, 2)); \
 addParameter(new FloatParam("Osc 1 Shape")); \
+addParameter(new EnumParam("Osc 2 Wave", {"Tri","Rect","Saw"}, 2)); \
+addParameter(new FloatParam("Osc 2 Shape")); \
 addParameter(new IntParam("Osc 2 Coarse Tune", 0, {-7,19})); \
 addParameter(new FloatParam("Osc 2 Fine Tune", 0.0f, {-1.0f,1.0f})); \
 addParameter(new EnumParam("Sub Osc Octave", {"-2","-1"}, 1)); \
@@ -73,7 +76,7 @@ SETUP_DEBUG_PARAMS()
 
 // Class Param is in range 0-1, as are all overridden virtual methods
 // However, some param types optionally have their own ranges, with values
-// in these ranges exposed in non-virtual functions
+// in these ranges exposed in functions not from AudioProcessorParameter
 class Param :
 	public juce::AudioProcessorParameter,
 	public juce::SliderListener
@@ -93,6 +96,7 @@ public:
 		bMeta(bIsMeta)
 	{}
 
+	// from juce::AudioProcessorParameter
 	float getDefaultValue() const override { return defaultValue; }
 	juce::String getName(int /*maximumStringLength*/) const override { return name; } // TODO: use maximumStringLength
 	juce::String getLabel() const override { return units; }
@@ -103,7 +107,33 @@ public:
 	// from juce::SliderListener
 	void sliderValueChanged(juce::Slider* slider) override { 
 		DEBUG_ASSERT(slider);
-		setValue(float(Utils::ReverseInterp(slider->getMinimum(), slider->getMaximum(), slider->getValue())));
+		
+		setValueNotifyingHost(float(Utils::ReverseInterp(slider->getMinimum(), slider->getMaximum(), slider->getValue())));
+
+		// This would be better (doesn't need to convert to host range & back), but won't notify host:
+		//SetActualValue(float(slider->getValue()));
+	}
+
+	// New methods
+	virtual float GetActualValue() const = 0;
+	virtual void SetActualValue(float val) = 0;
+	virtual float GetMin() const = 0;
+	virtual float GetMax() const = 0;
+	juce::String getName() const { return name; } // same as juce::AudioProcessorParameter function but with no args
+	
+	virtual float GetInterval() const {
+		return (getNumSteps() == 0) ?
+			0.0f :
+			1.0f / (getNumSteps() - 1.0f);
+	};
+
+	virtual void BindToSlider(Slider* pSlider) {
+		DEBUG_ASSERT(pSlider);
+		pSlider->setRange(GetMin(), GetMax(), GetInterval());
+		pSlider->setValue(GetActualValue());
+		pSlider->addListener(this);
+
+		//LOG(getName() + String::formatted(" = %.2f [%.1f,%.1f,%.1f]", GetActualValue(), GetMin(), GetInterval(), GetMax()));
 	}
 
 protected:
@@ -151,17 +181,18 @@ public:
 	juce::String getText(float value, int /*maximumStringLength*/) const override
 		{ return juce::String(HostToActual_(value)); }
 
-	// New functions
-	
-	void SetActualValue(float newValue) {
+	// Param functions
+
+	float GetMin() const override { return m_range.min; }
+	float GetMax() const override { return m_range.max; }
+	float GetInterval() const override { return 0.0f; }
+
+	void SetActualValue(float newValue) override {
 		newValue = m_range.Clip(newValue);
 		m_val.set(newValue);
 	}
 
-	float GetActualValue() const { return m_val.get(); }
-	float GetMin() const { return m_range.min; }
-	float GetMax() const { return m_range.max; }
-	Utils::Range_t<float> GetRange() const { return m_range; }
+	float GetActualValue() const override { return m_val.get(); }
 
 private:
 
@@ -174,7 +205,7 @@ private:
 		{ return Utils::ReverseInterp(m_range.min, m_range.max, actualVal); }
 
 	juce::Atomic<float> m_val;
-	Utils::Range_t<float> m_range;
+	Utils::Range_t<float> const m_range;
 };
 
 // ***** IntParam *****
@@ -202,10 +233,10 @@ public:
 	// AudioProcessorParameter functions
 
 	float getValue() const override
-		{ return ActualToHost_(GetActualValue()); }
+		{ return ActualToHost_(GetInt()); }
 
 	void setValue(float newValue) override
-		{ SetActualValue(HostToActual_(newValue)); }
+		{ SetActualValue(float(HostToActual_(newValue))); }
 
 	float getValueForText(const juce::String& text) const override
 		{ return ActualToHost_(Utils::RoundTo<int>(text.getFloatValue())); }
@@ -216,17 +247,21 @@ public:
 	int getNumSteps() const override
 		{ return (m_range.max - m_range.min + 1); }
 
-	// New functions
+	// Param functions
 
-	void SetActualValue(int newValue) {
-		newValue = m_range.Clip(newValue);
-		m_val.set(newValue);
+	void SetActualValue(float newValue) {
+		m_val.set(m_range.Clip(Utils::RoundTo<int>(newValue)));
 	}
 
-	int GetActualValue() const { return m_val.get(); }
-	int GetMin() const { return m_range.min; }
-	int GetMax() const { return m_range.max; }
-	Utils::Range_t<int> GetRange() const { return m_range; }
+	float GetActualValue() const { return float(m_val.get()); }
+	float GetMin() const override { return float(m_range.min); }
+	float GetMax() const override { return float(m_range.max); }
+	float GetInterval() const override { return 1.0f; }
+
+	// Other functions
+
+	void SetInt(int newValue) { m_val.set(m_range.Clip(newValue)); }
+	int GetInt() const { return m_val.get();  }
 
 private:
 
@@ -239,7 +274,7 @@ private:
 		{ return Utils::ReverseInterp(float(m_range.min), float(m_range.max), float(actualVal)); }
 
 	juce::Atomic<int> m_val;
-	Utils::Range_t<int> m_range;
+	Utils::Range_t<int> const m_range;
 };
 
 // ***** BoolParam *****
@@ -277,6 +312,14 @@ public:
 		{ return mk_names[value >= 0.5f]; }
 
 	int getNumSteps() const override { return 2; }
+
+	// Param functions
+
+	void SetActualValue(float newValue) override { setValue(newValue); }
+	float GetActualValue() const override { return getValue(); }
+	float GetMin() const override { return 0.0f; }
+	float GetMax() const override { return 1.0f; }
+	float GetInterval() const override { return 1.0f; }
 
 	// New functions
 
@@ -330,10 +373,20 @@ public:
 		return (intVal < mk_nVals) ? mk_enums[intVal] : juce::String(value);
 	}
 
+	// Param functions
+
+	float GetMin() const override { return 0.0f; }
+	float GetMax() const override { return float(mk_nVals - 1); }
+
 	// New functions
 
-	size_t GetActualValue() const { return m_val.get(); }
+	void SetActualValue(float newValue) {
+		m_val.set(Utils::Clip<int>(Utils::RoundTo<int>(newValue), 0, mk_nVals));
+	}
+
+	float GetActualValue() const { return float(m_val.get()); }
 	size_t GetNumVals() const { return mk_nVals; }
+	float GetInterval() const override { return 1.0f; }
 
 private:
 

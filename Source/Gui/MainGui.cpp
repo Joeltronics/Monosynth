@@ -1402,15 +1402,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label109->setColour (TextEditor::textColourId, Colours::black);
     label109->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label110 = new Label ("new label",
-                                             TRANS("->")));
-    label110->setFont (Font (15.00f, Font::plain));
-    label110->setJustificationType (Justification::centred);
-    label110->setEditable (false, false, false);
-    label110->setColour (Label::textColourId, Colours::white);
-    label110->setColour (TextEditor::textColourId, Colours::black);
-    label110->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label111 = new Label ("new label",
                                              TRANS("Hz")));
     label111->setFont (Font (12.00f, Font::plain));
@@ -1558,6 +1549,33 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     swi_filt_lfosrc2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_filt_lfosrc2->addListener (this);
 
+    addAndMakeVisible (label76 = new Label ("new label",
+                                            TRANS("+")));
+    label76->setFont (Font (12.00f, Font::plain));
+    label76->setJustificationType (Justification::centredLeft);
+    label76->setEditable (false, false, false);
+    label76->setColour (Label::textColourId, Colours::white);
+    label76->setColour (TextEditor::textColourId, Colours::black);
+    label76->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label77 = new Label ("new label",
+                                            TRANS("-")));
+    label77->setFont (Font (12.00f, Font::plain));
+    label77->setJustificationType (Justification::centredRight);
+    label77->setEditable (false, false, false);
+    label77->setColour (Label::textColourId, Colours::white);
+    label77->setColour (TextEditor::textColourId, Colours::black);
+    label77->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label123 = new Label ("new label",
+                                             TRANS("+7")));
+    label123->setFont (Font (12.00f, Font::plain));
+    label123->setJustificationType (Justification::centred);
+    label123->setEditable (false, false, false);
+    label123->setColour (Label::textColourId, Colours::white);
+    label123->setColour (TextEditor::textColourId, Colours::black);
+    label123->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
 
     //[UserPreSize]
 
@@ -1573,93 +1591,8 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     //[Constructor] You can add your own custom stuff here..
 
-	/* TODO:
-	 * Make this section not hacky:
-	 *   - dynamic_cast is a bad way to do things
-	 *   - An O(n^2) complexity is unnecessary
-	 *   - Use iterators if possible
-	 *   - Make it work if param name is longer than 30 characters
-	 *
-	 * The problem is, there isn't really any way to do this without either a ton of manual
-	 * repetitive code writing (that could break if ever making Introjucer changes) or using
-	 * some sort of code generation script (which is a pain because you have to re-run it any
-	 * time you make an Introjucer change)
-	 *
-	 * This will have to do for now. I'll fix it eventually.
-	 */
-
-	OwnedArray<AudioProcessorParameter> const& paramList = processor.getParameters();
-	size_t nParams = paramList.size();
-
-	size_t nChildren = this->getNumChildComponents();
-
-	uint32_t numNewSlider = 0;
-
-	for (size_t n = 0; n < nChildren; ++n) {
-		Component* pComp = this->getChildComponent(n);
-		DEBUG_ASSERT(pComp);
-
-		// Cast to Slider - if it returns null, the component isn't a Slider
-		Slider* pSlider = dynamic_cast<Slider*>(pComp);
-		if (!pSlider) continue;
-
-		// At this point we know it's a slider
-
-		String const& sliName = pSlider->getName();
-
-		if (sliName.compare("new slider") == 0)
-		{
-			numNewSlider++;
-			continue;
-		}
-
-		SliderListener* pListener = 0;
-
-		for (size_t m = 0; m < nParams; ++m) {
-			DEBUG_ASSERT(paramList[m]);
-			// Item will be juce::AudioProcessorParameter, cast to my Param class
-			Param* pParam = dynamic_cast<Param*>(paramList[m]);
-
-			String const& paramName = pParam->getName(30);
-
-			if (!pParam) {
-				// The only way this should happen is if an AudioProcessorParameter
-				// that isn't a Param got into the list somehow
-
-				LOG(String("dynamic_cast of AudioProcessorParameter to Param failed for param ") + paramName);
-				continue;
-			}
-
-			if (sliName.compare(paramName) == 0) {
-				// We've found the param that goes with this slider
-
-				// Register param as a listener
-				pListener = pParam;
-
-				// And set slider to param value (which should be default)
-				float val = Utils::Interp(float(pSlider->getMinimum()), float(pSlider->getMaximum()), pParam->getValue());
-				pSlider->setValue(val);
-
-				// TODO: when I have different log levels, re-add this (but make it lower level)
-				//LOG(String("Found param matching slider ") + sliName + String(", setting slider to ") + String(val));
-				break;
-			}
-		}
-
-		if (pListener)
-		{
-			pSlider->addListener(pListener);
-		}
-		else
-		{
-			LOG(String("Could not find param named ") + sliName);
-		}
-	}
-
-	if (numNewSlider)
-	{
-		LOG(String::formatted("%u sliders named \"new slider\"", numNewSlider));
-	}
+	SetSliderIDs_();
+	BindParamsToSliders_();
 
     //[/Constructor]
 }
@@ -1845,7 +1778,6 @@ MainGui::~MainGui()
     label107 = nullptr;
     label108 = nullptr;
     label109 = nullptr;
-    label110 = nullptr;
     label111 = nullptr;
     label112 = nullptr;
     swi_tune_type = nullptr;
@@ -1864,6 +1796,9 @@ MainGui::~MainGui()
     label121 = nullptr;
     label122 = nullptr;
     swi_filt_lfosrc2 = nullptr;
+    label76 = nullptr;
+    label77 = nullptr;
+    label123 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1893,7 +1828,7 @@ void MainGui::resized()
     groupComponent11->setBounds (147, 200, 112, 192);
     swi_filt_poles->setBounds (538, 199, 40, 16);
     groupComponent4->setBounds (8, 98, 264, 102);
-    groupComponent->setBounds (8, 0, 136, 96);
+    groupComponent->setBounds (8, 0, 144, 96);
     sli_o1_sh->setBounds (48, 28, 56, 48);
     groupComponent8->setBounds (8, 200, 112, 192);
     groupComponent5->setBounds (172, 0, 96, 96);
@@ -1940,19 +1875,19 @@ void MainGui::resized()
     sli_pitchmod_amt->setBounds (216, 268, 37, 40);
     label7->setBounds (13, 160, 40, 10);
     label25->setBounds (15, 62, 40, 10);
-    groupComponent9->setBounds (272, 200, 176, 96);
-    groupComponent10->setBounds (278, 296, 240, 96);
+    groupComponent9->setBounds (272, 200, 184, 96);
+    groupComponent10->setBounds (272, 296, 240, 96);
     sli_glide_amt->setBounds (16, 336, 56, 48);
     sli_bend_range->setBounds (34, 268, 56, 48);
     label26->setBounds (16, 252, 96, 16);
     label28->setBounds (286, 216, 56, 14);
-    sli_lfo2_freq->setBounds (286, 328, 56, 48);
-    label29->setBounds (286, 314, 56, 14);
-    sli_lfo2_att->setBounds (452, 328, 56, 48);
-    label31->setBounds (452, 312, 56, 14);
+    sli_lfo2_freq->setBounds (280, 327, 56, 48);
+    label29->setBounds (280, 314, 56, 14);
+    sli_lfo2_att->setBounds (446, 327, 56, 48);
+    label31->setBounds (446, 312, 56, 14);
     label30->setBounds (509, 223, 40, 16);
     sli_filt_vel->setBounds (509, 239, 40, 32);
-    sli_filt_resbass->setBounds (780, 332, 48, 32);
+    sli_filt_resbass->setBounds (780, 330, 48, 32);
     sli_fenv_dec->setBounds (670, 32, 56, 48);
     sli_fenv_sus->setBounds (726, 32, 56, 48);
     sli_fenv_rel->setBounds (782, 32, 56, 48);
@@ -1966,25 +1901,25 @@ void MainGui::resized()
     sli_fenv_vel->setBounds (651, 75, 40, 32);
     sli_aenv_vel->setBounds (650, 189, 40, 32);
     label36->setBounds (682, 197, 96, 16);
-    sli_lfo1_sh->setBounds (366, 232, 56, 48);
-    label27->setBounds (342, 240, 32, 16);
-    label33->setBounds (347, 227, 32, 16);
-    label34->setBounds (368, 217, 32, 16);
-    label35->setBounds (388, 217, 32, 16);
-    label37->setBounds (408, 227, 32, 16);
-    label38->setBounds (413, 240, 32, 16);
-    sli_lfo2_sh->setBounds (367, 329, 56, 48);
-    label39->setBounds (346, 351, 32, 16);
-    label40->setBounds (343, 336, 32, 16);
-    label41->setBounds (353, 322, 32, 16);
-    label42->setBounds (366, 314, 32, 16);
-    label43->setBounds (390, 314, 32, 16);
-    label44->setBounds (411, 323, 32, 16);
-    label45->setBounds (412, 337, 32, 16);
-    label46->setBounds (412, 352, 32, 16);
+    sli_lfo1_sh->setBounds (360, 228, 64, 64);
+    label27->setBounds (333, 243, 32, 16);
+    label33->setBounds (341, 224, 32, 16);
+    label34->setBounds (365, 215, 32, 16);
+    label35->setBounds (389, 215, 32, 16);
+    label37->setBounds (413, 226, 32, 16);
+    label38->setBounds (420, 243, 32, 16);
+    sli_lfo2_sh->setBounds (354, 325, 64, 64);
+    label39->setBounds (326, 356, 32, 16);
+    label40->setBounds (327, 338, 32, 16);
+    label41->setBounds (342, 320, 32, 16);
+    label42->setBounds (358, 310, 32, 16);
+    label43->setBounds (383, 310, 32, 16);
+    label44->setBounds (405, 321, 32, 16);
+    label45->setBounds (413, 339, 32, 16);
+    label46->setBounds (413, 356, 32, 16);
     label48->setBounds (219, 128, 40, 8);
-    label49->setBounds (190, 133, 33, 16);
-    sli_lfo1_freq->setBounds (286, 232, 56, 48);
+    label49->setBounds (192, 137, 33, 16);
+    sli_lfo1_freq->setBounds (286, 231, 56, 48);
     label51->setBounds (113, 30, 32, 10);
     label53->setBounds (113, 46, 32, 10);
     label54->setBounds (113, 62, 32, 10);
@@ -1999,7 +1934,7 @@ void MainGui::resized()
     swi_o1_sh->setBounds (98, 22, 20, 56);
     swi_sub_sh->setBounds (219, 24, 20, 56);
     swi_sub_oct->setBounds (196, 24, 20, 56);
-    label62->setBounds (16, 317, 96, 16);
+    label62->setBounds (16, 319, 96, 16);
     label63->setBounds (81, 338, 32, 10);
     label64->setBounds (81, 354, 39, 10);
     label65->setBounds (81, 370, 32, 10);
@@ -2021,8 +1956,8 @@ void MainGui::resized()
     label78->setBounds (471, 189, 56, 10);
     slider41->setBounds (111, 179, 40, 16);
     label79->setBounds (143, 182, 32, 10);
-    label80->setBounds (189, 242, 32, 8);
-    label81->setBounds (51, 241, 32, 10);
+    label80->setBounds (189, 242, 32, 10);
+    label81->setBounds (51, 242, 32, 10);
     label82->setBounds (48, 176, 16, 10);
     label83->setBounds (8, 176, 16, 10);
     swi_o2_lfosrc->setBounds (16, 173, 40, 16);
@@ -2040,14 +1975,14 @@ void MainGui::resized()
     label92->setBounds (176, 286, 40, 10);
     label93->setBounds (176, 302, 40, 10);
     swi_pitchmod_src->setBounds (160, 263, 20, 56);
-    label94->setBounds (490, 375, 38, 10);
-    label95->setBounds (441, 375, 26, 10);
-    swi_lfo2_att->setBounds (459, 371, 40, 16);
+    label94->setBounds (484, 375, 38, 10);
+    label95->setBounds (435, 375, 26, 10);
+    swi_lfo2_att->setBounds (453, 371, 40, 16);
     label96->setBounds (320, 279, 24, 10);
     swi_lfo1_kb->setBounds (288, 276, 40, 16);
     label50->setBounds (209, 174, 20, 16);
     label52->setBounds (249, 174, 24, 16);
-    label47->setBounds (144, 133, 16, 16);
+    label47->setBounds (144, 137, 16, 16);
     label97->setBounds (803, 290, 30, 10);
     label98->setBounds (745, 290, 34, 10);
     swi_noise_color->setBounds (771, 287, 40, 16);
@@ -2060,28 +1995,30 @@ void MainGui::resized()
     swi_filt_model->setBounds (536, 125, 20, 56);
     label105->setBounds (213, 251, 40, 16);
     label106->setBounds (160, 252, 48, 16);
-    label107->setBounds (32, 307, 20, 16);
-    label108->setBounds (70, 307, 24, 16);
-    label109->setBounds (74, 297, 24, 16);
-    label110->setBounds (144, 46, 32, 16);
+    label107->setBounds (34, 308, 20, 16);
+    label108->setBounds (70, 308, 24, 16);
+    label109->setBounds (77, 298, 24, 16);
     label111->setBounds (691, 290, 30, 10);
     label112->setBounds (633, 290, 34, 10);
     swi_tune_type->setBounds (659, 287, 40, 16);
     label113->setBounds (633, 277, 88, 10);
-    label114->setBounds (666, 330, 35, 10);
-    label115->setBounds (666, 346, 40, 10);
-    label116->setBounds (666, 362, 40, 10);
-    swi_glide_type->setBounds (652, 323, 19, 56);
-    label117->setBounds (650, 316, 48, 10);
-    label118->setBounds (696, 312, 75, 20);
-    sli_tune_instab->setBounds (705, 330, 24, 24);
-    sli_shape_instab->setBounds (705, 352, 24, 24);
-    label119->setBounds (726, 329, 48, 24);
-    label120->setBounds (726, 352, 48, 24);
-    label22->setBounds (764, 312, 75, 20);
+    label114->setBounds (666, 328, 35, 10);
+    label115->setBounds (666, 344, 40, 10);
+    label116->setBounds (666, 360, 40, 10);
+    swi_glide_type->setBounds (652, 321, 19, 56);
+    label117->setBounds (650, 314, 48, 10);
+    label118->setBounds (696, 310, 75, 20);
+    sli_tune_instab->setBounds (705, 328, 24, 24);
+    sli_shape_instab->setBounds (705, 350, 24, 24);
+    label119->setBounds (726, 327, 48, 24);
+    label120->setBounds (726, 350, 48, 24);
+    label22->setBounds (764, 310, 75, 20);
     label121->setBounds (789, 378, 49, 10);
     label122->setBounds (725, 378, 39, 10);
     swi_filt_lfosrc2->setBounds (757, 375, 40, 16);
+    label76->setBounds (495, 266, 18, 10);
+    label77->setBounds (468, 266, 15, 10);
+    label123->setBounds (174, 124, 26, 16);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -2410,6 +2347,90 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
+
+/* TODO: Find a non-hacky way to match up params with sliders
+*
+* This doesn't need to happen at runtime!
+* This algorithm should have a complexity of O(n), plus whatever the complexity of findChildWithID is
+* So the overall complexity will be either O(n*log(n)) or O(n^2)
+*
+* Besides complexity issues, it's dependent on knobs & params having exactly the same name - which
+* would be okay if it happened at compile-time, but not at runtime. (Though at least we log if there
+* are mismatched names.) Also, it will break if two sliders or two params have the same name.
+*
+* The problem is, there isn't really any way to do this without either a ton of manual repetitive code
+* writing (that could break if ever making Introjucer changes), or using some sort of code generation
+* script (which is a pain because you would have to re-run it any time you make absolutely any Introjucer
+* change)
+*
+* I also tried a method that overloaded addAndMakeVisible to do this, but Introjucer code calls setRange()
+* after calling addAndMakeVisible, so the part that sets the range (inside Param::BindToSlider) was
+* useless, and the only ways around that were even hackier.
+*
+* This will have to do, at least for now - without a code generation script, it's the least hacky solution.
+*/
+
+void MainGui::SetSliderIDs_() {
+
+	size_t nChildren = this->getNumChildComponents();
+	size_t numNewSlider = 0;
+
+	for (size_t n = 0; n < nChildren; ++n) {
+		Component* pComp = this->getChildComponent(n);
+		DEBUG_ASSERT(pComp);
+
+		Slider* pSlider = dynamic_cast<Slider*>(pComp);
+		if (!pSlider) continue;
+
+		if (pSlider->getName().startsWith("new"))
+		{
+			numNewSlider++;
+			continue;
+		}
+
+		pComp->setComponentID(pComp->getName());
+	}
+
+	if (numNewSlider) LOG(String::formatted("%u unnamed sliders", numNewSlider));
+}
+
+// Note:: SetSliderIds_(); must be called before this!
+void MainGui::BindParamsToSliders_() {
+
+	OwnedArray<AudioProcessorParameter> const& paramList = processor.getParameters();
+
+	for (size_t n = 0; n < size_t(paramList.size()); ++n) {
+		AudioProcessorParameter* pJuceParam = paramList[n];
+		DEBUG_ASSERT(pJuceParam);
+
+		Param* pParam = dynamic_cast<Param*>(pJuceParam);
+
+		String const& paramName = pParam->getName();
+
+		if (!pParam) {
+			// The only way this should happen is if a plain juce::AudioProcessorParameter
+			// got into the list somehow
+
+			LOG(String("dynamic_cast of AudioProcessorParameter* to Param* failed for param ") + paramName);
+			continue;
+		}
+
+		Component* pComp = this->findChildWithID(paramName);
+		if (!pComp) {
+			LOG(String("Could not find component matching ") + paramName);
+			continue;
+		}
+
+		Slider* pSlider = dynamic_cast<Slider*>(pComp);
+		if (!pSlider) {
+			LOG(String("Found component matching ") + paramName + " that isn't a slider");
+			continue;
+		}
+
+		pParam->BindToSlider(pSlider);
+	}
+}
+
 } // namespace Gui
 
 //[/MiscUserCode]
@@ -2450,7 +2471,7 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="8 98 264 102" outlinecol="66ffffff"
                   textcol="ffffffff" title="Osc2"/>
   <GROUPCOMPONENT name="new group" id="9fb59b5f6494cccc" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="8 0 136 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="8 0 144 96" outlinecol="66ffffff"
                   textcol="ffffffff" title="Osc1"/>
   <SLIDER name="Osc 1 Shape" id="13d0d9d98ecd6c62" memberName="sli_o1_sh"
           virtualName="" explicitFocusOrder="0" pos="48 28 56 48" min="0"
@@ -2654,10 +2675,10 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12"
          bold="0" italic="0" justification="36"/>
   <GROUPCOMPONENT name="new group" id="d530435b1472d6bd" memberName="groupComponent9"
-                  virtualName="" explicitFocusOrder="0" pos="272 200 176 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="272 200 184 96" outlinecol="66ffffff"
                   textcol="ffffffff" title="LFO1"/>
   <GROUPCOMPONENT name="new group" id="2f9f6ffa0d9e55e2" memberName="groupComponent10"
-                  virtualName="" explicitFocusOrder="0" pos="278 296 240 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="272 296 240 96" outlinecol="66ffffff"
                   textcol="ffffffff" title="LFO2"/>
   <SLIDER name="new slider" id="ca4ffa3f27169af8" memberName="sli_glide_amt"
           virtualName="" explicitFocusOrder="0" pos="16 336 56 48" min="0"
@@ -2678,20 +2699,20 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="LFO 2 Freq" id="320ebe3eb3fc4ddf" memberName="sli_lfo2_freq"
-          virtualName="" explicitFocusOrder="0" pos="286 328 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="280 327 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ef22716764130697" memberName="label29" virtualName=""
-         explicitFocusOrder="0" pos="286 314 56 14" textCol="ffffffff"
+         explicitFocusOrder="0" pos="280 314 56 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Freq" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="adf7d9bbe7bedc02" memberName="sli_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="452 328 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="446 327 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="677e03b32f7824b6" memberName="label31" virtualName=""
-         explicitFocusOrder="0" pos="452 312 56 14" textCol="ffffffff"
+         explicitFocusOrder="0" pos="446 312 56 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -2705,7 +2726,7 @@ BEGIN_JUCER_METADATA
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="785b4bba36ddbb84" memberName="sli_filt_resbass"
-          virtualName="" explicitFocusOrder="0" pos="780 332 48 32" min="0"
+          virtualName="" explicitFocusOrder="0" pos="780 330 48 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filt Env Decay" id="22d76f58418fb20b" memberName="sli_fenv_dec"
@@ -2764,80 +2785,80 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
   <SLIDER name="LFO 1 Shape" id="747eb511b0641157" memberName="sli_lfo1_sh"
-          virtualName="" explicitFocusOrder="0" pos="366 232 56 48" min="1"
+          virtualName="" explicitFocusOrder="0" pos="360 228 64 64" min="1"
           max="6" int="1" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ef8271d0b766807a" memberName="label27" virtualName=""
-         explicitFocusOrder="0" pos="342 240 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="333 243 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Squ" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="14c2042ad7f1aad9" memberName="label33" virtualName=""
-         explicitFocusOrder="0" pos="347 227 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="341 224 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Tri" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="67f626c1ada88a30" memberName="label34" virtualName=""
-         explicitFocusOrder="0" pos="368 217 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="365 215 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Sin" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="817d0b1acf3795c8" memberName="label35" virtualName=""
-         explicitFocusOrder="0" pos="388 217 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="389 215 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+Saw" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="f72439c824d989c5" memberName="label37" virtualName=""
-         explicitFocusOrder="0" pos="408 227 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="413 226 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="-Saw" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="fdedd0c93b90cfbc" memberName="label38" virtualName=""
-         explicitFocusOrder="0" pos="413 240 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="420 243 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="S&amp;H" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="LFO 2 Shape" id="8f80c42fdf365c88" memberName="sli_lfo2_sh"
-          virtualName="" explicitFocusOrder="0" pos="367 329 56 48" min="1"
+          virtualName="" explicitFocusOrder="0" pos="354 325 64 64" min="1"
           max="8" int="1" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="aaee591581053266" memberName="label39" virtualName=""
-         explicitFocusOrder="0" pos="346 351 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="326 356 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Squ" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="e6ca05028638175e" memberName="label40" virtualName=""
-         explicitFocusOrder="0" pos="343 336 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="327 338 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Tri" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="c4f1d4c9d2419fe8" memberName="label41" virtualName=""
-         explicitFocusOrder="0" pos="353 322 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="342 320 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Sin" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="3f4eb26424ee1e1d" memberName="label42" virtualName=""
-         explicitFocusOrder="0" pos="366 314 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="358 310 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+Saw" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="19f746dd8768517d" memberName="label43" virtualName=""
-         explicitFocusOrder="0" pos="390 314 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="383 310 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="-Saw" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="380db8f6a50f7aea" memberName="label44" virtualName=""
-         explicitFocusOrder="0" pos="411 323 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="405 321 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="S&amp;H" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="ffd1847a25441efc" memberName="label45" virtualName=""
-         explicitFocusOrder="0" pos="412 337 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="413 339 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+Env" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="5bb8a7ba065b36b3" memberName="label46" virtualName=""
-         explicitFocusOrder="0" pos="412 352 32 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="413 356 32 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="-Env" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
@@ -2847,12 +2868,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="d1e6db63a46ed8a3" memberName="label49" virtualName=""
-         explicitFocusOrder="0" pos="190 133 33 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="192 137 33 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+12" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="LFO 1 Freq" id="b473ed648319c3c5" memberName="sli_lfo1_freq"
-          virtualName="" explicitFocusOrder="0" pos="286 232 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="286 231 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="a64876f8e639f198" memberName="label51" virtualName=""
@@ -2922,7 +2943,7 @@ BEGIN_JUCER_METADATA
           max="-1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="72064045411c385b" memberName="label62" virtualName=""
-         explicitFocusOrder="0" pos="16 317 96 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="16 319 96 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Glide" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -3027,12 +3048,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="37e280526a434fe5" memberName="label80" virtualName=""
-         explicitFocusOrder="0" pos="189 242 32 8" textCol="ffffffff"
+         explicitFocusOrder="0" pos="189 242 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1+2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="ad572bf50a8a3ef0" memberName="label81" virtualName=""
-         explicitFocusOrder="0" pos="51 241 32 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="51 242 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1+2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
@@ -3117,17 +3138,17 @@ BEGIN_JUCER_METADATA
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="a2306d3d8ea34037" memberName="label94" virtualName=""
-         explicitFocusOrder="0" pos="490 375 38 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="484 375 38 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Dec" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="b4a33df58cfc9de2" memberName="label95" virtualName=""
-         explicitFocusOrder="0" pos="441 375 26 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="435 375 26 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Att" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="6fafdb6bff2e60aa" memberName="swi_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="459 371 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="453 371 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="5fbafef03a41acb0" memberName="label96" virtualName=""
@@ -3150,7 +3171,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="2bb7bacc4f35a31c" memberName="label47" virtualName=""
-         explicitFocusOrder="0" pos="144 133 16 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="144 137 16 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
@@ -3213,25 +3234,20 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="c2b98f64f381a54e" memberName="label107"
-         virtualName="" explicitFocusOrder="0" pos="32 307 20 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="34 308 20 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="a088be42b0aa2bd8" memberName="label108"
-         virtualName="" explicitFocusOrder="0" pos="70 307 24 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="70 308 24 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="24" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="e800eda52eb4e127" memberName="label109"
-         virtualName="" explicitFocusOrder="0" pos="74 297 24 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="77 298 24 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="12" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="432a00dcbf41f4e2" memberName="label110"
-         virtualName="" explicitFocusOrder="0" pos="144 46 32 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="-&gt;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="f7d41627cbc579bd" memberName="label111"
          virtualName="" explicitFocusOrder="0" pos="691 290 30 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Hz" editableSingleClick="0"
@@ -3252,54 +3268,54 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="f31a739f49e54751" memberName="label114"
-         virtualName="" explicitFocusOrder="0" pos="666 330 35 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 328 35 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Exp" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="85de66ed3dc33db1" memberName="label115"
-         virtualName="" explicitFocusOrder="0" pos="666 346 40 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 344 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Time" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="382734bd47b507ef" memberName="label116"
-         virtualName="" explicitFocusOrder="0" pos="666 362 40 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="666 360 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Rate" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="f4c8dfa89b2d9239" memberName="swi_glide_type"
-          virtualName="" explicitFocusOrder="0" pos="652 323 19 56" min="0"
+          virtualName="" explicitFocusOrder="0" pos="652 321 19 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="bef16673747564c4" memberName="label117"
-         virtualName="" explicitFocusOrder="0" pos="650 316 48 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="650 314 48 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Glide" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="61723174b32dc750" memberName="label118"
-         virtualName="" explicitFocusOrder="0" pos="696 312 75 20" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="696 310 75 20" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Instability" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="37aafb176850241e" memberName="sli_tune_instab"
-          virtualName="" explicitFocusOrder="0" pos="705 330 24 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="705 328 24 24" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="93127b2857ac305e" memberName="sli_shape_instab"
-          virtualName="" explicitFocusOrder="0" pos="705 352 24 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="705 350 24 24" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="fb39f80023ca0a29" memberName="label119"
-         virtualName="" explicitFocusOrder="0" pos="726 329 48 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="726 327 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Tuning" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="7700c713c66972b4" memberName="label120"
-         virtualName="" explicitFocusOrder="0" pos="726 352 48 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="726 350 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Shape" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="be2f453c2cf64201" memberName="label22" virtualName=""
-         explicitFocusOrder="0" pos="764 312 75 20" textCol="ffffffff"
+         explicitFocusOrder="0" pos="764 310 75 20" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Res. Bass" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -3317,6 +3333,21 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="757 375 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="103c8c075f50b7b0" memberName="label76" virtualName=""
+         explicitFocusOrder="0" pos="495 266 18 10" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="+" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="33"/>
+  <LABEL name="new label" id="fa96c6c093d2f08" memberName="label77" virtualName=""
+         explicitFocusOrder="0" pos="468 266 15 10" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="-" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="34"/>
+  <LABEL name="new label" id="32cdf22a180cf81d" memberName="label123"
+         virtualName="" explicitFocusOrder="0" pos="174 124 26 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="+7" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

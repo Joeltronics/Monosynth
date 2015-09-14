@@ -49,11 +49,11 @@ namespace Utils {
 		friend bool operator==(Range_t<T> const& lhs, Range_t<T> const& rhs);
 		friend bool operator!=(Range_t<T> const& lhs, Range_t<T> const& rhs);
 
-		bool IsInRange(T val) {
+		bool IsInRange(T val) const {
 			return (val <= max && m_val >= m_min)
 		}
 
-		T Clip(T val) {
+		T Clip(T val) const {
 			return std::max(std::min(val, max), min);
 		}
 	};

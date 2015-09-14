@@ -97,6 +97,7 @@ namespace Gui {
 
 		// Values to set depending on knob size
 		std::vector<float> ticks;
+		std::vector<float> miniTicks;
 		Image img;
 		float r1, r2, tickWidth;
 
@@ -127,15 +128,27 @@ namespace Gui {
 			r1 = r2 * 0.25f;
 			tickWidth = 2.0f;
 
-			// HACK FIXME: this is a way of detecting osc2 tuning knob - but a bad one
-			if (intMaxVal - intMinVal < 20) {
+			
+			if (intMinVal == 0 && intMaxVal == 1 && sl.getInterval() == 0.0f) {
+				// Draw 10 ticks
+				for (int32_t n = 0; n <= 10; ++n)
+					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, n/10.0f)));
+			}
+			else if (intMaxVal - intMinVal >= 20) {
+				// HACK FIXME: this is a way of detecting osc2 tuning knob - but a bad one
+				for (int32_t n = intMinVal; n <= intMaxVal; ++n)
+				{
+					if (n == -5 || n == 0 || n == 7 || n == 12 || n == 19)
+						ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+					else
+						miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+				}
+			}
+			else {
+
 				// Draw all ticks
 				for (int32_t n = intMinVal; n <= intMaxVal; ++n)
 					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
-			}
-			else {
-				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, 0.0f)));
-				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, 12.0f)));
 			}
 		}
 		else if (minDim >= 32) {
@@ -158,6 +171,12 @@ namespace Gui {
 
 		// Draw ticks
 		g.setColour(Colours::whitesmoke);
+
+		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
+			float miniR = Utils::Interp<float>(r2, maxRadius, 2.0f/3.0f);
+			DrawTick_(g, cx, cy, r2, miniR, *it);
+		}
+
 		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
 			DrawTick_(g, cx, cy, r2, maxRadius, *it);
 		}
