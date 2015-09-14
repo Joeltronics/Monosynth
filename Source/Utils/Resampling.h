@@ -19,11 +19,11 @@ namespace  Utils {
     
     // ***** Static functions *****
 
-    void ZeroPadUpsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nUpsamp, bool bScale);
-    void NearestUpsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nUpsamp);
+    void ZeroPadUpsample(juce::AudioSampleBuffer& outBuf, juce::AudioSampleBuffer const& inBuf, uint8_t nUpsamp, bool bScale);
+    void NearestUpsample(juce::AudioSampleBuffer& outBuf, juce::AudioSampleBuffer const& inBuf, uint8_t nUpsamp);
     
-    void NaiveDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
-    void AveragingDownsample(AudioSampleBuffer& outBuf, AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
+    void NaiveDownsample(juce::AudioSampleBuffer& outBuf, juce::AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
+    void AveragingDownsample(juce::AudioSampleBuffer& outBuf, juce::AudioSampleBuffer const& inBuf, uint8_t nDownsamp, bool bScale = false);
     
     // ***** Resampling interface *****
     
@@ -34,7 +34,7 @@ namespace  Utils {
     class IResampler {
     public:
         virtual ~IResampler() {}
-        virtual void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf) = 0;
+        virtual void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf) = 0;
     };
     
     // ***** Upsamplers *****
@@ -52,7 +52,7 @@ namespace  Utils {
         ~ZeroPadUpsampler() {}
         
         // inlined below
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nUpsamp;
@@ -71,7 +71,7 @@ namespace  Utils {
         ~NearestUpsampler() {}
         
         // inlined below
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nUpsamp;
@@ -90,7 +90,7 @@ namespace  Utils {
         LinearInterpUpsampler(uint8_t nUpsamp, uint8_t nChannels);
         LinearInterpUpsampler(uint8_t nUpsamp, uint8_t nChannels, bool bMinGroupDelay);
         ~LinearInterpUpsampler() {}
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         void Reset_();
@@ -110,7 +110,7 @@ namespace  Utils {
         FirUpsampler(uint8_t nUpsamp, uint8_t nChannels);
         ~FirUpsampler() {}
         
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nUpsamp;
@@ -135,7 +135,7 @@ namespace  Utils {
         ~NaiveDownsampler() {}
         
         // inlined below
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nDownsamp;
@@ -155,7 +155,7 @@ namespace  Utils {
         ~AveragingDownsampler() {}
         
         // inlined below
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nDownsamp;
@@ -171,7 +171,7 @@ namespace  Utils {
         FirDownsampler(uint8_t nDownsamp, uint8_t nChannels);
         ~FirDownsampler() {}
         
-        void Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf);
+        void Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf);
         
     private:
         uint8_t const m_nDownsamp;
@@ -179,16 +179,16 @@ namespace  Utils {
     };
     
     
-    inline void ZeroPadUpsampler::Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf)
+    inline void ZeroPadUpsampler::Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf)
         { ZeroPadUpsample(outBuf, inBuf, m_nUpsamp, m_bScale); }
     
-    inline void NearestUpsampler::Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf)
+    inline void NearestUpsampler::Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf)
         { NearestUpsample(outBuf, inBuf, m_nUpsamp); }
     
-    inline void NaiveDownsampler::Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf)
+    inline void NaiveDownsampler::Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf)
         { NaiveDownsample(outBuf, inBuf, m_nDownsamp, m_bScale); }
     
-    inline void AveragingDownsampler::Process(AudioSampleBuffer const& inBuf, AudioSampleBuffer& outBuf)
+    inline void AveragingDownsampler::Process(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf)
         { AveragingDownsample(outBuf, inBuf, m_nDownsamp, m_bScale); }
     
 }

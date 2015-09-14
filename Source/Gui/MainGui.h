@@ -31,6 +31,23 @@
 #include <typeinfo>
 
 namespace Gui {
+
+// Introjucer generated code assumes "using namespace juce"
+// Instead of including this line in a header file (bad!), just import specific types into GUI namespace.
+// Still try to only include MainGui.h when necessary, though.
+
+using Component = juce::Component;
+using SliderListener = juce::SliderListener;
+using String = juce::String;
+using Graphics = juce::Graphics;
+
+using Slider = juce::Slider;
+using Label = juce::Label;
+using GroupComponent = juce::GroupComponent;
+
+template<class T>
+using ScopedPointer = juce::ScopedPointer<T>;
+
 //[/Headers]
 
 

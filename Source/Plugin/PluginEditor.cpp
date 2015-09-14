@@ -12,6 +12,8 @@
 #include "PluginEditor.h"
 #include "Utils/Logger.h"
 
+using namespace juce;
+
 //==============================================================================
 MonosynthAudioProcessorEditor::MonosynthAudioProcessorEditor (MonosynthAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p), mainGui (p)

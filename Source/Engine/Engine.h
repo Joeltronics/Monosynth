@@ -21,9 +21,10 @@ public:
 	SynthEngine();
 	~SynthEngine();
 
-	void Process(AudioSampleBuffer& buffer, MidiBuffer& midiMessages);
 	void PrepareToPlay(double sampleRate, int samplesPerBlock);
 
+	void Process(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages);
+	
 private:
 	double m_sampleRate;
 

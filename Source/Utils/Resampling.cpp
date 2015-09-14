@@ -12,6 +12,8 @@
 
 #include "Debug.h"
 
+using namespace juce;
+
 // nChan std::min is fallback behavior if assert fails
 // (for release builds where assert may be defined as nothing)
 #define SETUP_UPSAMP(N) \

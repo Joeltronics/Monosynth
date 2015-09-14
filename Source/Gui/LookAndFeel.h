@@ -15,18 +15,22 @@
 
 namespace Gui {
 
-	class DefaultLookAndFeel : public LookAndFeel_V3 {
+	class DefaultLookAndFeel : public juce::LookAndFeel_V3 {
 
 	public:
 
 		DefaultLookAndFeel() {}
 		~DefaultLookAndFeel() {}
 
-		void drawRotarySlider(Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, Slider &) override;
+		virtual void drawRotarySlider(
+			juce::Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &)
+			override;
 
-		void drawLinearSlider(Graphics&, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, Slider::SliderStyle const, Slider& sl) override;
+		virtual void drawLinearSlider(
+			juce::Graphics&, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, juce::Slider::SliderStyle const, juce::Slider& sl)
+			override;
 
-		Typeface::Ptr getTypefaceForFont(const Font &) override;
+		juce::Typeface::Ptr getTypefaceForFont(const juce::Font &) override;
 	};
 
 	class TuningKnobLookAndFeel : public DefaultLookAndFeel {
@@ -34,7 +38,9 @@ namespace Gui {
 		TuningKnobLookAndFeel() {}
 		~TuningKnobLookAndFeel() {}
 
-		void drawRotarySlider(Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, Slider &) override;
+		void drawRotarySlider(
+			juce::Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &)
+			override;
 	};
 
 	class FreqKnobLookAndFeel : public DefaultLookAndFeel {

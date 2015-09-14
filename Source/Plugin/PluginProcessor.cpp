@@ -15,6 +15,8 @@
 
 #include "Params.h"
 
+using namespace juce;
+
 //==============================================================================
 MonosynthAudioProcessor::MonosynthAudioProcessor()
 {

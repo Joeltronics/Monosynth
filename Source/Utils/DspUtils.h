@@ -21,6 +21,8 @@
 #include "Debug.h"
 #include "Utils/Types.h"
 
+#include <cmath>
+
 #include <algorithm>
 
 namespace Utils

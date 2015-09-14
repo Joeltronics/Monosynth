@@ -18,14 +18,14 @@
 //==============================================================================
 /**
 */
-class MonosynthAudioProcessorEditor  : public AudioProcessorEditor
+class MonosynthAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     MonosynthAudioProcessorEditor (MonosynthAudioProcessor&);
     ~MonosynthAudioProcessorEditor();
 
     //==============================================================================
-    void paint (Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
 
 private:

@@ -17,6 +17,8 @@
 #include <cmath>
 #include <vector>
 
+using namespace juce;
+
 namespace Gui {
 
 	static inline int ToInt(float f) { return Utils::RoundTo<int>(f); }

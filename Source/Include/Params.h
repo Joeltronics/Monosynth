@@ -127,7 +127,7 @@ public:
 			1.0f / (getNumSteps() - 1.0f);
 	};
 
-	virtual void BindToSlider(Slider* pSlider) {
+	virtual void BindToSlider(juce::Slider* pSlider) {
 		DEBUG_ASSERT(pSlider);
 		pSlider->setRange(GetMin(), GetMax(), GetInterval());
 		pSlider->setValue(GetActualValue());
@@ -402,7 +402,7 @@ private:
 
 	std::vector<juce::String> const mk_enums;
 	size_t const mk_nVals;
-	Atomic<size_t> m_val;
+	juce::Atomic<size_t> m_val;
 };
 
 

@@ -22,6 +22,8 @@
 #include <math.h>
 #include "Utils/Logger.h"
 
+using namespace juce;
+
 //[/Headers]
 
 #include "MainGui.h"
