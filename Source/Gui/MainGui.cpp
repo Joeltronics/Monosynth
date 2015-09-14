@@ -179,7 +179,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label5->setColour (TextEditor::textColourId, Colours::black);
     label5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_o2_tune = new Slider ("new slider"));
+    addAndMakeVisible (sli_o2_tune = new Slider ("Osc 2 Coarse Tune"));
     sli_o2_tune->setRange (-7, 19, 1);
     sli_o2_tune->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_o2_tune->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1593,6 +1593,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
 	SetSliderIDs_();
 	BindParamsToSliders_();
+	SetSpecialKnobs_();
 
     //[/Constructor]
 }
@@ -2431,6 +2432,22 @@ void MainGui::BindParamsToSliders_() {
 	}
 }
 
+void MainGui::SetSpecialKnobs_() {
+	Component* pComp;
+
+	pComp = this->findChildWithID("Osc 2 Coarse Tune");
+	if (pComp)
+		pComp->setLookAndFeel(&tuningLookAndFeel);
+	else
+		LOG("Could not find component \"Osc 2 Coarse Tune\"");
+
+	pComp = this->findChildWithID("Filter Freq");
+	if (pComp)
+		pComp->setLookAndFeel(&freqLookAndFeel);
+	else
+		LOG("Could not find component \"Filter Freq\"");
+}
+
 } // namespace Gui
 
 //[/MiscUserCode]
@@ -2535,7 +2552,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Noise" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="12"/>
-  <SLIDER name="new slider" id="3d1bb66ede0105e3" memberName="sli_o2_tune"
+  <SLIDER name="Osc 2 Coarse Tune" id="3d1bb66ede0105e3" memberName="sli_o2_tune"
           virtualName="" explicitFocusOrder="0" pos="151 135 56 48" min="-7"
           max="19" int="1" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>

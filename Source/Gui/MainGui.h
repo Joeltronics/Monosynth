@@ -67,8 +67,12 @@ private:
 	// ...and private methods!
 	void SetSliderIDs_();
 	void BindParamsToSliders_();
+	void SetSpecialKnobs_();
 
 	DefaultLookAndFeel defaultLookAndFeel;
+	TuningKnobLookAndFeel tuningLookAndFeel;
+	FreqKnobLookAndFeel freqLookAndFeel;
+
 	MonosynthAudioProcessor& processor;
     //[/UserVariables]
 

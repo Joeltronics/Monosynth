@@ -27,9 +27,20 @@ namespace Gui {
 		void drawLinearSlider(Graphics&, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, Slider::SliderStyle const, Slider& sl) override;
 
 		Typeface::Ptr getTypefaceForFont(const Font &) override;
+	};
 
-	private:
+	class TuningKnobLookAndFeel : public DefaultLookAndFeel {
+	public:
+		TuningKnobLookAndFeel() {}
+		~TuningKnobLookAndFeel() {}
 
+		void drawRotarySlider(Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, Slider &) override;
+	};
+
+	class FreqKnobLookAndFeel : public DefaultLookAndFeel {
+	public:
+		FreqKnobLookAndFeel() {}
+		~FreqKnobLookAndFeel() {}
 	};
 
 } // namespace Gui

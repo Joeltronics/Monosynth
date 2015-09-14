@@ -97,7 +97,6 @@ namespace Gui {
 
 		// Values to set depending on knob size
 		std::vector<float> ticks;
-		std::vector<float> miniTicks;
 		Image img;
 		float r1, r2, tickWidth;
 
@@ -134,16 +133,6 @@ namespace Gui {
 				for (int32_t n = 0; n <= 10; ++n)
 					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, n/10.0f)));
 			}
-			else if (intMaxVal - intMinVal >= 20) {
-				// HACK FIXME: this is a way of detecting osc2 tuning knob - but a bad one
-				for (int32_t n = intMinVal; n <= intMaxVal; ++n)
-				{
-					if (n == -5 || n == 0 || n == 7 || n == 12 || n == 19)
-						ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
-					else
-						miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
-				}
-			}
 			else {
 
 				// Draw all ticks
@@ -171,11 +160,6 @@ namespace Gui {
 
 		// Draw ticks
 		g.setColour(Colours::whitesmoke);
-
-		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
-			float miniR = Utils::Interp<float>(r2, maxRadius, 2.0f/3.0f);
-			DrawTick_(g, cx, cy, r2, miniR, *it);
-		}
 
 		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
 			DrawTick_(g, cx, cy, r2, maxRadius, *it);
@@ -345,6 +329,80 @@ namespace Gui {
 		}
 
 		return Font::getDefaultTypefaceForFont(f);
+	}
+
+	void TuningKnobLookAndFeel::drawRotarySlider(
+		Graphics& g,
+		int const x, int const y,
+		int const w, int const h,
+		float const sliderPosProportional,
+		float rotaryStartAngle,
+		float rotaryEndAngle,
+		Slider& sl)
+	{
+		// Center coords
+		float cx = x + (float(w) / 2.0f);
+		float cy = y + (float(h) / 2.0f);
+
+		// Angles coming in seem to be clockwise starting at the top
+		// We want these in Cartesian coordinates (counterclockwise starting to the right)
+		rotaryStartAngle = float(M_PI_2) - rotaryStartAngle;
+		rotaryEndAngle = float(M_PI_2) - rotaryEndAngle;
+		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
+
+		// Mouseover
+		bool const bIsMouseOver = sl.isEnabled() && sl.isMouseOverOrDragging();
+
+		// TODO: use mouseover value
+
+		// Max Radius
+		int minDim = std::min(w, h);
+		float maxRadius = minDim / 2.0f;
+
+		// Values to set depending on knob size
+		
+		Image img = ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
+		float r2 = (cx - x) * 0.38f;
+		float r1 = r2 * 0.25f;
+		float tickWidth = 2.0f;
+		float miniTickR = Utils::Interp<float>(r2, maxRadius, 2.0f / 3.0f);
+
+		float minVal = float(sl.getMinimum());
+		float maxVal = float(sl.getMaximum());
+		//float range = maxVal - minVal;
+
+		int32_t intMinVal = int32_t(std::ceil(minVal));
+		int32_t intMaxVal = int32_t(std::floor(maxVal));
+		//int32_t intRange = intMaxVal - intMinVal;
+
+		std::vector<float> ticks;
+		std::vector<float> miniTicks;
+		for (int32_t n = intMinVal; n <= intMaxVal; ++n)
+		{
+			int nMod = n % 12;
+			if (nMod == 0 || nMod == 7 || nMod == -5)
+				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+			else
+				miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+		}
+
+		// Draw ticks
+		g.setColour(Colours::whitesmoke);
+
+		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
+			DrawTick_(g, cx, cy, r2, miniTickR, *it);
+		}
+
+		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
+			DrawTick_(g, cx, cy, r2, maxRadius, *it);
+		}
+
+		// Draw knob image
+		DrawImageCentered_(g, img, cx, cy, w, h);
+
+		// Draw knob indicator
+		g.setColour(Colours::whitesmoke);
+		DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
 	}
 
 } // namespace Gui
