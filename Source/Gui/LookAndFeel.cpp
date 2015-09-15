@@ -44,14 +44,24 @@ namespace Gui {
 		return float(M_PI_2) - angle;
 	}
 
-	static Image GetKnobImage_(bool bBigKnobStyle, uint32_t dim) {
+	static Image GetKnobImage_(bool bBigKnobStyle, uint32_t dim, float& r1, float& r2, float& r3) {
+		float rOuter = dim / 2.0f;
 		if (bBigKnobStyle) {
+			r3 = rOuter * 2.0f/3.0f;
+			r2 = rOuter * 0.38f;
+			r1 = r2 * 0.25f;
 			return ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
 		}
 		else if (dim >= 32) {
+			r3 = rOuter * 0.5f;
+			r2 = r3;
+			r1 = r2 * 0.25f;
 			return ImageCache::getFromMemory(BinaryData::knob32_png, BinaryData::knob32_pngSize);
 		}
 		else {
+			r3 = rOuter * 0.5f;
+			r2 = r3;
+			r1 = r2 * 0.25f;
 			return ImageCache::getFromMemory(BinaryData::knob24_png, BinaryData::knob24_pngSize);
 		}
 	}
@@ -92,7 +102,7 @@ namespace Gui {
 	// r3 = edge of knob (or slightly less)
 	static void DrawKnob_(
 		Graphics& g,
-		float const cx, float const cy, // center coords
+		int const x, int const y,
 		int const w, int const h,
 		float const sliderPosProportional,
 		float rotaryStartAngle, float rotaryEndAngle,
@@ -102,6 +112,10 @@ namespace Gui {
 		float r1, float r2, float r3,
 		float tickWidth)
 	{
+		// Center coords
+		float cx = x + (float(w) / 2.0f);
+		float cy = y + (float(h) / 2.0f);
+
 		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
 
 		// Mouseover
@@ -111,18 +125,18 @@ namespace Gui {
 
 		// Max Radius
 		int minDim = std::min(w, h);
-		float maxRadius = minDim / 2.0f;
-		float miniTickR = Utils::Interp<float>(r3, maxRadius, 0.5f);
+		float rOuter = minDim / 2.0f;
+		float rMiniTick = (r3 + rOuter) * 0.5f;
 
 		// Draw ticks
 		g.setColour(Colours::whitesmoke);
 
 		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
-			DrawTick_(g, cx, cy, r3, miniTickR, *it);
+			DrawTick_(g, cx, cy, r3, rMiniTick, *it);
 		}
 
 		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
-			DrawTick_(g, cx, cy, r3, maxRadius, *it);
+			DrawTick_(g, cx, cy, r3, rOuter, *it);
 		}
 
 		// Draw knob image
@@ -146,26 +160,16 @@ namespace Gui {
 		rotaryStartAngle = AngleToCartesian_(rotaryStartAngle);
 		rotaryEndAngle = AngleToCartesian_(rotaryEndAngle);
 
-		// Center coords
-		float cx = x + (float(w) / 2.0f);
-		float cy = y + (float(h) / 2.0f);
-
-		float minVal = float(sl.getMinimum());
-		float maxVal = float(sl.getMaximum());
-
-		int32_t intMinVal = int32_t(std::ceil(minVal));
-		int32_t intMaxVal = int32_t(std::floor(maxVal));
+		int32_t intMinVal = int32_t(std::ceil(sl.getMinimum()));
+		int32_t intMaxVal = int32_t(std::floor(sl.getMaximum()));
 
 		int minDim = std::min(w, h);
 		
-		Image knobImg = GetKnobImage_((minDim >= 48), minDim);
 		float r1, r2, r3, tickWidth;
+		Image knobImg = GetKnobImage_((minDim >= 48), minDim, r1, r2, r3);
 		std::vector<float> ticks;
 		
 		if (minDim >= 88) {
-			r3 = (cx - x) * 0.5f;
-			r2 = (cx - x) * 0.38f;
-			r1 = r2 * 0.25f;
 			tickWidth = 3.0f;
 
 			ticks.push_back(rotaryStartAngle);
@@ -173,47 +177,39 @@ namespace Gui {
 
 			// Draw all ticks
 			for (int32_t n = intMinVal; n <= intMaxVal; ++n)
-				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+				ticks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(n)));
 		}
 		else if (minDim >= 48) {
-			r3 = (cx - x) * 0.5f;
-			r2 = (cx - x) * 0.38f;
-			r1 = r2 * 0.25f;
 			tickWidth = 2.0f;
 
 			if (intMinVal == 0 && intMaxVal == 1 && sl.getInterval() == 0.0f) {
 				// Draw 10 ticks
 				for (int32_t n = 0; n <= 10; ++n)
-					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, n / 10.0f)));
+					ticks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(n/10.0)));
 			}
 			else {
 
 				// Draw all ticks
 				for (int32_t n = intMinVal; n <= intMaxVal; ++n)
-					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+					ticks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(n)));
 			}
 		}
 		else if (minDim >= 32) {
-			r3 = (cx - x) * 0.5f;
-			r2 = r3;
-			r1 = r2 * 0.25f;
 			tickWidth = 2.0f;
 
-			// Draw start & end, and center point if bipolar
+			// Draw start & end, and zero point if bipolar
 			ticks.push_back(rotaryStartAngle);
-			if (minVal < 0) ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, 0.0f)));
+			if (sl.getMinimum() < 0.0)
+				ticks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(0.0)));
 			ticks.push_back(rotaryEndAngle);
 		}
 		else {
-			r3 = (cx - x) * 0.5f;
-			r2 = r3;
-			r1 = r2 * 0.25f;
 			tickWidth = 1.0f;
 		}
 
 		DrawKnob_(
 			g,
-			cx, cy, w, h,
+			x, y, w, h,
 			sliderPosProportional, rotaryStartAngle, rotaryEndAngle,
 			sl,
 			knobImg,
@@ -235,45 +231,35 @@ namespace Gui {
 		rotaryStartAngle = AngleToCartesian_(rotaryStartAngle);
 		rotaryEndAngle = AngleToCartesian_(rotaryEndAngle);
 
-		// Center coords
-		float cx = x + (float(w) / 2.0f);
-		float cy = y + (float(h) / 2.0f);
-
 		int minDim = std::min(w, h);
-		Image knobImg = GetKnobImage_(true, minDim);
 
-		float r3 = (cx - x) * 0.5f;
-		float r2 = (cx - x) * 0.38f;
-		float r1 = r2 * 0.25f;
-		float tickWidth = 2.0f;
-
-		float minVal = float(sl.getMinimum());
-		float maxVal = float(sl.getMaximum());
-
-		int32_t intMinVal = int32_t(std::ceil(minVal));
-		int32_t intMaxVal = int32_t(std::floor(maxVal));
+		float r1, r2, r3;
+		Image knobImg = GetKnobImage_(true, minDim, r1, r2, r3);
+		
+		//int32_t intMinVal = int32_t(std::ceil(sl.getMinimum()));
+		//int32_t intMaxVal = int32_t(std::floor(sl.getMaximum()));
 
 		std::vector<float> ticks;
 		std::vector<float> miniTicks;
-		for (int32_t n = intMinVal; n <= intMaxVal; ++n)
+		for (int32_t n = std::ceil(sl.getMinimum()); n <= std::floor(sl.getMaximum()); ++n)
 		{
 			int nMod = n % 12;
 			if (nMod == 0 || nMod == 7 || nMod == -5)
-				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+				ticks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(n)));
 			else
-				miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+				miniTicks.push_back(Utils::Interp<float>(rotaryStartAngle, rotaryEndAngle, sl.valueToProportionOfLength(n)));
 		}
 
 		DrawKnob_(
 			g,
-			cx, cy, w, h,
+			x, y, w, h,
 			sliderPosProportional, rotaryStartAngle, rotaryEndAngle,
 			sl,
 			knobImg,
 			ticks,
 			miniTicks,
 			r1, r2, r3,
-			tickWidth);
+			2.0f /*tickWidth*/);
 	}
 	
 	// ***** Switch functions *****

@@ -1847,7 +1847,7 @@ void MainGui::resized()
     label3->setBounds (342, 104, 40, 16);
     label4->setBounds (374, 104, 39, 16);
     label5->setBounds (406, 104, 40, 16);
-    sli_o2_tune->setBounds (151, 135, 56, 48);
+    sli_o2_tune->setBounds (154, 135, 48, 48);
     label8->setBounds (151, 112, 56, 16);
     sli_filt_freq->setBounds (478, 32, 104, 88);
     label13->setBounds (472, 16, 120, 16);
@@ -2555,7 +2555,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="12"/>
   <SLIDER name="Osc 2 Coarse Tune" id="3d1bb66ede0105e3" memberName="sli_o2_tune"
-          virtualName="" explicitFocusOrder="0" pos="151 135 56 48" min="-7"
+          virtualName="" explicitFocusOrder="0" pos="154 135 48 48" min="-7"
           max="19" int="1" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="119ab5d1772f94fd" memberName="label8" virtualName=""
