@@ -272,7 +272,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label10 = new Label ("new label",
-                                            TRANS("Res")));
+                                            TRANS("Resonance")));
     label10->setFont (Font (15.00f, Font::plain));
     label10->setJustificationType (Justification::centred);
     label10->setEditable (false, false, false);
@@ -1578,6 +1578,51 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label123->setColour (TextEditor::textColourId, Colours::black);
     label123->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (label110 = new Label ("new label",
+                                             TRANS("20")));
+    label110->setFont (Font (12.00f, Font::plain));
+    label110->setJustificationType (Justification::centredRight);
+    label110->setEditable (false, false, false);
+    label110->setColour (Label::textColourId, Colours::white);
+    label110->setColour (TextEditor::textColourId, Colours::black);
+    label110->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label124 = new Label ("new label",
+                                             TRANS("20k")));
+    label124->setFont (Font (12.00f, Font::plain));
+    label124->setJustificationType (Justification::centredLeft);
+    label124->setEditable (false, false, false);
+    label124->setColour (Label::textColourId, Colours::white);
+    label124->setColour (TextEditor::textColourId, Colours::black);
+    label124->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label125 = new Label ("new label",
+                                             TRANS("100")));
+    label125->setFont (Font (12.00f, Font::plain));
+    label125->setJustificationType (Justification::centredRight);
+    label125->setEditable (false, false, false);
+    label125->setColour (Label::textColourId, Colours::white);
+    label125->setColour (TextEditor::textColourId, Colours::black);
+    label125->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label126 = new Label ("new label",
+                                             TRANS("1k")));
+    label126->setFont (Font (12.00f, Font::plain));
+    label126->setJustificationType (Justification::centredLeft);
+    label126->setEditable (false, false, false);
+    label126->setColour (Label::textColourId, Colours::white);
+    label126->setColour (TextEditor::textColourId, Colours::black);
+    label126->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label127 = new Label ("new label",
+                                             TRANS("10k")));
+    label127->setFont (Font (12.00f, Font::plain));
+    label127->setJustificationType (Justification::centredLeft);
+    label127->setEditable (false, false, false);
+    label127->setColour (Label::textColourId, Colours::white);
+    label127->setColour (TextEditor::textColourId, Colours::black);
+    label127->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
 
     //[UserPreSize]
 
@@ -1802,6 +1847,11 @@ MainGui::~MainGui()
     label76 = nullptr;
     label77 = nullptr;
     label123 = nullptr;
+    label110 = nullptr;
+    label124 = nullptr;
+    label125 = nullptr;
+    label126 = nullptr;
+    label127 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1829,7 +1879,7 @@ void MainGui::resized()
     groupComponent12->setBounds (628, 258, 216, 136);
     groupComponent3->setBounds (462, 0, 136, 296);
     groupComponent11->setBounds (147, 200, 112, 192);
-    swi_filt_poles->setBounds (538, 199, 40, 16);
+    swi_filt_poles->setBounds (538, 202, 40, 16);
     groupComponent4->setBounds (8, 98, 264, 102);
     groupComponent->setBounds (8, 0, 144, 96);
     sli_o1_sh->setBounds (48, 28, 56, 48);
@@ -1850,8 +1900,8 @@ void MainGui::resized()
     sli_o2_tune->setBounds (154, 135, 48, 48);
     label8->setBounds (151, 112, 56, 16);
     sli_filt_freq->setBounds (478, 32, 104, 88);
-    label13->setBounds (472, 16, 120, 16);
-    sli_filt_res->setBounds (470, 138, 55, 48);
+    label13->setBounds (472, 12, 120, 16);
+    sli_filt_res->setBounds (470, 139, 55, 48);
     sli_filt_env->setBounds (469, 239, 40, 32);
     sli_filt_lfo->setBounds (549, 239, 40, 32);
     sli_drive->setBounds (382, 144, 56, 48);
@@ -1860,7 +1910,7 @@ void MainGui::resized()
     sli_o2_finetune->setBounds (211, 136, 56, 48);
     label6->setBounds (219, 112, 40, 16);
     label9->setBounds (469, 223, 40, 16);
-    label10->setBounds (470, 120, 56, 16);
+    label10->setBounds (463, 123, 72, 16);
     label11->setBounds (366, 128, 88, 16);
     groupComponent6->setBounds (606, 115, 240, 112);
     label12->setBounds (614, 131, 56, 16);
@@ -1949,14 +1999,14 @@ void MainGui::resized()
     label69->setBounds (214, 231, 16, 8);
     label70->setBounds (172, 231, 16, 8);
     label71->setBounds (184, 219, 40, 8);
-    label23->setBounds (571, 202, 16, 10);
-    label72->setBounds (527, 202, 16, 10);
-    label73->setBounds (537, 189, 40, 10);
+    label23->setBounds (571, 205, 16, 10);
+    label72->setBounds (527, 205, 16, 10);
+    label73->setBounds (537, 192, 40, 10);
     label74->setBounds (581, 274, 16, 10);
     label75->setBounds (541, 274, 16, 10);
     swi_filt_lfosrc->setBounds (549, 270, 40, 16);
-    swi_filt_kb->setBounds (482, 199, 40, 16);
-    label78->setBounds (471, 189, 56, 10);
+    swi_filt_kb->setBounds (482, 202, 40, 16);
+    label78->setBounds (471, 192, 56, 10);
     slider41->setBounds (111, 179, 40, 16);
     label79->setBounds (143, 182, 32, 10);
     label80->setBounds (189, 242, 32, 10);
@@ -1992,10 +2042,10 @@ void MainGui::resized()
     label99->setBounds (769, 277, 40, 10);
     label100->setBounds (48, 112, 56, 14);
     label101->setBounds (48, 14, 56, 14);
-    label102->setBounds (550, 133, 32, 10);
-    label103->setBounds (550, 149, 32, 10);
-    label104->setBounds (550, 165, 32, 10);
-    swi_filt_model->setBounds (536, 125, 20, 56);
+    label102->setBounds (556, 136, 32, 10);
+    label103->setBounds (556, 152, 32, 10);
+    label104->setBounds (556, 168, 32, 10);
+    swi_filt_model->setBounds (542, 128, 20, 56);
     label105->setBounds (213, 251, 40, 16);
     label106->setBounds (160, 252, 48, 16);
     label107->setBounds (34, 308, 20, 16);
@@ -2021,7 +2071,12 @@ void MainGui::resized()
     swi_filt_lfosrc2->setBounds (757, 375, 40, 16);
     label76->setBounds (495, 266, 18, 10);
     label77->setBounds (468, 266, 15, 10);
-    label123->setBounds (174, 124, 26, 16);
+    label123->setBounds (172, 123, 26, 16);
+    label110->setBounds (483, 109, 25, 16);
+    label124->setBounds (552, 109, 36, 16);
+    label125->setBounds (461, 52, 31, 16);
+    label126->setBounds (541, 27, 27, 16);
+    label127->setBounds (567, 87, 36, 16);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -2483,7 +2538,7 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="147 200 112 192" outlinecol="66ffffff"
                   textcol="ffffffff" title="Pitch Mod"/>
   <SLIDER name="Filter Poles" id="9366d7598a118d48" memberName="swi_filt_poles"
-          virtualName="" explicitFocusOrder="0" pos="538 199 40 16" min="2"
+          virtualName="" explicitFocusOrder="0" pos="538 202 40 16" min="2"
           max="4" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <GROUPCOMPONENT name="new group" id="3c0dca09a310f370" memberName="groupComponent4"
@@ -2568,12 +2623,12 @@ BEGIN_JUCER_METADATA
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="688179c92518c30a" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="472 16 120 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="472 12 120 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Frequency" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="Filter Resonance" id="4e819dd141ad6884" memberName="sli_filt_res"
-          virtualName="" explicitFocusOrder="0" pos="470 138 55 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="470 139 55 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filter Env Amount" id="bf7ee7b16a44fd46" memberName="sli_filt_env"
@@ -2611,8 +2666,8 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="eebe59db1e731703" memberName="label10" virtualName=""
-         explicitFocusOrder="0" pos="470 120 56 16" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Res" editableSingleClick="0"
+         explicitFocusOrder="0" pos="463 123 72 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Resonance" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="b942b70f43767d13" memberName="label11" virtualName=""
@@ -3020,17 +3075,17 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="678fadab46d9a69e" memberName="label23" virtualName=""
-         explicitFocusOrder="0" pos="571 202 16 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="571 205 16 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="4" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="f1ef89eff647ee05" memberName="label72" virtualName=""
-         explicitFocusOrder="0" pos="527 202 16 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="527 205 16 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="51b1c7c05b9444c0" memberName="label73" virtualName=""
-         explicitFocusOrder="0" pos="537 189 40 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="537 192 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Poles" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -3049,11 +3104,11 @@ BEGIN_JUCER_METADATA
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Filter KB Track" id="3aff6026701ab6fc" memberName="swi_filt_kb"
-          virtualName="" explicitFocusOrder="0" pos="482 199 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="482 202 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="c953c9b10bd66654" memberName="label78" virtualName=""
-         explicitFocusOrder="0" pos="471 189 56 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="471 192 56 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="KB Track" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -3224,22 +3279,22 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="15969bfb36970447" memberName="label102"
-         virtualName="" explicitFocusOrder="0" pos="550 133 32 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="556 136 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="IC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="8b6c9c4747b5fba" memberName="label103" virtualName=""
-         explicitFocusOrder="0" pos="550 149 32 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="556 152 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Trans" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="ad5da72b946168f2" memberName="label104"
-         virtualName="" explicitFocusOrder="0" pos="550 165 32 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="556 168 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Diode" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="Filter Model" id="a8d08e23f18a2b9e" memberName="swi_filt_model"
-          virtualName="" explicitFocusOrder="0" pos="536 125 20 56" min="0"
+          virtualName="" explicitFocusOrder="0" pos="542 128 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="4f9e29710ea85f8b" memberName="label105"
@@ -3363,10 +3418,35 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="32cdf22a180cf81d" memberName="label123"
-         virtualName="" explicitFocusOrder="0" pos="174 124 26 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="172 123 26 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+7" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
+  <LABEL name="new label" id="b19745e0adb6724e" memberName="label110"
+         virtualName="" explicitFocusOrder="0" pos="483 109 25 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="20" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="34"/>
+  <LABEL name="new label" id="944c47c83029687f" memberName="label124"
+         virtualName="" explicitFocusOrder="0" pos="552 109 36 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="20k" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="33"/>
+  <LABEL name="new label" id="62201f3d19ea01a7" memberName="label125"
+         virtualName="" explicitFocusOrder="0" pos="461 52 31 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="100" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="34"/>
+  <LABEL name="new label" id="2aad2e8c6ad2f227" memberName="label126"
+         virtualName="" explicitFocusOrder="0" pos="541 27 27 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="1k" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="33"/>
+  <LABEL name="new label" id="a896398c2324146" memberName="label127" virtualName=""
+         explicitFocusOrder="0" pos="567 87 36 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="10k" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -291,6 +291,11 @@ private:
     ScopedPointer<Label> label76;
     ScopedPointer<Label> label77;
     ScopedPointer<Label> label123;
+    ScopedPointer<Label> label110;
+    ScopedPointer<Label> label124;
+    ScopedPointer<Label> label125;
+    ScopedPointer<Label> label126;
+    ScopedPointer<Label> label127;
 
 
     //==============================================================================

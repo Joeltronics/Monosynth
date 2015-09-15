@@ -247,6 +247,57 @@ namespace Gui {
 			knobImg, ticks, miniTicks,
 			r1, r2, r3, tickWidth);
 	}
+
+	void FreqKnobLookAndFeel::drawRotarySlider(
+		Graphics& g,
+		int const x, int const y,
+		int const w, int const h,
+		float const sliderPosProportional,
+		float rotaryStartAngle,
+		float rotaryEndAngle,
+		Slider& sl)
+	{
+		int minDim = std::min(w, h);
+
+		float r1, r2, r3;
+		Image knobImg = GetKnobImage_(true, minDim, r1, r2, r3);
+		float tickWidth = 3.0f;
+
+		std::vector<float> ticks;
+		std::vector<float> miniTicks;
+		
+		// This is more hard-coded than I want in the end
+		// Especially since this assumes specific knob range & mapping
+		// Also, I'm not even sure if I like the log ticks in the first place
+		// But it'll do for now
+		
+		// Sub Phatty/37 doesn't actually use a true log knob - it's more sensitive in the middle
+
+		std::vector<uint32_t> tickFreqs = { 20,   30,   40,   50,   60,   70,   80,   90,
+		                             100,   200,  300,  400,  500,  600,  700,  800,  900,
+		                             1000,  2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
+		                             10000, 20000 };
+
+		float startLog = logf(float(tickFreqs.front()));
+		float endLog = logf(float(tickFreqs.back()));
+
+		for (auto it = tickFreqs.begin(); it != tickFreqs.end(); ++it)
+		{
+
+			float logVal = Utils::ReverseInterp<float>(startLog, endLog, logf(float(*it)));
+			
+			if (*it == tickFreqs.front() || *it == tickFreqs.back() || *it == 100 || *it == 1000 || *it == 10000)
+				ticks.push_back(logVal);
+			else
+				miniTicks.push_back(logVal);
+		}
+
+		DrawKnob_(
+			g, x, y, w, h,
+			sliderPosProportional, rotaryStartAngle, rotaryEndAngle, sl,
+			knobImg, ticks, miniTicks,
+			r1, r2, r3, tickWidth);
+	}
 	
 	// ***** Switch functions *****
 

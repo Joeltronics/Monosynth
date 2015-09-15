@@ -47,6 +47,10 @@ namespace Gui {
 	public:
 		FreqKnobLookAndFeel() {}
 		~FreqKnobLookAndFeel() {}
+
+		void drawRotarySlider(
+			juce::Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &)
+			override;
 	};
 
 } // namespace Gui
