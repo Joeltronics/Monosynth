@@ -40,6 +40,22 @@ namespace Gui {
 			width);
 	}
 
+	static inline float AngleToCartesian_(float angle) {
+		return float(M_PI_2) - angle;
+	}
+
+	static Image GetKnobImage_(bool bBigKnobStyle, uint32_t dim) {
+		if (bBigKnobStyle) {
+			return ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
+		}
+		else if (dim >= 32) {
+			return ImageCache::getFromMemory(BinaryData::knob32_png, BinaryData::knob32_pngSize);
+		}
+		else {
+			return ImageCache::getFromMemory(BinaryData::knob24_png, BinaryData::knob24_pngSize);
+		}
+	}
+
 	static void DrawImageCentered_(
 		Graphics& g,
 		Image const& img,
@@ -69,6 +85,54 @@ namespace Gui {
 		g.drawImage(img, outx, outy, outw, outh, 0, 0, imgw, imgh);
 	}
 
+	// ***** Knob drawing functions *****
+
+	// r1 = start of knob indicator
+	// r2 = end of knob indicator
+	// r3 = edge of knob (or slightly less)
+	static void DrawKnob_(
+		Graphics& g,
+		float const cx, float const cy, // center coords
+		int const w, int const h,
+		float const sliderPosProportional,
+		float rotaryStartAngle, float rotaryEndAngle,
+		Slider& sl,
+		Image& knobImg,
+		std::vector<float> ticks, std::vector<float> miniTicks,
+		float r1, float r2, float r3,
+		float tickWidth)
+	{
+		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
+
+		// Mouseover
+		bool const bIsMouseOver = sl.isEnabled() && sl.isMouseOverOrDragging();
+
+		// TODO: use mouseover value
+
+		// Max Radius
+		int minDim = std::min(w, h);
+		float maxRadius = minDim / 2.0f;
+		float miniTickR = Utils::Interp<float>(r3, maxRadius, 0.5f);
+
+		// Draw ticks
+		g.setColour(Colours::whitesmoke);
+
+		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
+			DrawTick_(g, cx, cy, r3, miniTickR, *it);
+		}
+
+		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
+			DrawTick_(g, cx, cy, r3, maxRadius, *it);
+		}
+
+		// Draw knob image
+		DrawImageCentered_(g, knobImg, cx, cy, w, h);
+
+		// Draw knob indicator
+		g.setColour(Colours::whitesmoke);
+		DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
+	}
+
 	void DefaultLookAndFeel::drawRotarySlider(
 		Graphics& g,
 		int const x, int const y,
@@ -78,40 +142,28 @@ namespace Gui {
 		float rotaryEndAngle,
 		Slider& sl)
 	{
+		// Angles passed in are clockwise - convert to cartesian
+		rotaryStartAngle = AngleToCartesian_(rotaryStartAngle);
+		rotaryEndAngle = AngleToCartesian_(rotaryEndAngle);
+
 		// Center coords
 		float cx = x + (float(w) / 2.0f);
 		float cy = y + (float(h) / 2.0f);
 
-		// Angles coming in seem to be clockwise starting at the top
-		// We want these in Cartesian coordinates (counterclockwise starting to the right)
-		rotaryStartAngle = float(M_PI_2) - rotaryStartAngle;
-		rotaryEndAngle = float(M_PI_2) - rotaryEndAngle;
-		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
-		
-		// Mouseover
-		bool const bIsMouseOver = sl.isEnabled() && sl.isMouseOverOrDragging();
-
-		// TODO: use mouseover value
-
-		// Max Radius
-		int minDim = std::min(w, h);
-		float maxRadius = minDim / 2.0f;
-
-		// Values to set depending on knob size
-		std::vector<float> ticks;
-		Image img;
-		float r1, r2, tickWidth;
-
 		float minVal = float(sl.getMinimum());
 		float maxVal = float(sl.getMaximum());
-		//float range = maxVal - minVal;
 
 		int32_t intMinVal = int32_t(std::ceil(minVal));
 		int32_t intMaxVal = int32_t(std::floor(maxVal));
-		//int32_t intRange = intMaxVal - intMinVal;
 
+		int minDim = std::min(w, h);
+		
+		Image knobImg = GetKnobImage_((minDim >= 48), minDim);
+		float r1, r2, r3, tickWidth;
+		std::vector<float> ticks;
+		
 		if (minDim >= 88) {
-			img = ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
+			r3 = (cx - x) * 0.5f;
 			r2 = (cx - x) * 0.38f;
 			r1 = r2 * 0.25f;
 			tickWidth = 3.0f;
@@ -124,16 +176,15 @@ namespace Gui {
 				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
 		}
 		else if (minDim >= 48) {
-			img = ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
+			r3 = (cx - x) * 0.5f;
 			r2 = (cx - x) * 0.38f;
 			r1 = r2 * 0.25f;
 			tickWidth = 2.0f;
 
-			
 			if (intMinVal == 0 && intMaxVal == 1 && sl.getInterval() == 0.0f) {
 				// Draw 10 ticks
 				for (int32_t n = 0; n <= 10; ++n)
-					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, n/10.0f)));
+					ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, n / 10.0f)));
 			}
 			else {
 
@@ -143,8 +194,8 @@ namespace Gui {
 			}
 		}
 		else if (minDim >= 32) {
-			img = ImageCache::getFromMemory(BinaryData::knob32_png, BinaryData::knob32_pngSize);
-			r2 = (cx - x) * 0.5f;
+			r3 = (cx - x) * 0.5f;
+			r2 = r3;
 			r1 = r2 * 0.25f;
 			tickWidth = 2.0f;
 
@@ -154,27 +205,79 @@ namespace Gui {
 			ticks.push_back(rotaryEndAngle);
 		}
 		else {
-			img = ImageCache::getFromMemory(BinaryData::knob24_png, BinaryData::knob24_pngSize);
-			r2 = (cx - x) * 0.5f;
+			r3 = (cx - x) * 0.5f;
+			r2 = r3;
 			r1 = r2 * 0.25f;
 			tickWidth = 1.0f;
 		}
 
-		// Draw ticks
-		g.setColour(Colours::whitesmoke);
+		DrawKnob_(
+			g,
+			cx, cy, w, h,
+			sliderPosProportional, rotaryStartAngle, rotaryEndAngle,
+			sl,
+			knobImg,
+			ticks,
+			std::vector<float>() /*miniTicks*/,
+			r1, r2, r3,
+			tickWidth);
+	}
 
-		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
-			DrawTick_(g, cx, cy, r2, maxRadius, *it);
+	void TuningKnobLookAndFeel::drawRotarySlider(
+		Graphics& g,
+		int const x, int const y,
+		int const w, int const h,
+		float const sliderPosProportional,
+		float rotaryStartAngle,
+		float rotaryEndAngle,
+		Slider& sl)
+	{
+		rotaryStartAngle = AngleToCartesian_(rotaryStartAngle);
+		rotaryEndAngle = AngleToCartesian_(rotaryEndAngle);
+
+		// Center coords
+		float cx = x + (float(w) / 2.0f);
+		float cy = y + (float(h) / 2.0f);
+
+		int minDim = std::min(w, h);
+		Image knobImg = GetKnobImage_(true, minDim);
+
+		float r3 = (cx - x) * 0.5f;
+		float r2 = (cx - x) * 0.38f;
+		float r1 = r2 * 0.25f;
+		float tickWidth = 2.0f;
+
+		float minVal = float(sl.getMinimum());
+		float maxVal = float(sl.getMaximum());
+
+		int32_t intMinVal = int32_t(std::ceil(minVal));
+		int32_t intMaxVal = int32_t(std::floor(maxVal));
+
+		std::vector<float> ticks;
+		std::vector<float> miniTicks;
+		for (int32_t n = intMinVal; n <= intMaxVal; ++n)
+		{
+			int nMod = n % 12;
+			if (nMod == 0 || nMod == 7 || nMod == -5)
+				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
+			else
+				miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
 		}
 
-		// Draw knob image
-		DrawImageCentered_(g, img, cx, cy, w, h);
-
-		// Draw knob indicator
-		g.setColour(Colours::whitesmoke);
-		DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
+		DrawKnob_(
+			g,
+			cx, cy, w, h,
+			sliderPosProportional, rotaryStartAngle, rotaryEndAngle,
+			sl,
+			knobImg,
+			ticks,
+			miniTicks,
+			r1, r2, r3,
+			tickWidth);
 	}
 	
+	// ***** Switch functions *****
+
 	// returns true if successful
 	static bool DrawToggle_(
 		Graphics& g,
@@ -311,6 +414,8 @@ namespace Gui {
 		DrawImageCentered_(g, img, float(imgx), float(imgy), w, h);
 	}
 
+	// ***** Other LookAndFeel overrides *****
+
 	Typeface::Ptr DefaultLookAndFeel::getTypefaceForFont(const Font &f) {
 
 		/*
@@ -331,80 +436,6 @@ namespace Gui {
 		}
 
 		return Font::getDefaultTypefaceForFont(f);
-	}
-
-	void TuningKnobLookAndFeel::drawRotarySlider(
-		Graphics& g,
-		int const x, int const y,
-		int const w, int const h,
-		float const sliderPosProportional,
-		float rotaryStartAngle,
-		float rotaryEndAngle,
-		Slider& sl)
-	{
-		// Center coords
-		float cx = x + (float(w) / 2.0f);
-		float cy = y + (float(h) / 2.0f);
-
-		// Angles coming in seem to be clockwise starting at the top
-		// We want these in Cartesian coordinates (counterclockwise starting to the right)
-		rotaryStartAngle = float(M_PI_2) - rotaryStartAngle;
-		rotaryEndAngle = float(M_PI_2) - rotaryEndAngle;
-		float angle = Utils::Interp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
-
-		// Mouseover
-		bool const bIsMouseOver = sl.isEnabled() && sl.isMouseOverOrDragging();
-
-		// TODO: use mouseover value
-
-		// Max Radius
-		int minDim = std::min(w, h);
-		float maxRadius = minDim / 2.0f;
-
-		// Values to set depending on knob size
-		
-		Image img = ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
-		float r2 = (cx - x) * 0.38f;
-		float r1 = r2 * 0.25f;
-		float tickWidth = 2.0f;
-		float miniTickR = Utils::Interp<float>(r2, maxRadius, 2.0f / 3.0f);
-
-		float minVal = float(sl.getMinimum());
-		float maxVal = float(sl.getMaximum());
-		//float range = maxVal - minVal;
-
-		int32_t intMinVal = int32_t(std::ceil(minVal));
-		int32_t intMaxVal = int32_t(std::floor(maxVal));
-		//int32_t intRange = intMaxVal - intMinVal;
-
-		std::vector<float> ticks;
-		std::vector<float> miniTicks;
-		for (int32_t n = intMinVal; n <= intMaxVal; ++n)
-		{
-			int nMod = n % 12;
-			if (nMod == 0 || nMod == 7 || nMod == -5)
-				ticks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
-			else
-				miniTicks.push_back(Utils::Interp(rotaryStartAngle, rotaryEndAngle, Utils::ReverseInterp(minVal, maxVal, float(n))));
-		}
-
-		// Draw ticks
-		g.setColour(Colours::whitesmoke);
-
-		for (std::vector<float>::const_iterator it = miniTicks.begin(); it != miniTicks.end(); ++it) {
-			DrawTick_(g, cx, cy, r2, miniTickR, *it);
-		}
-
-		for (std::vector<float>::const_iterator it = ticks.begin(); it != ticks.end(); ++it) {
-			DrawTick_(g, cx, cy, r2, maxRadius, *it);
-		}
-
-		// Draw knob image
-		DrawImageCentered_(g, img, cx, cy, w, h);
-
-		// Draw knob indicator
-		g.setColour(Colours::whitesmoke);
-		DrawTick_(g, cx, cy, r1, r2, angle, tickWidth);
 	}
 
 } // namespace Gui
