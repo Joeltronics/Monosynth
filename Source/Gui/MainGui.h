@@ -172,7 +172,6 @@ private:
     ScopedPointer<Label> label24;
     ScopedPointer<Slider> sli_fenv_vel;
     ScopedPointer<Slider> sli_aenv_vel;
-    ScopedPointer<Label> label36;
     ScopedPointer<Slider> sli_lfo1_sh;
     ScopedPointer<Label> label27;
     ScopedPointer<Label> label33;
@@ -296,6 +295,7 @@ private:
     ScopedPointer<Label> label125;
     ScopedPointer<Label> label126;
     ScopedPointer<Label> label127;
+    ScopedPointer<Label> label36;
 
 
     //==============================================================================
