@@ -30,12 +30,17 @@ The main goal is for this to be super accessible and easy to get a good sound ou
 
 ## Status
 
-It doesn't work yet - there's no sound engine. The GUI controls are pretty much all there, but none of them are hooked up yet, and the GUI is currently really quite messy and possibly a bit confusing; I plan on fixing this eventually.
+It doesn't work yet - there's no sound engine. The GUI controls are pretty much all there and ready to be hooked up, but there's no engine to hook them up to.
+
+Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - possibly even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to get the sound engine working.
+
+Here is what the GUI looks like at the moment: *(click to enlarge)*  
+[<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)
 
 ## Plugin features planned for 1.0
 
 * Fully automatable parameters - so if you want an extra LFO, you could always use automation to act as one
-* "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like "mods" to a hardware synth.
+* "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like "mods" to a hardware synth. They're currently on the front panel, but they won't be staying there forever.
 
 ## Features not planned for 1.0
 
