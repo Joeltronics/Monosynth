@@ -34,13 +34,13 @@ Tin EventBufToBuf(
 	/*in*/ eventBuf_t<Tin> const& inBuf,
 	/*in*/ size_t length,
 	/*out*/ Tout* outBuf,
-	std::function<Tout(Tin)> mappingFunc = [](auto x) {return static_cast<Tout>(x);})
+	std::function<Tout(Tin)> mappingFunc = [](Tin x) -> Tout {return static_cast<Tout>(x);})
 {
 	Tin inVal = startVal;
 	Tout outVal = mappingFunc(inVal);
 
 	size_t n = 0;
-	for (eventBuf_t<Tin>::const_iterator it = inBuf.begin(); it != inBuf.end(); ++it)
+	for (typename eventBuf_t<Tin>::const_iterator it = inBuf.begin(); it != inBuf.end(); ++it)
 	{
 		size_t eventTime = it->time;
 		while (n < eventTime) outBuf[n++] = outVal;

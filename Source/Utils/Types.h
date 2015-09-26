@@ -38,7 +38,7 @@ namespace Utils {
 		// If values given are backward, will swap them
 		Range_t(std::array<T, 2> arr) :
 			min((arr[0] <= arr[1]) ? arr[0] : arr[1]),
-			min((arr[0] <= arr[1]) ? arr[1] : arr[0])
+			max((arr[0] <= arr[1]) ? arr[1] : arr[0])
 		{}
 
 		Range_t(Range_t const& r) :
@@ -50,7 +50,7 @@ namespace Utils {
 		friend bool operator!=(Range_t<T> const& lhs, Range_t<T> const& rhs);
 
 		bool IsInRange(T val) const {
-			return (val <= max && m_val >= m_min)
+			return (val <= max && val >= min);
 		}
 
 		T Clip(T val) const {

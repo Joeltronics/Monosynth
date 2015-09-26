@@ -162,9 +162,9 @@ public:
 			bool bIsInverted = false,
 			bool bIsAutomatable = true,
 			bool bIsMeta = false) :
+        Param(paramName, unitName, defaultParamValue, bIsInverted, bIsAutomatable, bIsMeta),
 		m_val(defaultParamValue),
-		m_range(paramRange),
-		Param(paramName, unitName, defaultParamValue, bIsInverted, bIsAutomatable, bIsMeta)
+		m_range(paramRange)
 	{}
 
 	// AudioProcessorParameter functions
@@ -225,9 +225,9 @@ public:
 		bool bIsInverted = false,
 		bool bIsAutomatable = true,
 		bool bIsMeta = false) :
+		Param(paramName, unitName, ActualToHost_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta),
 		m_val(defaultParamValue),
-		m_range(paramRange),
-		Param(paramName, unitName, ActualToHost_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
+		m_range(paramRange)
 	{}
 
 	// AudioProcessorParameter functions
@@ -289,9 +289,9 @@ public:
 			bool bIsInverted = false,
 			bool bIsAutomatable = true,
 			bool bIsMeta = false) :
+		Param(paramName, unitName, float(bDefaultParamValue), bIsInverted, bIsAutomatable, bIsMeta),
 		m_val(size_t(bDefaultParamValue)),
-		mk_names(valueNames),
-		Param(paramName, unitName, float(bDefaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
+		mk_names(valueNames)
 	{}
 
 	// AudioProcessorParameter functions
@@ -342,10 +342,10 @@ public:
 			bool bIsInverted = false,
 			bool bIsAutomatable = true,
 			bool bIsMeta = false) :
+		Param(paramName, unitName, IntToFloatVal_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta),
 		mk_enums(paramEnumValueNames),
 		mk_nVals(paramEnumValueNames.size()),
-		m_val(defaultParamValue),
-		Param(paramName, unitName, IntToFloatVal_(defaultParamValue), bIsInverted, bIsAutomatable, bIsMeta)
+		m_val(defaultParamValue)
 	{}
 
 	// AudioProcessorParameter functions

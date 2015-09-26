@@ -62,11 +62,11 @@ void OnePole::ProcessHighpass(float* buf /*inout*/, uint32_t nSamp) {
 	ProcessBufHighpass_(buf, buf, nSamp);
 }
 
-void OnePole::ProcessLowpass(float const* inBuf, float* outBuf /*out*/, uint32_t nSamp) {
+void OnePole::ProcessLowpass(sample_t const* inBuf, sample_t* outBuf /*out*/, size_t nSamp) {
 	ProcessBufLowpass_(inBuf, outBuf, nSamp);
 }
 
-void OnePole::ProcessHighpass(float const* inBuf, float* outBuf /*out*/, uint32_t nSamp) {
+void OnePole::ProcessHighpass(sample_t const* inBuf, sample_t* outBuf /*out*/, size_t nSamp) {
 	ProcessBufHighpass_(inBuf, outBuf, nSamp);
 }
     
@@ -93,14 +93,14 @@ http://reanimator-web.appspot.com/articles/simdiir
 http://dsp.stackexchange.com/questions/1075/how-can-i-vectorize-the-computations-for-a-first-order-recursive-filter
 */
 
-void OnePole::ProcessBufLowpass_(float const* inBuf, float* outBuf, uint32_t nSamp) {
+void OnePole::ProcessBufLowpass_(sample_t const* inBuf, sample_t* outBuf, size_t nSamp) {
 	for (uint32_t n=0; n < nSamp; n++) {
 		z1 = b0*double(inBuf[n]) + a1*z1;
 		outBuf[n] = float(z1);
 	}
 }
 
-void OnePole::ProcessBufHighpass_(float const* inBuf, float* outBuf, uint32_t nSamp) {
+void OnePole::ProcessBufHighpass_(sample_t const* inBuf, sample_t* outBuf, size_t nSamp) {
 	// Process as lowpass, but into temporary buffer
 	// No need to copy; just allocate
 	Buffer lowpassBuf(nSamp);
