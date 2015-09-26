@@ -34,7 +34,7 @@ Tin EventBufToBuf(
 	/*in*/ eventBuf_t<Tin> const& inBuf,
 	/*in*/ size_t length,
 	/*out*/ Tout* outBuf,
-	std::function<Tout(Tin)> mappingFunc = [](Tin x) -> Tout {return static_cast<Tout>(x);})
+	std::function<Tout(Tin)> mappingFunc)
 {
 	Tin inVal = startVal;
 	Tout outVal = mappingFunc(inVal);
@@ -51,6 +51,20 @@ Tin EventBufToBuf(
 	while (n < length) outBuf[n++] = outVal;
 
 	return inVal;
+}
+
+template<typename Tin, typename Tout>
+inline Tin EventBufToBuf(
+	/*in*/ Tin startVal,
+	/*in*/ eventBuf_t<Tin> const& inBuf,
+	/*in*/ size_t length,
+	/*out*/ Tout* outBuf)
+{
+	std::function<Tout(Tin)> mappingFunc = [](Tin x) -> Tout {
+		return static_cast<Tout>(x);
+	};
+
+	return EventBufToBuf(startVal, inBuf, length, outBuf, mappingFunc);
 }
 
 } // namespace Utils
