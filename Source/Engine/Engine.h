@@ -15,6 +15,7 @@
 
 #include "Types.h"
 #include "MidiProcessor.h"
+#include "PitchProcessor.h"
 
 class SynthEngine {
 public:
@@ -26,9 +27,18 @@ public:
 	void Process(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages);
 	
 private:
+	void ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, Buffer& FreqPhaseBuf2);
+
 	double m_sampleRate;
+    
+   	uint8_t m_lastNote;
+	gateEvent_t m_lastGate;
+    
+	float m_prevPhaseOsc1;
+	float m_prevPhaseOsc2;
 
 	Engine::MidiProcessor m_midiProc;
+	Engine::PitchProcessor m_pitchProc;
 };
 
 

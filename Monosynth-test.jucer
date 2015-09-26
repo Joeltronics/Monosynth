@@ -5,6 +5,29 @@
               jucerVersion="3.2.0">
   <MAINGROUP id="MOlkSB" name="Monosynth-test">
     <GROUP id="{9833A35D-E2FA-D93F-DA49-BFD7590A00B4}" name="Source">
+      <GROUP id="{066BDEE6-DDB7-516D-772F-810B26698E9C}" name="Include">
+        <FILE id="lJA3jW" name="Params.h" compile="0" resource="0" file="Source/Include/Params.h"/>
+        <FILE id="B2teu0" name="Types.h" compile="0" resource="0" file="Source/Include/Types.h"/>
+      </GROUP>
+      <GROUP id="{6264D7E2-3BA0-53D2-2125-7F7904BBA979}" name="Engine">
+        <GROUP id="{898E51B8-EE78-A81D-8F41-68FC60F81C54}" name="Test">
+          <FILE id="u80l9F" name="PitchProcessorUnitTest.cpp" compile="1" resource="0"
+                file="Source/Engine/Test/PitchProcessorUnitTest.cpp"/>
+          <FILE id="lINP4g" name="PitchProcessorUnitTest.h" compile="0" resource="0"
+                file="Source/Engine/Test/PitchProcessorUnitTest.h"/>
+          <FILE id="GdK47o" name="MidiProcessorUnitTest.cpp" compile="1" resource="0"
+                file="Source/Engine/Test/MidiProcessorUnitTest.cpp"/>
+          <FILE id="uTyNDJ" name="MidiProcessorUnitTest.h" compile="0" resource="0"
+                file="Source/Engine/Test/MidiProcessorUnitTest.h"/>
+        </GROUP>
+        <FILE id="kWRxUp" name="MidiProcessor.cpp" compile="1" resource="0"
+              file="Source/Engine/MidiProcessor.cpp"/>
+        <FILE id="TF60A0" name="MidiProcessor.h" compile="0" resource="0" file="Source/Engine/MidiProcessor.h"/>
+        <FILE id="AsjYAt" name="PitchProcessor.cpp" compile="1" resource="0"
+              file="Source/Engine/PitchProcessor.cpp"/>
+        <FILE id="B7YblA" name="PitchProcessor.h" compile="0" resource="0"
+              file="Source/Engine/PitchProcessor.h"/>
+      </GROUP>
       <GROUP id="{5020C285-D097-74F8-1820-88BC0BA3BBA7}" name="Test">
         <FILE id="ksssdH" name="Main.cpp" compile="1" resource="0" file="Source/Test/Main.cpp"/>
         <FILE id="OftYER" name="UnitTestRunner.h" compile="0" resource="0"

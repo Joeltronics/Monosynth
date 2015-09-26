@@ -315,6 +315,39 @@ namespace Utils
 		for (size_t n = 0; n < nSamp; ++n) sum += p[n];
 		return sqrtf(sum / float(nSamp));
 	}
+
+	/*
+	 * Accumulates frequency buffer (i.e. converts frequency to phase)
+	 * Returns starting phase of next buffer
+	 */
+	static float FreqToPhase(Buffer& buf, float phase) {
+		
+		float prevFreq;
+		float* p = buf.Get();
+
+		for (size_t n = 0; n < buf.GetLength(); ++n) {
+			prevFreq = p[n];
+			p[n] = phase;
+			phase += prevFreq;
+			phase = fmod(phase, 1.0f);
+		}
+
+		return phase;
+	}
+
+	/*
+	 * Determines starting phase of next buffer without modifying buffer
+	 */
+	static float FreqToPhaseNoProcess(Buffer const& buf, float phase) {
+
+		float const* p = buf.GetConst();
+
+		for (size_t n = 0; n < buf.GetLength(); ++n) {
+			phase += p[n];
+		}
+
+		return fmod(phase, 1.0f);
+	}
 }
 
 #endif  // DSPUTILS_H_INCLUDED

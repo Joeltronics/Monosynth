@@ -41,6 +41,10 @@
         <FILE id="G2sUNX" name="Types.h" compile="0" resource="0" file="Source/Include/Types.h"/>
       </GROUP>
       <GROUP id="{64F1D4CF-5AF8-19D8-7E95-D0070893A8A6}" name="Engine">
+        <FILE id="nkmpC4" name="PitchProcessor.cpp" compile="1" resource="0"
+              file="Source/Engine/PitchProcessor.cpp"/>
+        <FILE id="X7cdDG" name="PitchProcessor.h" compile="0" resource="0"
+              file="Source/Engine/PitchProcessor.h"/>
         <FILE id="WTSyHd" name="MidiProcessor.cpp" compile="1" resource="0"
               file="Source/Engine/MidiProcessor.cpp"/>
         <FILE id="Hko8wF" name="MidiProcessor.h" compile="0" resource="0" file="Source/Engine/MidiProcessor.h"/>
