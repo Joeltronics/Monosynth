@@ -97,10 +97,10 @@
     <VS2015 targetFolder="Builds/VisualStudio2015">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"
+                       isDebug="1" optimisation="1" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source&#10;$(ProjectDir)../../Source/Include"
                        defines="_DEBUG=1, _CLI=1, _USE_MATH_DEFINES"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source"
+                       isDebug="0" optimisation="3" targetName="Monosynth-test" headerPath="$(ProjectDir)../../Source&#10;$(ProjectDir)../../Source/Include"
                        defines="_CLI=1, _USE_MATH_DEFINES"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

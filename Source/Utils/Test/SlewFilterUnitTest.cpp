@@ -16,6 +16,8 @@
 
 #include <vector>
 
+using namespace Utils;
+
 namespace Test {
 
     SlewFilterUnitTest::SlewFilterUnitTest()
@@ -36,7 +38,7 @@ namespace Test {
             outVals = { 0.25f, 0.50f, 0.75f, 1.00f, 1.00f };
             
             for (size_t n = 0; n < inVals.size(); ++n) {
-                samp = filter.Process(inVals[n], 0);
+                samp = filter.Process(inVals[n]);
                 if (!Utils::ApproxEqual(samp, outVals[n]))
                     std::cout << "Input: " << inVals[n] << ", expect: " << outVals[n] << ", actual: " << samp << std::endl;
                 expect(Utils::ApproxEqual(samp, outVals[n]));
@@ -49,7 +51,7 @@ namespace Test {
             outVals = { 0.3f, 0.6f, 0.9f, 1.0f, 1.0f };
 
             for (size_t n = 0; n < inVals.size(); ++n) {
-                samp = filter.Process(inVals[n], 0);
+                samp = filter.Process(inVals[n]);
                 if (!Utils::ApproxEqual(samp, outVals[n]))
                     std::cout << "Input: " << inVals[n] << ", expect: " << outVals[n] << ", actual: " << samp << std::endl;
                 expect(Utils::ApproxEqual(samp, outVals[n]));
@@ -61,7 +63,7 @@ namespace Test {
             outVals = { -0.3f, -0.6f, -0.3f, 0.0f, 0.3f, 0.5f };
             
             for (size_t n = 0; n < inVals.size(); ++n) {
-                samp = filter.Process(inVals[n], 0);
+                samp = filter.Process(inVals[n]);
                 if (!Utils::ApproxEqual(samp, outVals[n]))
                     std::cout << "Input: " << inVals[n] << ", expect: " << outVals[n] << ", actual: " << samp << std::endl;
                 expect(Utils::ApproxEqual(samp, outVals[n]));
@@ -83,7 +85,7 @@ namespace Test {
             
             for (size_t n = 0; n < inVals.size(); ++n) {
                 filter.SetRate(rate[n]);
-                samp = filter.Process(inVals[n], 0);
+                samp = filter.Process(inVals[n]);
                 if (!Utils::ApproxEqual(samp, outVals[n]))
                     std::cout << "Input: "<< inVals[n] <<", rate: "<< rate[n] <<", expect: "<< outVals[n] <<", actual: "<< samp << std::endl;
                 expect(Utils::ApproxEqual(samp, outVals[n]));

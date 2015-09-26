@@ -19,6 +19,8 @@
 #include <iostream>
 #include <fstream>
 
+using namespace Utils;
+
 namespace Test {
 
 std::string const k_basicTestFilename("OnePole_BasicTest.csv");

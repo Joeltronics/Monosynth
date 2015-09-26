@@ -14,6 +14,8 @@
 
 #include "Utils/Utils.h"
 
+using namespace Utils;
+
 namespace Test {
 
 ResamplingUnitTest::ResamplingUnitTest()

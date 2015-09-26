@@ -190,7 +190,7 @@ namespace Test {
             expect(Utils::ApproxEqual(Utils::dBtoAmp(33.979f), 50.0f, 0.01f));
 
             expect(Utils::ApproxEqual(Utils::AmpTodB(1.0f), Utils::PowTodB(1.0f)));
-            expect(Utils::ApproxEqual(Utils::AmpTodB(M_SQRT1_2), Utils::PowTodB(0.5f)));
+            expect(Utils::ApproxEqual(Utils::AmpTodB(float(M_SQRT1_2)), Utils::PowTodB(0.5f)));
             
             expect(Utils::ApproxEqual(Utils::dBtoAmp(15.0f), Utils::dBtoPow(7.5f)));
         }
@@ -384,6 +384,32 @@ namespace Test {
                 expect(bEq);
             }
         }
+
+		beginTest("Testing FreqToPhase");
+		{
+			size_t const nSamp = 5;
+			
+			float ph = 0.3f;
+
+			float inVals[nSamp] = { 0.35f, 0.1f, 0.4f, 0.01f, 0.2f };
+			
+			float const expFinal1 = 0.36f;
+			
+			float const expVals2[nSamp] = { 0.36f, 0.71f, 0.81f, 0.21f, 0.22f };
+			float const expFinal2 = 0.42f;
+			
+			Utils::Buffer buf(inVals, nSamp);
+			ph = FreqToPhaseNoProcess(buf, ph);
+
+			expect(Utils::ApproxEqual(ph, expFinal1));
+
+			ph = Utils::FreqToPhase(buf, ph);
+
+			for (size_t n = 0; n < nSamp; ++n)
+				expect(Utils::ApproxEqual(buf[n], expVals2[n]));
+
+			expect(Utils::ApproxEqual(ph, expFinal2));
+		}
     }
 
 } // namespace Test
