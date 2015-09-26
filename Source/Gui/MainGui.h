@@ -38,12 +38,14 @@ namespace Gui {
 
 using Component = juce::Component;
 using SliderListener = juce::SliderListener;
+using ComboBoxListener = juce::ComboBoxListener;
 using String = juce::String;
 using Graphics = juce::Graphics;
 
 using Slider = juce::Slider;
 using Label = juce::Label;
 using GroupComponent = juce::GroupComponent;
+using ComboBox = juce::ComboBox;
 
 template<class T>
 using ScopedPointer = juce::ScopedPointer<T>;
@@ -61,7 +63,8 @@ using ScopedPointer = juce::ScopedPointer<T>;
                                                                     //[/Comments]
 */
 class MainGui  : public Component,
-                 public SliderListener
+                 public SliderListener,
+                 public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -75,6 +78,7 @@ public:
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
 
 
@@ -94,17 +98,20 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> groupComponent13;
-    ScopedPointer<GroupComponent> groupComponent12;
-    ScopedPointer<GroupComponent> groupComponent3;
     ScopedPointer<GroupComponent> groupComponent11;
+    ScopedPointer<Label> label70;
+    ScopedPointer<Label> label80;
+    ScopedPointer<Slider> swi_pitchmod_dest;
+    ScopedPointer<GroupComponent> groupComponent2;
+    ScopedPointer<GroupComponent> groupComponent6;
+    ScopedPointer<GroupComponent> groupComponent13;
+    ScopedPointer<GroupComponent> groupComponent3;
     ScopedPointer<Slider> swi_filt_poles;
     ScopedPointer<GroupComponent> groupComponent4;
     ScopedPointer<GroupComponent> groupComponent;
     ScopedPointer<Slider> sli_o1_sh;
     ScopedPointer<GroupComponent> groupComponent8;
     ScopedPointer<GroupComponent> groupComponent5;
-    ScopedPointer<GroupComponent> groupComponent2;
     ScopedPointer<Slider> sli_o2_sh;
     ScopedPointer<Slider> sli_mix_o1;
     ScopedPointer<Slider> sli_mix_o2;
@@ -131,13 +138,8 @@ private:
     ScopedPointer<Label> label9;
     ScopedPointer<Label> label10;
     ScopedPointer<Label> label11;
-    ScopedPointer<GroupComponent> groupComponent6;
-    ScopedPointer<Label> label12;
-    ScopedPointer<Label> label14;
-    ScopedPointer<Label> label15;
-    ScopedPointer<Label> label16;
     ScopedPointer<GroupComponent> groupComponent7;
-    ScopedPointer<Slider> sli_fenv_att;
+    ScopedPointer<Slider> sli_env_att;
     ScopedPointer<Label> label17;
     ScopedPointer<Label> label18;
     ScopedPointer<Label> label19;
@@ -160,34 +162,16 @@ private:
     ScopedPointer<Label> label30;
     ScopedPointer<Slider> sli_filt_vel;
     ScopedPointer<Slider> sli_filt_resbass;
-    ScopedPointer<Slider> sli_fenv_dec;
-    ScopedPointer<Slider> sli_fenv_sus;
-    ScopedPointer<Slider> sli_fenv_rel;
-    ScopedPointer<Slider> sli_aenv_att;
-    ScopedPointer<Slider> sli_aenv_dec;
-    ScopedPointer<Slider> sli_aenv_sus;
-    ScopedPointer<Slider> sli_aenv_rel;
+    ScopedPointer<Slider> sli_env_dec;
+    ScopedPointer<Slider> sli_env_sus;
+    ScopedPointer<Slider> sli_env_rel;
     ScopedPointer<Slider> sli_pitchmod_scale;
     ScopedPointer<Label> label32;
     ScopedPointer<Label> label24;
-    ScopedPointer<Slider> sli_fenv_vel;
+    ScopedPointer<Slider> sli_env_vel;
     ScopedPointer<Slider> sli_aenv_vel;
-    ScopedPointer<Slider> sli_lfo1_sh;
-    ScopedPointer<Label> label27;
-    ScopedPointer<Label> label33;
-    ScopedPointer<Label> label34;
-    ScopedPointer<Label> label35;
-    ScopedPointer<Label> label37;
-    ScopedPointer<Label> label38;
-    ScopedPointer<Slider> sli_lfo2_sh;
-    ScopedPointer<Label> label39;
-    ScopedPointer<Label> label40;
-    ScopedPointer<Label> label41;
-    ScopedPointer<Label> label42;
-    ScopedPointer<Label> label43;
-    ScopedPointer<Label> label44;
-    ScopedPointer<Label> label45;
-    ScopedPointer<Label> label46;
+    ScopedPointer<Slider> swi_lfo1_sh;
+    ScopedPointer<Slider> swi_lfo2_sh;
     ScopedPointer<Label> label48;
     ScopedPointer<Label> label49;
     ScopedPointer<Slider> sli_lfo1_freq;
@@ -210,13 +194,7 @@ private:
     ScopedPointer<Label> label64;
     ScopedPointer<Label> label65;
     ScopedPointer<Slider> swi_glide;
-    ScopedPointer<Label> label66;
-    ScopedPointer<Label> label67;
-    ScopedPointer<Slider> swi_pitch_dest;
-    ScopedPointer<Label> label68;
     ScopedPointer<Label> label69;
-    ScopedPointer<Label> label70;
-    ScopedPointer<Label> label71;
     ScopedPointer<Label> label23;
     ScopedPointer<Label> label72;
     ScopedPointer<Label> label73;
@@ -227,8 +205,6 @@ private:
     ScopedPointer<Label> label78;
     ScopedPointer<Slider> slider41;
     ScopedPointer<Label> label79;
-    ScopedPointer<Label> label80;
-    ScopedPointer<Label> label81;
     ScopedPointer<Label> label82;
     ScopedPointer<Label> label83;
     ScopedPointer<Slider> swi_o2_lfosrc;
@@ -236,19 +212,14 @@ private:
     ScopedPointer<Label> label85;
     ScopedPointer<Label> label86;
     ScopedPointer<Slider> swi_o2_sh;
-    ScopedPointer<Slider> swi_pitchmod_dest;
     ScopedPointer<Label> label87;
     ScopedPointer<Label> label88;
-    ScopedPointer<Label> label89;
     ScopedPointer<Label> label90;
     ScopedPointer<Slider> swi_pitchmod_scale;
     ScopedPointer<Label> label91;
     ScopedPointer<Label> label92;
     ScopedPointer<Label> label93;
     ScopedPointer<Slider> swi_pitchmod_src;
-    ScopedPointer<Label> label94;
-    ScopedPointer<Label> label95;
-    ScopedPointer<Slider> swi_lfo2_att;
     ScopedPointer<Label> label96;
     ScopedPointer<Slider> swi_lfo1_kb;
     ScopedPointer<Label> label50;
@@ -260,10 +231,6 @@ private:
     ScopedPointer<Label> label99;
     ScopedPointer<Label> label100;
     ScopedPointer<Label> label101;
-    ScopedPointer<Label> label102;
-    ScopedPointer<Label> label103;
-    ScopedPointer<Label> label104;
-    ScopedPointer<Slider> swi_filt_model;
     ScopedPointer<Label> label105;
     ScopedPointer<Label> label106;
     ScopedPointer<Label> label107;
@@ -296,6 +263,40 @@ private:
     ScopedPointer<Label> label126;
     ScopedPointer<Label> label127;
     ScopedPointer<Label> label36;
+    ScopedPointer<ComboBox> comboBox;
+    ScopedPointer<Label> label12;
+    ScopedPointer<Label> label14;
+    ScopedPointer<Label> label15;
+    ScopedPointer<Label> label16;
+    ScopedPointer<Slider> swi_pitchmod_src2;
+    ScopedPointer<Label> label104;
+    ScopedPointer<Slider> swi_lfo1_kb2;
+    ScopedPointer<Label> label37;
+    ScopedPointer<Label> label43;
+    ScopedPointer<Label> label46;
+    ScopedPointer<Slider> swi_pitchmod_src3;
+    ScopedPointer<Label> label66;
+    ScopedPointer<Label> label40;
+    ScopedPointer<Label> label41;
+    ScopedPointer<Label> label44;
+    ScopedPointer<Label> label68;
+    ScopedPointer<Label> label81;
+    ScopedPointer<Slider> sli_lfo2_sh;
+    ScopedPointer<Label> label89;
+    ScopedPointer<Label> label27;
+    ScopedPointer<Label> label33;
+    ScopedPointer<Slider> sli_lfo1_sh;
+    ScopedPointer<Label> label34;
+    ScopedPointer<Label> label35;
+    ScopedPointer<Slider> swi_lfo2_att;
+    ScopedPointer<Label> label38;
+    ScopedPointer<Label> label39;
+    ScopedPointer<Slider> swi_pitchmod_scale2;
+    ScopedPointer<Label> label42;
+    ScopedPointer<Label> label45;
+    ScopedPointer<Label> label67;
+    ScopedPointer<Label> label94;
+    ScopedPointer<Slider> swi_pitchmod_dest2;
 
 
     //==============================================================================

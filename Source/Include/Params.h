@@ -66,9 +66,9 @@ addParameter(new FloatParam("Amp Env Sustain", 1.0f)); \
 addParameter(new FloatParam("Amp Env Release")); \
 addParameter(new FloatParam("Amp Env Velocity")); \
 addParameter(new FloatParam("LFO 1 Freq", 0.5f)); \
-addParameter(new EnumParam("LFO 1 Shape", {"Squ","Tri","Sin","+Saw","-Saw","S&H"})); \
+addParameter(new EnumParam("LFO 1 Shape", {"Tri/Squ","Saw","S&H"})); \
 addParameter(new FloatParam("LFO 2 Freq", 0.5f)); \
-addParameter(new EnumParam("LFO 2 Shape", {"Squ","Tri","Sin","+Saw","-Saw","S&H","+Env","-Env"})); \
+addParameter(new EnumParam("LFO 2 Shape", {"Tri/Squ","Saw","S&H","Env"})); \
 addParameter(new FloatParam("LFO 2 Attack")); \
 SETUP_DEBUG_PARAMS()
 
