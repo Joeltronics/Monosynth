@@ -40,15 +40,8 @@ namespace Test {
 		expect(bEq); \
 	} while(0)
 
-#define EXPGT(A, B) \
-	do { \
-		bool bEq = (A >= B); \
-		if (!bEq) { \
-			std::cout << "Expected: " << #A << " >= " << #B << std::endl;\
-			std::cout << "Actual: " << A << " < " << B << std::endl;\
-		} \
-		expect(bEq); \
-	} while(0)
+#define EXPRANGE(n1, n2, val, T) \
+	for (size_t n = n1; n < n2; ++n) { EXPEQT(buf[n], val, T); }
 
 static bool Eq(float a, float b) {
 	bool bEq = Utils::ApproxEqual(a, b);
@@ -78,36 +71,35 @@ void EnvelopeUnitTest::runTest() {
 
 		env.Process(gateEvents, buf);
 
-		for (size_t n = 0; n < 50; ++n) { EXPEQ(buf[n], 0.0f); }
-		for (size_t n = 50; n < 72; ++n) { EXPEQT(buf[n], 1.0f, 1.0f); }
-		for (size_t n = 72; n < 100; ++n) { EXPEQT(buf[n], 1.0f, 0.4f); }
-		for (size_t n = 100; n < 200; ++n) { EXPEQ(buf[n], 1.0f); }
-		for (size_t n = 200; n < 222; ++n) { EXPEQT(buf[n], 0.0f, 1.0f); }
-		for (size_t n = 222; n < 250; ++n) { EXPEQT(buf[n], 0.0f, 0.4f); }
-		for (size_t n = 250; n < 300; ++n) { EXPEQ(buf[n], 0.0f); }
-		for (size_t n = 300; n < 322; ++n) { EXPEQT(buf[n], 1.0f, 1.0f); }
-		for (size_t n = 322; n < 350; ++n) { EXPEQT(buf[322], 1.0f, 0.4f); }
-		for (size_t n = 350; n < nSamp; ++n) { EXPEQ(buf[350], 1.0f); }
+		EXPRANGE(0, 49, 0.0f, 0.0001f);
+		EXPRANGE(50, 71, 1.0f, 1.0f);
+		EXPRANGE(72, 99, 1.0f, 0.4f);
+		EXPRANGE(100, 199, 1.0f, 0.0001f);
+		EXPRANGE(200, 221, 0.0f, 1.0f);
+		EXPRANGE(222, 249, 0.0f, 0.4f);
+		EXPRANGE(250, 299, 0.0f, 0.0001f);
+		EXPRANGE(300, 321, 1.0f, 1.0f);
+		EXPRANGE(322, 349, 1.0f, 0.4f);
+		EXPRANGE(350, nSamp-1, 1.0f, 0.0001f);
 
 		gateEvents.clear();
 		env.Process(gateEvents, buf);
 
-		for (size_t n = 0; n < nSamp; ++n) { EXPEQ(buf[n], 1.0f); }
+		EXPRANGE(0, nSamp-1, 1.0f, 0.0001f);
 
 		gateEvents.clear();
 		gateEvents.push_back(Utils::timedEvent_t<gateEvent_t>(50, gateEvent_off));
-
 		env.Process(gateEvents, buf);
 
-		for (size_t n = 0; n < 50; ++n) { EXPEQ(buf[n], 1.0f); }
-		for (size_t n = 50; n < 72; ++n) { EXPEQT(buf[n], 0.0f, 1.0f); }
-		for (size_t n = 72; n < 100; ++n) { EXPEQT(buf[n], 0.0f, 0.4f); }
-		for (size_t n = 100; n < nSamp; ++n) { EXPEQ(buf[100], 0.0f); }
+		EXPRANGE(0, 49, 1.0f, 0.0001f);
+		EXPRANGE(50, 71, 0.0f, 1.0f);
+		EXPRANGE(72, 99, 0.0f, 0.4f);
+		EXPRANGE(100, nSamp-1, 0.0f, 0.0001f);
 
 		gateEvents.clear();
 		env.Process(gateEvents, buf);
 
-		for (size_t n = 0; n < nSamp; ++n) { EXPEQ(buf[n], 0.0f); }
+		EXPRANGE(0, nSamp-1, 0.0f, 0.0001f);
 	}
 }
 
