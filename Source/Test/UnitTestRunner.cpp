@@ -18,13 +18,18 @@
 #include "Utils/Test/ResamplingUnitTest.h"
 #include "Utils/Test/OnePoleTest.h"
 
+#include "Engine/Test/EnvelopeUnitTest.h"
+
 namespace Test {
     
-    // Unit tests
+    // Utils unit tests
     static DspUtilsUnitTest s_dspUtilsTest;
     static SlewFilterUnitTest s_slewFilterTest;
     static ResamplingUnitTest s_resampTest;
     
+	// Engine unit tests
+	static EnvelopeUnitTest s_envTest;
+
     // Performance tests
     static OnePoleTest s_onePoleTest;
     

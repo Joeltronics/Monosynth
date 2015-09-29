@@ -29,7 +29,7 @@ OnePole::OnePole() :
 	Clear();
 }
     
-OnePole::OnePole(float wc) {
+OnePole::OnePole(double wc) {
 	Clear();
 	CalcCoeffs_(wc);
 }
@@ -131,7 +131,7 @@ void OnePole::ProcessBufHighpass_(Buffer const& inBuf /*in*/, Buffer& outBuf /*o
     
 // ***** Other public functions *****
 
-void OnePole::SetFreq(float wc) { CalcCoeffs_(wc); }
+void OnePole::SetFreq(double wc) { CalcCoeffs_(wc); }
 
 void OnePole::Clear() { z1 = 0.0; }
 

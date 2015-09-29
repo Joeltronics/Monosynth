@@ -58,19 +58,22 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// 2a. Envelopes
 
-	// TODO: proper envelopes (at the moment this is just a trivial instant on/off envelope)
-	
-	Buffer ampEnv(nSamp);
-	//Buffer filtEnv(nSamp);
+	// TODO: only need to process this if enabled for VCA
+	// (though I guess it doesn't use that much processor or memory, so maybe it's fine)
+	Buffer ampEnvBuf(nSamp);
+	m_ampEnv.Process(gateEvents, ampEnvBuf);
 
-	m_lastGate = Utils::EventBufToBuf<gateEvent_t, float>(m_lastGate, gateEvents, nSamp, ampEnv.Get(), [](gateEvent_t ev) { return (ev == gateEvent_off ? 0.0f : 1.0f); });
+#if 0 // TODO
+	Buffer filtEnvBuf(nSamp);
+	m_filtEnv.Process(gateEvents, filtEnvBuf);
+#endif
 
 	// 2b. LFO
 
-	//Buffer lfo1(nSamp);
-	//Buffer lfo2(nSamp);
-	
-	// TODO
+#if 0 // TODO
+	Buffer lfo1(nSamp);
+	Buffer lfo2(nSamp);
+#endif
 
 	// 3. Pitch
 
@@ -104,9 +107,10 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// TODO
 
 	// 7. VCA
+	
 	// TODO: proper implementation
 
-	buf *= ampEnv;
+	buf *= ampEnvBuf;
 
 
 	// If not mono, copy channel 0 to all others

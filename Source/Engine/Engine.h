@@ -16,6 +16,7 @@
 #include "Types.h"
 #include "MidiProcessor.h"
 #include "PitchProcessor.h"
+#include "Envelope.h"
 
 class SynthEngine {
 public:
@@ -32,13 +33,15 @@ private:
 	double m_sampleRate;
     
    	uint8_t m_lastNote;
-	gateEvent_t m_lastGate;
     
 	float m_prevPhaseOsc1;
 	float m_prevPhaseOsc2;
 
 	Engine::MidiProcessor m_midiProc;
 	Engine::PitchProcessor m_pitchProc;
+
+	Engine::GateEnvelope m_ampEnv;
+	Engine::AdsrEnvelope m_filtEnv;
 };
 
 

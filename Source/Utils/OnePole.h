@@ -25,7 +25,7 @@ class OnePole
     
 public:
     OnePole();
-    OnePole(float wc);
+    OnePole(double wc);
 
     // Processing functions:
     
@@ -47,8 +47,7 @@ public:
     
     // Other public functions:
     
-    void SetFreq(float wc);
-    void SetNumChannels(uint8_t nChan); // will call Clear() if changed
+    void SetFreq(double wc);
     void Clear();
     
 protected:
