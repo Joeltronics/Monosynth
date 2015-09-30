@@ -60,4 +60,12 @@ struct midiNote_t {
 	}
 };
 
+static bool operator==(midiNote_t const& lhs, midiNote_t const& rhs) {
+	return (lhs.n == rhs.n && lhs.v == rhs.v);
+}
+
+static bool operator!=(midiNote_t const& lhs, midiNote_t const& rhs) {
+	return !(lhs == rhs);
+}
+
 #endif  // TYPES_H_INCLUDED

@@ -71,6 +71,8 @@ private:
 
 	NoteQueue m_noteQueue;
 
+	midiNote_t m_prevNote;
+
 	bool m_bRetrig;
 	bool m_bSusPedal;
 	std::vector<uint8_t> m_susNotes; /// Notes that have been noteOff'ed but are still being played because of sustain pedal

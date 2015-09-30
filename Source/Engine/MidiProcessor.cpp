@@ -73,8 +73,14 @@ namespace Detail {
 	{
 		bool bNewNoteOn = (newNote.v > 0);
 		gateEvents.push_back(timedEvent_t<gateEvent_t>(time, GetGateEvent_(bPrevNoteOn, bNewNoteOn, bRetrig)));
-		noteEvents.push_back(timedEvent_t<uint8_t>(time, newNote.n));
-		velEvents.push_back(timedEvent_t<uint8_t>(time, newNote.v));
+
+		// If it's a note-off, we don't push an event to note/vel so that the note won't sound weird during
+		// the envelope decay
+		if (bNewNoteOn) {
+			noteEvents.push_back(timedEvent_t<uint8_t>(time, newNote.n));
+			velEvents.push_back(timedEvent_t<uint8_t>(time, newNote.v));
+		}
+
 		return bNewNoteOn;
 	}
 }
@@ -128,7 +134,12 @@ void MidiProcessor::Process(
 					m_noteQueue.Add(newNote) :
 					m_noteQueue.Remove(newNote));
 
-				bPrevNoteOn = Detail::PushNewNote_(time, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
+				// If the current note didn't change, do nothing
+				// (e.g. if NoteOff on a note that isn't the current note, don't retrigger)
+				if (currNote != m_prevNote)
+					bPrevNoteOn = Detail::PushNewNote_(time, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
+
+				m_prevNote = currNote;
 
 				if (m_bSusPedal) {
 					// erase-remove idiom

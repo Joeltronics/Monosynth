@@ -26,6 +26,16 @@ struct timedEvent_t {
 		time(time_), ev(ev_) {}
 };
 
+template<typename T>
+static bool operator==(timedEvent_t<T> const& lhs, timedEvent_t<T> const& rhs) {
+	return (lhs.time == rhs.time && lhs.ev == rhs.ev);
+}
+
+template<typename T>
+static bool operator!=(timedEvent_t<T> const& lhs, timedEvent_t<T> const& rhs) {
+	return !(lhs == rhs);
+}
+
 template<class T> using eventBuf_t = std::vector<timedEvent_t<T>>;
 
 template<typename Tin, typename Tout>

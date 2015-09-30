@@ -19,6 +19,7 @@
 #include "Utils/Test/OnePoleTest.h"
 
 #include "Engine/Test/EnvelopeUnitTest.h"
+#include "Engine/Test/MidiProcessorUnitTest.h"
 
 namespace Test {
     
@@ -29,6 +30,7 @@ namespace Test {
     
 	// Engine unit tests
 	static EnvelopeUnitTest s_envTest;
+	static MidiProcessorUnitTest s_midiProcTest;
 
     // Performance tests
     static OnePoleTest s_onePoleTest;

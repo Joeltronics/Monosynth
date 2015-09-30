@@ -12,7 +12,17 @@
 #define MIDIPROCESSORUNITTEST_H_INCLUDED
 
 
+#include "JuceHeader.h"
 
+namespace Test {
+
+	class MidiProcessorUnitTest : public juce::UnitTest {
+	public:
+		MidiProcessorUnitTest();
+		void runTest();
+	};
+
+}
 
 
 #endif  // MIDIPROCESSORUNITTEST_H_INCLUDED
