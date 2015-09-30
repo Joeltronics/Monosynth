@@ -14,9 +14,6 @@
 
 using namespace juce;
 
-//using MidiMessage = juce::MidiMessage;
-//using MidiBuffer = juce::MidiBuffer;
-
 namespace Test {
 
 MidiProcessorUnitTest::MidiProcessorUnitTest()

@@ -41,6 +41,11 @@ namespace Utils
 	static inline float  dBtoPow(float  dB)  {return powf(10.0f, dB/10.0f);}
 	static inline double dBtoPow(double dB)  {return pow (10.0 , dB/10.0 );}
 
+	template <typename T, typename Tin>
+	static inline T PitchToFreqHz(Tin pitch) {
+		return T(440.0 * pow(2.0, (double(pitch) - 69.0) / 12.0));
+	}
+
     static inline void CopyAudioSampleBuffer(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf) {
         size_t const nChan = inBuf.getNumChannels();
         size_t const nSamp = inBuf.getNumSamples();

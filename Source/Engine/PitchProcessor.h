@@ -15,6 +15,8 @@
 
 #include <cmath>
 
+#include "Utils/DspUtils.h"
+
 namespace Engine {
 
 class PitchProcessor {
@@ -25,13 +27,8 @@ public:
 
 	void PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) { m_sampleRate = sampleRate; }
 
-	template <typename T, typename Tin>
-	inline T PitchToFreqHz(Tin pitch) {
-		return T(440.0 * pow(2.0, (double(pitch) - 69.0) / 12.0));
-	}
-
 	inline float PitchToNormFreq(float pitch) {
-		return float(PitchToFreqHz<double>(pitch) / m_sampleRate);
+		return float(Utils::PitchToFreqHz<double>(pitch) / m_sampleRate);
 	}
 	
 	void PitchToFreq(Buffer& buf);

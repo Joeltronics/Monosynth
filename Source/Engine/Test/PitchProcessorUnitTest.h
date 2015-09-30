@@ -12,7 +12,17 @@
 #define PITCHPROCESSORUNITTEST_H_INCLUDED
 
 
+#include "JuceHeader.h"
 
+namespace Test {
+
+	class PitchProcessorUnitTest : public juce::UnitTest {
+	public:
+		PitchProcessorUnitTest();
+		void runTest();
+	};
+
+}
 
 
 #endif  // PITCHPROCESSORUNITTEST_H_INCLUDED
