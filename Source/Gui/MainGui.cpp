@@ -43,6 +43,11 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 	LOG("Constructing MainGui");
     //[/Constructor_pre]
 
+    addAndMakeVisible (groupComponent12 = new GroupComponent ("new group",
+                                                              TRANS("Effects")));
+    groupComponent12->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent12->setColour (GroupComponent::textColourId, Colours::white);
+
     addAndMakeVisible (groupComponent11 = new GroupComponent ("new group",
                                                               TRANS("Pitch Mod")));
     groupComponent11->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
@@ -306,7 +311,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (label11 = new Label ("new label",
                                             TRANS("Overdrive")));
-    label11->setFont (Font (12.00f, Font::plain));
+    label11->setFont (Font (15.00f, Font::plain));
     label11->setJustificationType (Justification::centred);
     label11->setEditable (false, false, false);
     label11->setColour (Label::textColourId, Colours::white);
@@ -483,12 +488,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     sli_filt_vel->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_vel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_filt_vel->addListener (this);
-
-    addAndMakeVisible (sli_filt_resbass = new Slider ("new slider"));
-    sli_filt_resbass->setRange (0, 10, 0);
-    sli_filt_resbass->setSliderStyle (Slider::RotaryVerticalDrag);
-    sli_filt_resbass->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    sli_filt_resbass->addListener (this);
 
     addAndMakeVisible (sli_env_dec = new Slider ("Env Decay"));
     sli_env_dec->setRange (0, 10, 0);
@@ -992,39 +991,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label47->setColour (TextEditor::textColourId, Colours::black);
     label47->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label97 = new Label ("new label",
-                                            TRANS("White")));
-    label97->setFont (Font (12.00f, Font::plain));
-    label97->setJustificationType (Justification::centredLeft);
-    label97->setEditable (false, false, false);
-    label97->setColour (Label::textColourId, Colours::white);
-    label97->setColour (TextEditor::textColourId, Colours::black);
-    label97->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label98 = new Label ("new label",
-                                            TRANS("Pink")));
-    label98->setFont (Font (12.00f, Font::plain));
-    label98->setJustificationType (Justification::centredRight);
-    label98->setEditable (false, false, false);
-    label98->setColour (Label::textColourId, Colours::white);
-    label98->setColour (TextEditor::textColourId, Colours::black);
-    label98->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_noise_color = new Slider ("new slider"));
-    swi_noise_color->setRange (0, 1, 1);
-    swi_noise_color->setSliderStyle (Slider::LinearHorizontal);
-    swi_noise_color->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_noise_color->addListener (this);
-
-    addAndMakeVisible (label99 = new Label ("new label",
-                                            TRANS("Noise")));
-    label99->setFont (Font (12.00f, Font::plain));
-    label99->setJustificationType (Justification::centred);
-    label99->setEditable (false, false, false);
-    label99->setColour (Label::textColourId, Colours::white);
-    label99->setColour (TextEditor::textColourId, Colours::black);
-    label99->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label100 = new Label ("new label",
                                              TRANS("Shape")));
     label100->setFont (Font (12.00f, Font::plain));
@@ -1087,154 +1053,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label109->setColour (Label::textColourId, Colours::white);
     label109->setColour (TextEditor::textColourId, Colours::black);
     label109->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label111 = new Label ("new label",
-                                             TRANS("Hz")));
-    label111->setFont (Font (12.00f, Font::plain));
-    label111->setJustificationType (Justification::centredLeft);
-    label111->setEditable (false, false, false);
-    label111->setColour (Label::textColourId, Colours::white);
-    label111->setColour (TextEditor::textColourId, Colours::black);
-    label111->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label112 = new Label ("new label",
-                                             TRANS("Cents")));
-    label112->setFont (Font (12.00f, Font::plain));
-    label112->setJustificationType (Justification::centredRight);
-    label112->setEditable (false, false, false);
-    label112->setColour (Label::textColourId, Colours::white);
-    label112->setColour (TextEditor::textColourId, Colours::black);
-    label112->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_tune_type = new Slider ("new slider"));
-    swi_tune_type->setRange (0, 1, 1);
-    swi_tune_type->setSliderStyle (Slider::LinearHorizontal);
-    swi_tune_type->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_tune_type->addListener (this);
-
-    addAndMakeVisible (label113 = new Label ("new label",
-                                             TRANS("Osc 2 Fine Tune")));
-    label113->setFont (Font (12.00f, Font::plain));
-    label113->setJustificationType (Justification::centred);
-    label113->setEditable (false, false, false);
-    label113->setColour (Label::textColourId, Colours::white);
-    label113->setColour (TextEditor::textColourId, Colours::black);
-    label113->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label114 = new Label ("new label",
-                                             TRANS("Exp")));
-    label114->setFont (Font (12.00f, Font::plain));
-    label114->setJustificationType (Justification::centredLeft);
-    label114->setEditable (false, false, false);
-    label114->setColour (Label::textColourId, Colours::white);
-    label114->setColour (TextEditor::textColourId, Colours::black);
-    label114->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label115 = new Label ("new label",
-                                             TRANS("Time")));
-    label115->setFont (Font (12.00f, Font::plain));
-    label115->setJustificationType (Justification::centredLeft);
-    label115->setEditable (false, false, false);
-    label115->setColour (Label::textColourId, Colours::white);
-    label115->setColour (TextEditor::textColourId, Colours::black);
-    label115->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label116 = new Label ("new label",
-                                             TRANS("Rate")));
-    label116->setFont (Font (12.00f, Font::plain));
-    label116->setJustificationType (Justification::centredLeft);
-    label116->setEditable (false, false, false);
-    label116->setColour (Label::textColourId, Colours::white);
-    label116->setColour (TextEditor::textColourId, Colours::black);
-    label116->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_glide_type = new Slider ("new slider"));
-    swi_glide_type->setRange (0, 2, 1);
-    swi_glide_type->setSliderStyle (Slider::LinearVertical);
-    swi_glide_type->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_glide_type->addListener (this);
-
-    addAndMakeVisible (label117 = new Label ("new label",
-                                             TRANS("Glide")));
-    label117->setFont (Font (12.00f, Font::plain));
-    label117->setJustificationType (Justification::centred);
-    label117->setEditable (false, false, false);
-    label117->setColour (Label::textColourId, Colours::white);
-    label117->setColour (TextEditor::textColourId, Colours::black);
-    label117->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label118 = new Label ("new label",
-                                             TRANS("Instability")));
-    label118->setFont (Font (15.00f, Font::plain));
-    label118->setJustificationType (Justification::centred);
-    label118->setEditable (false, false, false);
-    label118->setColour (Label::textColourId, Colours::white);
-    label118->setColour (TextEditor::textColourId, Colours::black);
-    label118->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (sli_tune_instab = new Slider ("new slider"));
-    sli_tune_instab->setRange (0, 10, 0);
-    sli_tune_instab->setSliderStyle (Slider::RotaryVerticalDrag);
-    sli_tune_instab->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    sli_tune_instab->addListener (this);
-
-    addAndMakeVisible (sli_shape_instab = new Slider ("new slider"));
-    sli_shape_instab->setRange (0, 10, 0);
-    sli_shape_instab->setSliderStyle (Slider::RotaryVerticalDrag);
-    sli_shape_instab->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    sli_shape_instab->addListener (this);
-
-    addAndMakeVisible (label119 = new Label ("new label",
-                                             TRANS("Tuning")));
-    label119->setFont (Font (12.00f, Font::plain));
-    label119->setJustificationType (Justification::centredLeft);
-    label119->setEditable (false, false, false);
-    label119->setColour (Label::textColourId, Colours::white);
-    label119->setColour (TextEditor::textColourId, Colours::black);
-    label119->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label120 = new Label ("new label",
-                                             TRANS("Shape")));
-    label120->setFont (Font (12.00f, Font::plain));
-    label120->setJustificationType (Justification::centredLeft);
-    label120->setEditable (false, false, false);
-    label120->setColour (Label::textColourId, Colours::white);
-    label120->setColour (TextEditor::textColourId, Colours::black);
-    label120->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label22 = new Label ("new label",
-                                            TRANS("Res.\n"
-                                            "Bass")));
-    label22->setFont (Font (15.00f, Font::plain));
-    label22->setJustificationType (Justification::centred);
-    label22->setEditable (false, false, false);
-    label22->setColour (Label::textColourId, Colours::white);
-    label22->setColour (TextEditor::textColourId, Colours::black);
-    label22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label121 = new Label ("new label",
-                                             TRANS("Bypass")));
-    label121->setFont (Font (12.00f, Font::plain));
-    label121->setJustificationType (Justification::centredLeft);
-    label121->setEditable (false, false, false);
-    label121->setColour (Label::textColourId, Colours::white);
-    label121->setColour (TextEditor::textColourId, Colours::black);
-    label121->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label122 = new Label ("new label",
-                                             TRANS("Drive")));
-    label122->setFont (Font (12.00f, Font::plain));
-    label122->setJustificationType (Justification::centredRight);
-    label122->setEditable (false, false, false);
-    label122->setColour (Label::textColourId, Colours::white);
-    label122->setColour (TextEditor::textColourId, Colours::black);
-    label122->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_filt_lfosrc2 = new Slider ("new slider"));
-    swi_filt_lfosrc2->setRange (0, 1, 1);
-    swi_filt_lfosrc2->setSliderStyle (Slider::LinearHorizontal);
-    swi_filt_lfosrc2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_filt_lfosrc2->addListener (this);
 
     addAndMakeVisible (label76 = new Label ("new label",
                                             TRANS("+")));
@@ -1327,15 +1145,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     comboBox->addItem (TRANS("IC OTA"), 3);
     comboBox->addListener (this);
 
-    addAndMakeVisible (label12 = new Label ("new label",
-                                            TRANS("\"Under the hood\" controls")));
-    label12->setFont (Font (15.00f, Font::plain));
-    label12->setJustificationType (Justification::centred);
-    label12->setEditable (false, false, false);
-    label12->setColour (Label::textColourId, Colours::white);
-    label12->setColour (TextEditor::textColourId, Colours::black);
-    label12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label14 = new Label ("new label",
                                             TRANS("Pre-Filt")));
     label14->setFont (Font (12.00f, Font::plain));
@@ -1368,54 +1177,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     swi_pitchmod_src2->setSliderStyle (Slider::LinearVertical);
     swi_pitchmod_src2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_pitchmod_src2->addListener (this);
-
-    addAndMakeVisible (label104 = new Label ("new label",
-                                             TRANS("Reset LFOs on retrig")));
-    label104->setFont (Font (12.00f, Font::plain));
-    label104->setJustificationType (Justification::centredLeft);
-    label104->setEditable (false, false, false);
-    label104->setColour (Label::textColourId, Colours::white);
-    label104->setColour (TextEditor::textColourId, Colours::black);
-    label104->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_lfo1_kb2 = new Slider ("new slider"));
-    swi_lfo1_kb2->setRange (0, 1, 1);
-    swi_lfo1_kb2->setSliderStyle (Slider::LinearHorizontal);
-    swi_lfo1_kb2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_lfo1_kb2->addListener (this);
-
-    addAndMakeVisible (label37 = new Label ("new label",
-                                            TRANS("Legato")));
-    label37->setFont (Font (12.00f, Font::plain));
-    label37->setJustificationType (Justification::centredLeft);
-    label37->setEditable (false, false, false);
-    label37->setColour (Label::textColourId, Colours::white);
-    label37->setColour (TextEditor::textColourId, Colours::black);
-    label37->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label43 = new Label ("new label",
-                                            TRANS("Leg/Sus Pedal")));
-    label43->setFont (Font (12.00f, Font::plain));
-    label43->setJustificationType (Justification::centredLeft);
-    label43->setEditable (false, false, false);
-    label43->setColour (Label::textColourId, Colours::white);
-    label43->setColour (TextEditor::textColourId, Colours::black);
-    label43->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label46 = new Label ("new label",
-                                            TRANS("Retrig")));
-    label46->setFont (Font (12.00f, Font::plain));
-    label46->setJustificationType (Justification::centredLeft);
-    label46->setEditable (false, false, false);
-    label46->setColour (Label::textColourId, Colours::white);
-    label46->setColour (TextEditor::textColourId, Colours::black);
-    label46->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_pitchmod_src3 = new Slider ("new slider"));
-    swi_pitchmod_src3->setRange (0, 2, 1);
-    swi_pitchmod_src3->setSliderStyle (Slider::LinearVertical);
-    swi_pitchmod_src3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_pitchmod_src3->addListener (this);
 
     addAndMakeVisible (label66 = new Label ("new label",
                                             TRANS("S&H")));
@@ -1510,30 +1271,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     sli_lfo1_sh->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_lfo1_sh->addListener (this);
 
-    addAndMakeVisible (label34 = new Label ("new label",
-                                            TRANS("Attack")));
-    label34->setFont (Font (12.00f, Font::plain));
-    label34->setJustificationType (Justification::centredLeft);
-    label34->setEditable (false, false, false);
-    label34->setColour (Label::textColourId, Colours::white);
-    label34->setColour (TextEditor::textColourId, Colours::black);
-    label34->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label35 = new Label ("new label",
-                                            TRANS("Decay")));
-    label35->setFont (Font (12.00f, Font::plain));
-    label35->setJustificationType (Justification::centredLeft);
-    label35->setEditable (false, false, false);
-    label35->setColour (Label::textColourId, Colours::white);
-    label35->setColour (TextEditor::textColourId, Colours::black);
-    label35->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (swi_lfo2_att = new Slider ("LFO2 Attack/Decay"));
-    swi_lfo2_att->setRange (0, 1, 1);
-    swi_lfo2_att->setSliderStyle (Slider::LinearVertical);
-    swi_lfo2_att->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_lfo2_att->addListener (this);
-
     addAndMakeVisible (label38 = new Label ("new label",
                                             TRANS("Envelope")));
     label38->setFont (Font (12.00f, Font::plain));
@@ -1558,6 +1295,30 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     swi_pitchmod_scale2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_pitchmod_scale2->addListener (this);
 
+    addAndMakeVisible (sli_drive2 = new Slider ("Reverb Amount"));
+    sli_drive2->setRange (0, 10, 0);
+    sli_drive2->setSliderStyle (Slider::RotaryVerticalDrag);
+    sli_drive2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    sli_drive2->addListener (this);
+
+    addAndMakeVisible (label12 = new Label ("new label",
+                                            TRANS("Reverb")));
+    label12->setFont (Font (15.00f, Font::plain));
+    label12->setJustificationType (Justification::centred);
+    label12->setEditable (false, false, false);
+    label12->setColour (Label::textColourId, Colours::white);
+    label12->setColour (TextEditor::textColourId, Colours::black);
+    label12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label22 = new Label ("new label",
+                                            TRANS("Chorus")));
+    label22->setFont (Font (15.00f, Font::plain));
+    label22->setJustificationType (Justification::centred);
+    label22->setEditable (false, false, false);
+    label22->setColour (Label::textColourId, Colours::white);
+    label22->setColour (TextEditor::textColourId, Colours::black);
+    label22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
     addAndMakeVisible (label42 = new Label ("new label",
                                             TRANS("2")));
     label42->setFont (Font (12.00f, Font::plain));
@@ -1570,35 +1331,59 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     addAndMakeVisible (label45 = new Label ("new label",
                                             TRANS("1")));
     label45->setFont (Font (12.00f, Font::plain));
-    label45->setJustificationType (Justification::centredRight);
+    label45->setJustificationType (Justification::centredLeft);
     label45->setEditable (false, false, false);
     label45->setColour (Label::textColourId, Colours::white);
     label45->setColour (TextEditor::textColourId, Colours::black);
     label45->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label67 = new Label ("new label",
-                                            TRANS("Glide+Bend Osc")));
+                                            TRANS("Off")));
     label67->setFont (Font (12.00f, Font::plain));
-    label67->setJustificationType (Justification::centred);
+    label67->setJustificationType (Justification::centredLeft);
     label67->setEditable (false, false, false);
     label67->setColour (Label::textColourId, Colours::white);
     label67->setColour (TextEditor::textColourId, Colours::black);
     label67->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label94 = new Label ("new label",
-                                            TRANS("1+2")));
-    label94->setFont (Font (12.00f, Font::plain));
-    label94->setJustificationType (Justification::centredLeft);
-    label94->setEditable (false, false, false);
-    label94->setColour (Label::textColourId, Colours::white);
-    label94->setColour (TextEditor::textColourId, Colours::black);
-    label94->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (swi_glide2 = new Slider ("Chorus"));
+    swi_glide2->setRange (0, 2, 1);
+    swi_glide2->setSliderStyle (Slider::LinearVertical);
+    swi_glide2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    swi_glide2->addListener (this);
+
+    addAndMakeVisible (label37 = new Label ("new label",
+                                            TRANS("Legato")));
+    label37->setFont (Font (12.00f, Font::plain));
+    label37->setJustificationType (Justification::centredRight);
+    label37->setEditable (false, false, false);
+    label37->setColour (Label::textColourId, Colours::white);
+    label37->setColour (TextEditor::textColourId, Colours::black);
+    label37->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label43 = new Label ("new label",
+                                            TRANS("Legato on Sus Pedal")));
+    label43->setFont (Font (12.00f, Font::plain));
+    label43->setJustificationType (Justification::centred);
+    label43->setEditable (false, false, false);
+    label43->setColour (Label::textColourId, Colours::white);
+    label43->setColour (TextEditor::textColourId, Colours::black);
+    label43->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (swi_pitchmod_dest2 = new Slider ("new slider"));
     swi_pitchmod_dest2->setRange (1, 2, 0.5);
     swi_pitchmod_dest2->setSliderStyle (Slider::LinearHorizontal);
     swi_pitchmod_dest2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_pitchmod_dest2->addListener (this);
+
+    addAndMakeVisible (label46 = new Label ("new label",
+                                            TRANS("Retrig")));
+    label46->setFont (Font (12.00f, Font::plain));
+    label46->setJustificationType (Justification::centredLeft);
+    label46->setEditable (false, false, false);
+    label46->setColour (Label::textColourId, Colours::white);
+    label46->setColour (TextEditor::textColourId, Colours::black);
+    label46->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -1627,6 +1412,7 @@ MainGui::~MainGui()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    groupComponent12 = nullptr;
     groupComponent11 = nullptr;
     label70 = nullptr;
     label80 = nullptr;
@@ -1690,7 +1476,6 @@ MainGui::~MainGui()
     label31 = nullptr;
     label30 = nullptr;
     sli_filt_vel = nullptr;
-    sli_filt_resbass = nullptr;
     sli_env_dec = nullptr;
     sli_env_sus = nullptr;
     sli_env_rel = nullptr;
@@ -1754,10 +1539,6 @@ MainGui::~MainGui()
     label50 = nullptr;
     label52 = nullptr;
     label47 = nullptr;
-    label97 = nullptr;
-    label98 = nullptr;
-    swi_noise_color = nullptr;
-    label99 = nullptr;
     label100 = nullptr;
     label101 = nullptr;
     label105 = nullptr;
@@ -1765,24 +1546,6 @@ MainGui::~MainGui()
     label107 = nullptr;
     label108 = nullptr;
     label109 = nullptr;
-    label111 = nullptr;
-    label112 = nullptr;
-    swi_tune_type = nullptr;
-    label113 = nullptr;
-    label114 = nullptr;
-    label115 = nullptr;
-    label116 = nullptr;
-    swi_glide_type = nullptr;
-    label117 = nullptr;
-    label118 = nullptr;
-    sli_tune_instab = nullptr;
-    sli_shape_instab = nullptr;
-    label119 = nullptr;
-    label120 = nullptr;
-    label22 = nullptr;
-    label121 = nullptr;
-    label122 = nullptr;
-    swi_filt_lfosrc2 = nullptr;
     label76 = nullptr;
     label77 = nullptr;
     label123 = nullptr;
@@ -1793,17 +1556,10 @@ MainGui::~MainGui()
     label127 = nullptr;
     label36 = nullptr;
     comboBox = nullptr;
-    label12 = nullptr;
     label14 = nullptr;
     label15 = nullptr;
     label16 = nullptr;
     swi_pitchmod_src2 = nullptr;
-    label104 = nullptr;
-    swi_lfo1_kb2 = nullptr;
-    label37 = nullptr;
-    label43 = nullptr;
-    label46 = nullptr;
-    swi_pitchmod_src3 = nullptr;
     label66 = nullptr;
     label40 = nullptr;
     label41 = nullptr;
@@ -1815,17 +1571,20 @@ MainGui::~MainGui()
     label27 = nullptr;
     label33 = nullptr;
     sli_lfo1_sh = nullptr;
-    label34 = nullptr;
-    label35 = nullptr;
-    swi_lfo2_att = nullptr;
     label38 = nullptr;
     label39 = nullptr;
     swi_pitchmod_scale2 = nullptr;
+    sli_drive2 = nullptr;
+    label12 = nullptr;
+    label22 = nullptr;
     label42 = nullptr;
     label45 = nullptr;
     label67 = nullptr;
-    label94 = nullptr;
+    swi_glide2 = nullptr;
+    label37 = nullptr;
+    label43 = nullptr;
     swi_pitchmod_dest2 = nullptr;
+    label46 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1849,6 +1608,7 @@ void MainGui::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    groupComponent12->setBounds (606, 253, 178, 91);
     groupComponent11->setBounds (160, 200, 112, 192);
     label70->setBounds (158, 222, 42, 8);
     label80->setBounds (189, 234, 56, 10);
@@ -1861,7 +1621,7 @@ void MainGui::resized()
     groupComponent4->setBounds (8, 98, 264, 102);
     groupComponent->setBounds (8, 0, 144, 96);
     sli_o1_sh->setBounds (48, 28, 56, 48);
-    groupComponent8->setBounds (8, 200, 144, 152);
+    groupComponent8->setBounds (8, 200, 144, 192);
     groupComponent5->setBounds (172, 0, 96, 96);
     sli_o2_sh->setBounds (47, 126, 56, 48);
     sli_mix_o1->setBounds (286, 16, 24, 88);
@@ -1888,7 +1648,7 @@ void MainGui::resized()
     label6->setBounds (219, 112, 40, 16);
     label9->setBounds (469, 237, 40, 16);
     label10->setBounds (525, 137, 72, 16);
-    label11->setBounds (623, 185, 62, 16);
+    label11->setBounds (619, 185, 64, 15);
     groupComponent7->setBounds (606, 0, 178, 128);
     sli_env_att->setBounds (614, 32, 24, 88);
     label17->setBounds (614, 16, 24, 16);
@@ -1901,18 +1661,17 @@ void MainGui::resized()
     label7->setBounds (13, 160, 40, 10);
     label25->setBounds (15, 62, 40, 10);
     groupComponent9->setBounds (275, 128, 184, 112);
-    groupComponent10->setBounds (275, 240, 184, 152);
-    sli_glide_amt->setBounds (16, 297, 56, 48);
-    sli_bend_range->setBounds (83, 226, 56, 48);
-    label26->setBounds (65, 212, 96, 16);
+    groupComponent10->setBounds (275, 240, 184, 136);
+    sli_glide_amt->setBounds (29, 337, 56, 48);
+    sli_bend_range->setBounds (51, 264, 56, 48);
+    label26->setBounds (33, 250, 96, 16);
     label28->setBounds (289, 144, 56, 14);
     sli_lfo2_freq->setBounds (283, 271, 56, 48);
     label29->setBounds (283, 258, 56, 14);
-    sli_lfo2_att->setBounds (281, 336, 56, 48);
-    label31->setBounds (281, 321, 56, 14);
+    sli_lfo2_att->setBounds (321, 324, 56, 48);
+    label31->setBounds (321, 309, 56, 14);
     label30->setBounds (509, 237, 40, 16);
     sli_filt_vel->setBounds (509, 253, 40, 32);
-    sli_filt_resbass->setBounds (740, 354, 48, 32);
     sli_env_dec->setBounds (646, 32, 24, 88);
     sli_env_sus->setBounds (678, 32, 24, 88);
     sli_env_rel->setBounds (710, 32, 24, 88);
@@ -1932,19 +1691,19 @@ void MainGui::resized()
     label55->setBounds (234, 32, 30, 10);
     label56->setBounds (234, 48, 32, 10);
     label57->setBounds (234, 64, 32, 10);
-    label58->setBounds (177, 32, 24, 8);
-    label59->setBounds (177, 64, 24, 8);
+    label58->setBounds (177, 38, 24, 8);
+    label59->setBounds (177, 62, 24, 8);
     label60->setBounds (48, 76, 16, 10);
     label61->setBounds (8, 76, 16, 10);
     swi_o1_lfosrc->setBounds (16, 73, 40, 16);
     swi_o1_sh->setBounds (99, 22, 20, 56);
     swi_sub_sh->setBounds (219, 24, 20, 56);
-    swi_sub_oct->setBounds (196, 24, 20, 56);
-    label62->setBounds (16, 280, 96, 16);
-    label63->setBounds (81, 299, 32, 10);
-    label64->setBounds (81, 315, 39, 10);
-    label65->setBounds (81, 331, 32, 10);
-    swi_glide->setBounds (67, 291, 20, 56);
+    swi_sub_oct->setBounds (196, 34, 16, 40);
+    label62->setBounds (29, 320, 96, 16);
+    label63->setBounds (94, 339, 32, 10);
+    label64->setBounds (94, 354, 39, 12);
+    label65->setBounds (94, 371, 32, 10);
+    swi_glide->setBounds (80, 331, 20, 56);
     label69->setBounds (231, 222, 48, 8);
     label23->setBounds (571, 219, 16, 10);
     label72->setBounds (527, 219, 16, 10);
@@ -1976,35 +1735,13 @@ void MainGui::resized()
     label50->setBounds (209, 174, 20, 16);
     label52->setBounds (248, 174, 24, 16);
     label47->setBounds (144, 137, 16, 16);
-    label97->setBounds (578, 326, 30, 10);
-    label98->setBounds (520, 326, 34, 10);
-    swi_noise_color->setBounds (546, 323, 40, 16);
-    label99->setBounds (544, 313, 40, 10);
     label100->setBounds (48, 112, 56, 14);
     label101->setBounds (48, 14, 56, 14);
     label105->setBounds (223, 252, 40, 16);
     label106->setBounds (163, 252, 64, 16);
-    label107->setBounds (83, 266, 20, 16);
-    label108->setBounds (119, 266, 24, 16);
-    label109->setBounds (126, 256, 24, 16);
-    label111->setBounds (577, 356, 30, 10);
-    label112->setBounds (520, 356, 34, 10);
-    swi_tune_type->setBounds (546, 353, 40, 16);
-    label113->setBounds (520, 343, 88, 10);
-    label114->setBounds (642, 340, 35, 10);
-    label115->setBounds (642, 356, 40, 10);
-    label116->setBounds (642, 372, 40, 10);
-    swi_glide_type->setBounds (628, 333, 19, 56);
-    label117->setBounds (626, 326, 48, 10);
-    label118->setBounds (672, 322, 75, 20);
-    sli_tune_instab->setBounds (681, 340, 24, 24);
-    sli_shape_instab->setBounds (681, 362, 24, 24);
-    label119->setBounds (702, 339, 48, 24);
-    label120->setBounds (702, 362, 48, 24);
-    label22->setBounds (740, 320, 48, 34);
-    label121->setBounds (577, 377, 49, 10);
-    label122->setBounds (514, 377, 39, 10);
-    swi_filt_lfosrc2->setBounds (546, 374, 40, 16);
+    label107->setBounds (51, 304, 20, 16);
+    label108->setBounds (87, 304, 24, 16);
+    label109->setBounds (94, 294, 24, 16);
     label76->setBounds (495, 280, 18, 10);
     label77->setBounds (468, 280, 15, 10);
     label123->setBounds (172, 123, 26, 16);
@@ -2015,17 +1752,10 @@ void MainGui::resized()
     label127->setBounds (567, 101, 36, 16);
     label36->setBounds (712, 152, 64, 12);
     comboBox->setBounds (472, 13, 120, 16);
-    label12->setBounds (608, 260, 176, 20);
     label14->setBounds (724, 197, 54, 10);
     label15->setBounds (724, 213, 54, 10);
     label16->setBounds (724, 229, 54, 10);
     swi_pitchmod_src2->setBounds (708, 190, 20, 56);
-    label104->setBounds (649, 289, 61, 32);
-    swi_lfo1_kb2->setBounds (617, 297, 40, 16);
-    label37->setBounds (28, 225, 50, 12);
-    label43->setBounds (28, 241, 60, 12);
-    label46->setBounds (28, 257, 50, 12);
-    swi_pitchmod_src3->setBounds (14, 219, 20, 56);
     label66->setBounds (415, 153, 32, 16);
     label40->setBounds (331, 271, 48, 16);
     label41->setBounds (364, 255, 32, 16);
@@ -2037,17 +1767,20 @@ void MainGui::resized()
     label27->setBounds (339, 151, 48, 16);
     label33->setBounds (378, 142, 32, 16);
     sli_lfo1_sh->setBounds (418, 194, 32, 32);
-    label34->setBounds (351, 344, 49, 10);
-    label35->setBounds (351, 359, 49, 10);
-    swi_lfo2_att->setBounds (336, 335, 16, 40);
     label38->setBounds (642, 149, 67, 10);
     label39->setBounds (642, 164, 59, 10);
     swi_pitchmod_scale2->setBounds (627, 140, 16, 40);
-    label42->setBounds (762, 296, 16, 8);
-    label45->setBounds (720, 296, 16, 8);
-    label67->setBounds (712, 282, 80, 11);
-    label94->setBounds (737, 307, 32, 10);
-    swi_pitchmod_dest2->setBounds (731, 292, 40, 16);
+    sli_drive2->setBounds (704, 282, 56, 48);
+    label12->setBounds (704, 267, 56, 16);
+    label22->setBounds (630, 267, 56, 16);
+    label42->setBounds (648, 286, 32, 10);
+    label45->setBounds (648, 302, 39, 10);
+    label67->setBounds (648, 318, 32, 10);
+    swi_glide2->setBounds (634, 278, 20, 56);
+    label37->setBounds (22, 219, 42, 12);
+    label43->setBounds (37, 233, 88, 12);
+    swi_pitchmod_dest2->setBounds (52, 215, 56, 20);
+    label46->setBounds (95, 219, 48, 12);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -2187,11 +1920,6 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_sli_filt_vel] -- add your slider handling code here..
         //[/UserSliderCode_sli_filt_vel]
     }
-    else if (sliderThatWasMoved == sli_filt_resbass)
-    {
-        //[UserSliderCode_sli_filt_resbass] -- add your slider handling code here..
-        //[/UserSliderCode_sli_filt_resbass]
-    }
     else if (sliderThatWasMoved == sli_env_dec)
     {
         //[UserSliderCode_sli_env_dec] -- add your slider handling code here..
@@ -2302,50 +2030,10 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_swi_lfo1_kb] -- add your slider handling code here..
         //[/UserSliderCode_swi_lfo1_kb]
     }
-    else if (sliderThatWasMoved == swi_noise_color)
-    {
-        //[UserSliderCode_swi_noise_color] -- add your slider handling code here..
-        //[/UserSliderCode_swi_noise_color]
-    }
-    else if (sliderThatWasMoved == swi_tune_type)
-    {
-        //[UserSliderCode_swi_tune_type] -- add your slider handling code here..
-        //[/UserSliderCode_swi_tune_type]
-    }
-    else if (sliderThatWasMoved == swi_glide_type)
-    {
-        //[UserSliderCode_swi_glide_type] -- add your slider handling code here..
-        //[/UserSliderCode_swi_glide_type]
-    }
-    else if (sliderThatWasMoved == sli_tune_instab)
-    {
-        //[UserSliderCode_sli_tune_instab] -- add your slider handling code here..
-        //[/UserSliderCode_sli_tune_instab]
-    }
-    else if (sliderThatWasMoved == sli_shape_instab)
-    {
-        //[UserSliderCode_sli_shape_instab] -- add your slider handling code here..
-        //[/UserSliderCode_sli_shape_instab]
-    }
-    else if (sliderThatWasMoved == swi_filt_lfosrc2)
-    {
-        //[UserSliderCode_swi_filt_lfosrc2] -- add your slider handling code here..
-        //[/UserSliderCode_swi_filt_lfosrc2]
-    }
     else if (sliderThatWasMoved == swi_pitchmod_src2)
     {
         //[UserSliderCode_swi_pitchmod_src2] -- add your slider handling code here..
         //[/UserSliderCode_swi_pitchmod_src2]
-    }
-    else if (sliderThatWasMoved == swi_lfo1_kb2)
-    {
-        //[UserSliderCode_swi_lfo1_kb2] -- add your slider handling code here..
-        //[/UserSliderCode_swi_lfo1_kb2]
-    }
-    else if (sliderThatWasMoved == swi_pitchmod_src3)
-    {
-        //[UserSliderCode_swi_pitchmod_src3] -- add your slider handling code here..
-        //[/UserSliderCode_swi_pitchmod_src3]
     }
     else if (sliderThatWasMoved == sli_lfo2_sh)
     {
@@ -2357,15 +2045,20 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_sli_lfo1_sh] -- add your slider handling code here..
         //[/UserSliderCode_sli_lfo1_sh]
     }
-    else if (sliderThatWasMoved == swi_lfo2_att)
-    {
-        //[UserSliderCode_swi_lfo2_att] -- add your slider handling code here..
-        //[/UserSliderCode_swi_lfo2_att]
-    }
     else if (sliderThatWasMoved == swi_pitchmod_scale2)
     {
         //[UserSliderCode_swi_pitchmod_scale2] -- add your slider handling code here..
         //[/UserSliderCode_swi_pitchmod_scale2]
+    }
+    else if (sliderThatWasMoved == sli_drive2)
+    {
+        //[UserSliderCode_sli_drive2] -- add your slider handling code here..
+        //[/UserSliderCode_sli_drive2]
+    }
+    else if (sliderThatWasMoved == swi_glide2)
+    {
+        //[UserSliderCode_swi_glide2] -- add your slider handling code here..
+        //[/UserSliderCode_swi_glide2]
     }
     else if (sliderThatWasMoved == swi_pitchmod_dest2)
     {
@@ -2516,6 +2209,9 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="795"
                  initialHeight="400">
   <BACKGROUND backgroundColour="ff1c1c1c"/>
+  <GROUPCOMPONENT name="new group" id="9da2be2e767c916e" memberName="groupComponent12"
+                  virtualName="" explicitFocusOrder="0" pos="606 253 178 91" outlinecol="66ffffff"
+                  textcol="ffffffff" title="Effects"/>
   <GROUPCOMPONENT name="new group" id="303c96ba3a6d7786" memberName="groupComponent11"
                   virtualName="" explicitFocusOrder="0" pos="160 200 112 192" outlinecol="66ffffff"
                   textcol="ffffffff" title="Pitch Mod"/>
@@ -2560,7 +2256,7 @@ BEGIN_JUCER_METADATA
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <GROUPCOMPONENT name="new group" id="d9483dc1d74a73c9" memberName="groupComponent8"
-                  virtualName="" explicitFocusOrder="0" pos="8 200 144 152" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="8 200 144 192" outlinecol="66ffffff"
                   textcol="ffffffff" title="Input"/>
   <GROUPCOMPONENT name="new group" id="f6c32fd096d279ac" memberName="groupComponent5"
                   virtualName="" explicitFocusOrder="0" pos="172 0 96 96" outlinecol="66ffffff"
@@ -2676,10 +2372,10 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="b942b70f43767d13" memberName="label11" virtualName=""
-         explicitFocusOrder="0" pos="623 185 62 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="619 185 64 15" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Overdrive" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="36"/>
+         fontsize="15" bold="0" italic="0" justification="36"/>
   <GROUPCOMPONENT name="new group" id="8e4a429367bb6ed1" memberName="groupComponent7"
                   virtualName="" explicitFocusOrder="0" pos="606 0 178 128" outlinecol="66ffffff"
                   textcol="ffffffff" title="Envelope"/>
@@ -2734,18 +2430,18 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="275 128 184 112" outlinecol="66ffffff"
                   textcol="ffffffff" title="LFO1"/>
   <GROUPCOMPONENT name="new group" id="2f9f6ffa0d9e55e2" memberName="groupComponent10"
-                  virtualName="" explicitFocusOrder="0" pos="275 240 184 152" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="275 240 184 136" outlinecol="66ffffff"
                   textcol="ffffffff" title="LFO2"/>
   <SLIDER name="new slider" id="ca4ffa3f27169af8" memberName="sli_glide_amt"
-          virtualName="" explicitFocusOrder="0" pos="16 297 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="29 337 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="6a4efc49fd6eaa55" memberName="sli_bend_range"
-          virtualName="" explicitFocusOrder="0" pos="83 226 56 48" min="1"
+          virtualName="" explicitFocusOrder="0" pos="51 264 56 48" min="1"
           max="13" int="1" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="31fbb6afc12ace2a" memberName="label26" virtualName=""
-         explicitFocusOrder="0" pos="65 212 96 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="33 250 96 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Bend Range" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -2764,11 +2460,11 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="LFO 1 Attack" id="adf7d9bbe7bedc02" memberName="sli_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="281 336 56 48" min="0"
+          virtualName="" explicitFocusOrder="0" pos="321 324 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="677e03b32f7824b6" memberName="label31" virtualName=""
-         explicitFocusOrder="0" pos="281 321 56 14" textCol="ffffffff"
+         explicitFocusOrder="0" pos="321 309 56 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
@@ -2780,10 +2476,6 @@ BEGIN_JUCER_METADATA
   <SLIDER name="Filter Vel Amount" id="2e1b5981e8fb0e0d" memberName="sli_filt_vel"
           virtualName="" explicitFocusOrder="0" pos="509 253 40 32" min="0"
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="785b4bba36ddbb84" memberName="sli_filt_resbass"
-          virtualName="" explicitFocusOrder="0" pos="740 354 48 32" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Env Decay" id="22d76f58418fb20b" memberName="sli_env_dec"
           virtualName="" explicitFocusOrder="0" pos="646 32 24 88" min="0"
@@ -2872,12 +2564,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="b9ef87d8f2eb14bf" memberName="label58" virtualName=""
-         explicitFocusOrder="0" pos="177 32 24 8" textCol="ffffffff" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="177 38 24 8" textCol="ffffffff" edTextCol="ff000000"
          edBkgCol="0" labelText="-1" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="10"
          bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="e930acfdc20baad5" memberName="label59" virtualName=""
-         explicitFocusOrder="0" pos="177 64 24 8" textCol="ffffffff" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="177 62 24 8" textCol="ffffffff" edTextCol="ff000000"
          edBkgCol="0" labelText="-2" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="10"
          bold="0" italic="0" justification="34"/>
@@ -2904,31 +2596,31 @@ BEGIN_JUCER_METADATA
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Sub Osc Octave" id="9ad005c2310e0623" memberName="swi_sub_oct"
-          virtualName="" explicitFocusOrder="0" pos="196 24 20 56" min="-2"
+          virtualName="" explicitFocusOrder="0" pos="196 34 16 40" min="-2"
           max="-1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="72064045411c385b" memberName="label62" virtualName=""
-         explicitFocusOrder="0" pos="16 280 96 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="29 320 96 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Glide" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="acbac73778a2cdcf" memberName="label63" virtualName=""
-         explicitFocusOrder="0" pos="81 299 32 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="94 339 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="On" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="6394f8f8d3f8e81f" memberName="label64" virtualName=""
-         explicitFocusOrder="0" pos="81 315 39 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="94 354 39 12" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Legato" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="c5fcdbfac6f2e29" memberName="label65" virtualName=""
-         explicitFocusOrder="0" pos="81 331 32 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="94 371 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Off" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="692296ee6459bc79" memberName="swi_glide"
-          virtualName="" explicitFocusOrder="0" pos="67 291 20 56" min="0"
+          virtualName="" explicitFocusOrder="0" pos="80 331 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="f621af72285c3ecd" memberName="label69" virtualName=""
@@ -3078,25 +2770,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
-  <LABEL name="new label" id="7d04b59c36e446b2" memberName="label97" virtualName=""
-         explicitFocusOrder="0" pos="578 326 30 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="White" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="5fe6882c9a7e7367" memberName="label98" virtualName=""
-         explicitFocusOrder="0" pos="520 326 34 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Pink" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="34"/>
-  <SLIDER name="new slider" id="b3bfb5605ac16f1d" memberName="swi_noise_color"
-          virtualName="" explicitFocusOrder="0" pos="546 323 40 16" min="0"
-          max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="4caec774c496eca" memberName="label99" virtualName=""
-         explicitFocusOrder="0" pos="544 313 40 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Noise" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="37928afa14c5ad1d" memberName="label100"
          virtualName="" explicitFocusOrder="0" pos="48 112 56 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Shape" editableSingleClick="0"
@@ -3118,105 +2791,20 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="c2b98f64f381a54e" memberName="label107"
-         virtualName="" explicitFocusOrder="0" pos="83 266 20 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="51 304 20 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="a088be42b0aa2bd8" memberName="label108"
-         virtualName="" explicitFocusOrder="0" pos="119 266 24 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="87 304 24 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="24" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="e800eda52eb4e127" memberName="label109"
-         virtualName="" explicitFocusOrder="0" pos="126 256 24 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="94 294 24 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="12" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="f7d41627cbc579bd" memberName="label111"
-         virtualName="" explicitFocusOrder="0" pos="577 356 30 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Hz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="ea554e618021a2b2" memberName="label112"
-         virtualName="" explicitFocusOrder="0" pos="520 356 34 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Cents" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="34"/>
-  <SLIDER name="new slider" id="a6b0788b80c26159" memberName="swi_tune_type"
-          virtualName="" explicitFocusOrder="0" pos="546 353 40 16" min="0"
-          max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="69e8630ce6b29c9c" memberName="label113"
-         virtualName="" explicitFocusOrder="0" pos="520 343 88 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Osc 2 Fine Tune"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="f31a739f49e54751" memberName="label114"
-         virtualName="" explicitFocusOrder="0" pos="642 340 35 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Exp" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="85de66ed3dc33db1" memberName="label115"
-         virtualName="" explicitFocusOrder="0" pos="642 356 40 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Time" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="382734bd47b507ef" memberName="label116"
-         virtualName="" explicitFocusOrder="0" pos="642 372 40 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Rate" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="f4c8dfa89b2d9239" memberName="swi_glide_type"
-          virtualName="" explicitFocusOrder="0" pos="628 333 19 56" min="0"
-          max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="bef16673747564c4" memberName="label117"
-         virtualName="" explicitFocusOrder="0" pos="626 326 48 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Glide" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="61723174b32dc750" memberName="label118"
-         virtualName="" explicitFocusOrder="0" pos="672 322 75 20" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Instability" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="37aafb176850241e" memberName="sli_tune_instab"
-          virtualName="" explicitFocusOrder="0" pos="681 340 24 24" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="new slider" id="93127b2857ac305e" memberName="sli_shape_instab"
-          virtualName="" explicitFocusOrder="0" pos="681 362 24 24" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="fb39f80023ca0a29" memberName="label119"
-         virtualName="" explicitFocusOrder="0" pos="702 339 48 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Tuning" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="7700c713c66972b4" memberName="label120"
-         virtualName="" explicitFocusOrder="0" pos="702 362 48 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Shape" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="be2f453c2cf64201" memberName="label22" virtualName=""
-         explicitFocusOrder="0" pos="740 320 48 34" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Res.&#10;Bass" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="637cab065add0171" memberName="label121"
-         virtualName="" explicitFocusOrder="0" pos="577 377 49 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Bypass" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="44da9a19304bc250" memberName="label122"
-         virtualName="" explicitFocusOrder="0" pos="514 377 39 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Drive" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="34"/>
-  <SLIDER name="new slider" id="3a62912dcdeb23ff" memberName="swi_filt_lfosrc2"
-          virtualName="" explicitFocusOrder="0" pos="546 374 40 16" min="0"
-          max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="103c8c075f50b7b0" memberName="label76" virtualName=""
          explicitFocusOrder="0" pos="495 280 18 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="+" editableSingleClick="0"
@@ -3266,11 +2854,6 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="472 13 120 16" editable="0"
             layout="33" items="Transistor Ladder&#10;Diode Ladder&#10;IC OTA"
             textWhenNonSelected="Filter Model" textWhenNoItems="(no choices)"/>
-  <LABEL name="new label" id="dd030ab400ea1422" memberName="label12" virtualName=""
-         explicitFocusOrder="0" pos="608 260 176 20" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="&quot;Under the hood&quot; controls"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="244dc8a10230e796" memberName="label14" virtualName=""
          explicitFocusOrder="0" pos="724 197 54 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Pre-Filt" editableSingleClick="0"
@@ -3288,34 +2871,6 @@ BEGIN_JUCER_METADATA
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="8718f1916d2e3d17" memberName="swi_pitchmod_src2"
           virtualName="" explicitFocusOrder="0" pos="708 190 20 56" min="0"
-          max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="bc675c8fe449178f" memberName="label104"
-         virtualName="" explicitFocusOrder="0" pos="649 289 61 32" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Reset LFOs on retrig"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="3ec464d79b406e02" memberName="swi_lfo1_kb2"
-          virtualName="" explicitFocusOrder="0" pos="617 297 40 16" min="0"
-          max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="fcb2ad1e4a5dc4a2" memberName="label37" virtualName=""
-         explicitFocusOrder="0" pos="28 225 50 12" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Legato" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="42056e2b966566ad" memberName="label43" virtualName=""
-         explicitFocusOrder="0" pos="28 241 60 12" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Leg/Sus Pedal" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="46b5c1d02749f605" memberName="label46" virtualName=""
-         explicitFocusOrder="0" pos="28 257 50 12" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Retrig" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="ec539363c77dad21" memberName="swi_pitchmod_src3"
-          virtualName="" explicitFocusOrder="0" pos="14 219 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="9c65016fbc168b33" memberName="label66" virtualName=""
@@ -3371,20 +2926,6 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="418 194 32 32" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="2a9ab2f0ac301cfa" memberName="label34" virtualName=""
-         explicitFocusOrder="0" pos="351 344 49 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="66430b8dfb9a92cd" memberName="label35" virtualName=""
-         explicitFocusOrder="0" pos="351 359 49 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Decay" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="LFO2 Attack/Decay" id="ca40100f8534db76" memberName="swi_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="336 335 16 40" min="0"
-          max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="93a34653caa27da8" memberName="label38" virtualName=""
          explicitFocusOrder="0" pos="642 149 67 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Envelope" editableSingleClick="0"
@@ -3399,30 +2940,58 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="627 140 16 40" min="0"
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="f88442ddb12fd59d" memberName="label42" virtualName=""
-         explicitFocusOrder="0" pos="762 296 16 8" textCol="ffffffff"
+  <SLIDER name="Reverb Amount" id="2fea1fd25759315c" memberName="sli_drive2"
+          virtualName="" explicitFocusOrder="0" pos="704 282 56 48" min="0"
+          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="bebd7aba5523fced" memberName="label12" virtualName=""
+         explicitFocusOrder="0" pos="704 267 56 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Reverb" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="new label" id="12bca2c7f5f38bbb" memberName="label22" virtualName=""
+         explicitFocusOrder="0" pos="630 267 56 16" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Chorus" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="new label" id="ab1e31df4ab51c63" memberName="label42" virtualName=""
+         explicitFocusOrder="0" pos="648 286 32 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <LABEL name="new label" id="f7bf39d204334aea" memberName="label45" virtualName=""
-         explicitFocusOrder="0" pos="720 296 16 8" textCol="ffffffff"
+  <LABEL name="new label" id="f92210fee39471d6" memberName="label45" virtualName=""
+         explicitFocusOrder="0" pos="648 302 39 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" bold="0" italic="0" justification="34"/>
-  <LABEL name="new label" id="41183b952de1e234" memberName="label67" virtualName=""
-         explicitFocusOrder="0" pos="712 282 80 11" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Glide+Bend Osc"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="a42483836264fd53" memberName="label94" virtualName=""
-         explicitFocusOrder="0" pos="737 307 32 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="1+2" editableSingleClick="0"
+         fontsize="12" bold="0" italic="0" justification="33"/>
+  <LABEL name="new label" id="c423afd097d508bb" memberName="label67" virtualName=""
+         explicitFocusOrder="0" pos="648 318 32 10" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Off" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="bceabba33a0620e7" memberName="swi_pitchmod_dest2"
-          virtualName="" explicitFocusOrder="0" pos="731 292 40 16" min="1"
+  <SLIDER name="Chorus" id="b4a58afcd4823304" memberName="swi_glide2" virtualName=""
+          explicitFocusOrder="0" pos="634 278 20 56" min="0" max="2" int="1"
+          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="b85c9abef7437058" memberName="label37" virtualName=""
+         explicitFocusOrder="0" pos="22 219 42 12" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Legato" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="34"/>
+  <LABEL name="new label" id="a56c1c55f79cdd1d" memberName="label43" virtualName=""
+         explicitFocusOrder="0" pos="37 233 88 12" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Legato on Sus Pedal"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
+  <SLIDER name="new slider" id="97cedc0ad434b4b" memberName="swi_pitchmod_dest2"
+          virtualName="" explicitFocusOrder="0" pos="52 215 56 20" min="1"
           max="2" int="0.5" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="ccea09327fffd238" memberName="label46" virtualName=""
+         explicitFocusOrder="0" pos="95 219 48 12" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Retrig" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
