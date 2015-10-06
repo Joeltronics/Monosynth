@@ -18,12 +18,21 @@
 */
 
 //[Headers] You can add your own extra header files here...
+
+#include <math.h>
+#include "Utils/Logger.h"
+
+using namespace juce;
+
 //[/Headers]
 
 #include "SecondaryControls.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+namespace Gui {
+
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -475,7 +484,7 @@ void SecondaryControls::resized()
     label34->setBounds (148, 229, 49, 10);
     label35->setBounds (148, 244, 49, 10);
     swi_lfo2_att->setBounds (133, 220, 16, 40);
-    label3->setBounds (120, 208, 96, 15);
+    label3->setBounds (112, 208, 96, 15);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -553,6 +562,9 @@ void SecondaryControls::sliderValueChanged (Slider* sliderThatWasMoved)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+} // namespace Gui
+
 //[/MiscUserCode]
 
 
@@ -754,7 +766,7 @@ BEGIN_JUCER_METADATA
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="addbe50fe3c13f62" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="120 208 96 15" textCol="ffffffff"
+         explicitFocusOrder="0" pos="112 208 96 15" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="LFO 2 Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>

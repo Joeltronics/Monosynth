@@ -81,6 +81,10 @@
         <FILE id="whusOH" name="SlewFilter.h" compile="0" resource="0" file="Source/Utils/SlewFilter.h"/>
       </GROUP>
       <GROUP id="{E938C894-F1B4-A05E-D3C6-249983BD5FF2}" name="Gui">
+        <FILE id="bq9EuO" name="SecondaryControls.cpp" compile="1" resource="0"
+              file="Source/Gui/SecondaryControls.cpp"/>
+        <FILE id="JF8hMi" name="SecondaryControls.h" compile="0" resource="0"
+              file="Source/Gui/SecondaryControls.h"/>
         <FILE id="nyCpN9" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/Gui/LookAndFeel.cpp"/>
         <FILE id="oZWn2e" name="LookAndFeel.h" compile="0" resource="0" file="Source/Gui/LookAndFeel.h"/>
         <FILE id="kAT1tl" name="MainGui.cpp" compile="1" resource="0" file="Source/Gui/MainGui.cpp"/>

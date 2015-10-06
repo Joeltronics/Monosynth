@@ -22,6 +22,34 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
+#include "Gui/LookAndFeel.h"
+
+#include "Plugin/PluginProcessor.h"
+
+#include "Params.h"
+
+#include <typeinfo>
+
+namespace Gui {
+
+// Introjucer generated code assumes "using namespace juce"
+// Instead of including this line in a header file (bad!), just import specific types into GUI namespace.
+// Still try to only include MainGui.h when necessary, though.
+
+using Component = juce::Component;
+using SliderListener = juce::SliderListener;
+using ComboBoxListener = juce::ComboBoxListener;
+using String = juce::String;
+using Graphics = juce::Graphics;
+
+using Slider = juce::Slider;
+using Label = juce::Label;
+using GroupComponent = juce::GroupComponent;
+using ComboBox = juce::ComboBox;
+
+template<class T>
+using ScopedPointer = juce::ScopedPointer<T>;
+
 //[/Headers]
 
 
@@ -104,6 +132,9 @@ private:
 };
 
 //[EndFile] You can add extra defines here...
+
+} // namespace Gui
+
 //[/EndFile]
 
 #endif   // __JUCE_HEADER_7123DAFC9A307C70__
