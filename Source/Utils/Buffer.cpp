@@ -64,6 +64,15 @@ Buffer::Buffer(Buffer const& other) :
 	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
 }
 
+// Copy with gain
+Buffer::Buffer(Buffer const& other, sample_t gain) :
+	m_len(other.GetLength()),
+	m_p(new sample_t[m_len]),
+	m_bOwnsBuf(true)
+{
+	juce::FloatVectorOperations::copyWithMultiply(m_p, other.GetConst(), gain, m_len);
+}
+
 // Using preallocated block
 Buffer::Buffer(sample_t* buf, size_t len) :
 	m_len(len),

@@ -25,6 +25,7 @@ public:
 	Buffer(sample_t val, size_t len); // Allocate and initialize to value
 	Buffer(Buffer && other); // Move
 	Buffer(Buffer const& other); // Copy
+	Buffer(Buffer const& other, sample_t gain); // Copy with multiply
 	Buffer(sample_t* buf, size_t len); // Using preallocated block
 
 	~Buffer();

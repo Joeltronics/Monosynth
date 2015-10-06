@@ -17,6 +17,8 @@
 #include "MidiProcessor.h"
 #include "PitchProcessor.h"
 #include "Envelope.h"
+#include "Oscillator.h"
+#include "Vca.h"
 
 class SynthEngine {
 public:
@@ -28,7 +30,7 @@ public:
 	void Process(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages);
 	
 private:
-	void ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, Buffer& FreqPhaseBuf2);
+	void ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& osc1freq /*inout*/, Buffer& osc2freq /*inout*/);
 
 	double m_sampleRate;
     
@@ -40,8 +42,13 @@ private:
 	Engine::MidiProcessor m_midiProc;
 	Engine::PitchProcessor m_pitchProc;
 
-	Engine::GateEnvelope m_ampEnv;
 	Engine::AdsrEnvelope m_filtEnv;
+
+	Engine::Oscillator m_osc1;
+	Engine::Oscillator m_osc2;
+	Engine::Oscillator m_subOsc;
+
+	Engine::Vca m_vca;
 };
 
 

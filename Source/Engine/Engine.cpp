@@ -27,6 +27,16 @@ SynthEngine::SynthEngine() :
 {}
 SynthEngine::~SynthEngine() {}
 
+void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
+	m_sampleRate = sampleRate;
+	m_pitchProc.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_filtEnv.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_osc1.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_osc2.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_subOsc.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_vca.PrepareToPlay(sampleRate, samplesPerBlock);
+}
+
 void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
 	
 	juce::FloatVectorOperations::enableFlushToZeroMode(true);
@@ -65,21 +75,12 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// 1. MIDI
 	m_midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
-	// 2a. Envelopes
-
-	// TODO: only need to process this if enabled for VCA
-	// (though I guess it doesn't use that much processor or memory, so maybe it's fine)
-	Buffer ampEnvBuf(nSamp);
-	m_ampEnv.Process(gateEvents, ampEnvBuf);
+	// 2. Envelope & LFO
 
 #if 0 // TODO
 	Buffer filtEnvBuf(nSamp);
 	m_filtEnv.Process(gateEvents, filtEnvBuf);
-#endif
 
-	// 2b. LFO
-
-#if 0 // TODO
 	Buffer lfo1(nSamp);
 	Buffer lfo2(nSamp);
 #endif
@@ -99,28 +100,9 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// TODO: tuning instability
 
-
-	if (!gateEvents.empty()) {
-		__nop();
-		__nop();
-		__nop();
-	}
-
-
 	// Pitch to freq
 	m_pitchProc.PitchToFreq(freqPhaseBuf1);
 	m_pitchProc.PitchToFreq(freqPhaseBuf2);
-
-
-
-	if (!gateEvents.empty()) {
-		__nop();
-		__nop();
-		__nop();
-	}
-
-
-
 
 	// 4. Oscillators & Mixer
 	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
@@ -132,20 +114,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// TODO
 
 	// 7. VCA
+	m_vca.Process(buf, gateEvents);
 	
-	// TODO: more features
-	buf *= ampEnvBuf;
-
-
-
-
-
-
-
-
-
-
-
 #ifdef DONT_REUSE_JUCE_BUF
 	// Copy buffer to output buffer (for all channels)
 	for (size_t chan = 0; chan < nChan; ++chan) {
@@ -168,21 +138,10 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	
 }
 
-void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
-	m_sampleRate = sampleRate;
-	m_pitchProc.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_filtEnv.PrepareToPlay(sampleRate, samplesPerBlock);
-}
-
-void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, Buffer& FreqPhaseBuf2)
+void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhaseBuf1 /*inout*/, Buffer& freqPhaseBuf2 /*inout*/)
 {
-	size_t const nSamp = MainBuf.GetLength();
-	MainBuf.Clear();
-
-	// TODO: do we really need to preallocate memory here?
-	Buffer osc1Buf(nSamp);
-	Buffer osc2Buf(nSamp);
+	size_t const nSamp = mainBuf.GetLength();
+	mainBuf.Clear();
 
 	// Get params
 	// TODO: get actual values
@@ -200,68 +159,32 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, B
 	bool bProcOsc2Sig = (osc2Gain > 0.0f || ringGain > 0.0f);
 	bool bProcOsc2Phase = bProcOsc2Sig;
 
-	// Process phases
+	// Allocate memory
 
-#if 1
-	// DEBUG: always process
-	m_prevPhaseOsc1 = Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1);
-	m_prevPhaseOsc2 = Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2);
-#else
-	// If we need the phase signal, process it. Otherwise, just increment the
-	// phase memory by the appropriate amount
-
-	if (bProcOsc1Phase) {
-		m_prevPhaseOsc1 = Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1);
-	}
-	else {
-		m_prevPhaseOsc1 = Utils::FreqToPhaseNoProcess(FreqPhaseBuf1, m_prevPhaseOsc1);
-	}
-
-	if (bProcOsc2Phase) {
-		m_prevPhaseOsc2 = Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2);
-	}
-	else {
-		m_prevPhaseOsc2 = Utils::FreqToPhaseNoProcess(FreqPhaseBuf2, m_prevPhaseOsc2);
-	}
-
-	/*
-	m_prevPhaseOsc1 = (bProcOsc1Phase ?
-		Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1) :
-		Utils::FreqToPhaseNoProcess(FreqPhaseBuf1, m_prevPhaseOsc1));
-
-	m_prevPhaseOsc2 = (bProcOsc2Phase ?
-		Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2) :
-		Utils::FreqToPhaseNoProcess(FreqPhaseBuf2, m_prevPhaseOsc2));
-		*/
-#endif
+	Buffer osc1Buf(nSamp);
+	Buffer osc2Buf(nSamp);
 
 	// Process oscs
 
 	if (bProcOsc1Sig) {
 		DEBUG_ASSERT(bProcOsc1Phase);
 
-		// TODO: process (FreqPhaseBuf1 -> Osc1Buf)
-
-		// This is just a temporary implementation (this is just an aliasing sawtooth)
-		osc1Buf = FreqPhaseBuf1 - 0.5f;
+		m_osc1.ProcessFromFreq(osc1Buf, freqPhaseBuf1);
 
 		if (osc1Gain > 0.0f) {
-			osc1Buf *= osc1Gain;
-			MainBuf += osc1Buf;
+			Buffer tempOscBuf(osc1Buf, osc1Gain);
+			mainBuf += tempOscBuf;
 		}
 	}
 
 	if (bProcOsc2Sig) {
 		DEBUG_ASSERT(bProcOsc2Phase);
 
-		// TODO: process (freqPhaseBuf2 -> osc2Buf)
-
-		// This is just a temporary implementation (this is just an aliasing sawtooth)
-		osc2Buf = FreqPhaseBuf2 - 0.5f;
+		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2);
 
 		if (osc2Gain > 0.0f) {
-			osc2Buf *= osc2Gain;
-			MainBuf += osc2Buf;
+			Buffer tempOscBuf(osc2Buf, osc2Gain);
+			mainBuf += tempOscBuf;
 		}
 	}
 
@@ -269,28 +192,25 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, B
 	if (ringGain > 0.0f) {
 		osc2Buf *= osc1Buf;
 		osc2Buf *= ringGain;
-		MainBuf += osc2Buf;
+		mainBuf += osc2Buf;
 	}
 
-	// At this point we're done with both osc1Buf and osc2Buf
-	// (But we still use freqPhaseBuf1 for sub)
-	/*
+	// At this point we're done with the contents of osc1Buf and osc2Buf - can use freely
 	if (subGain > 0.0f) {
-		// TODO: process (freqPhaseBuf1 -> osc1Buf)
-		Osc1Buf *= subGain;
-		MainBuf += Osc1Buf;
+		m_subOsc.ProcessSub(osc1Buf, freqPhaseBuf1);
+		osc1Buf *= subGain;
+		mainBuf += osc1Buf;
 	}
-	*/
 
 	/*
 	if (noiseGain > 0.0f) {
-		// TODO: process (noise -> osc1Buf)
-		Osc1Buf *= noiseGain;
-		MainBuf += Osc1Buf;
+		// TODO: process (noise -> osc2Buf)
+		osc2Buf *= noiseGain;
+		mainBuf += osc2Buf;
 	}
 	*/
 
 	if (!Utils::ApproxEqual(preFiltGain, 1.0f)) {
-		MainBuf *= preFiltGain;
+		mainBuf *= preFiltGain;
 	}
 }

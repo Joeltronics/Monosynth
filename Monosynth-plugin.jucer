@@ -41,17 +41,21 @@
         <FILE id="G2sUNX" name="Types.h" compile="0" resource="0" file="Source/Include/Types.h"/>
       </GROUP>
       <GROUP id="{64F1D4CF-5AF8-19D8-7E95-D0070893A8A6}" name="Engine">
-        <FILE id="SHOyBl" name="Envelope.cpp" compile="1" resource="0" file="Source/Engine/Envelope.cpp"/>
+        <FILE id="NkT6bs" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
+        <FILE id="Vg7ac4" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
+        <FILE id="PtYCfk" name="Oscillator.h" compile="0" resource="0" file="Source/Engine/Oscillator.h"/>
+        <FILE id="pQQoZ1" name="Oscillator.cpp" compile="1" resource="0" file="Source/Engine/Oscillator.cpp"/>
         <FILE id="VIEtZz" name="Envelope.h" compile="0" resource="0" file="Source/Engine/Envelope.h"/>
-        <FILE id="nkmpC4" name="PitchProcessor.cpp" compile="1" resource="0"
-              file="Source/Engine/PitchProcessor.cpp"/>
+        <FILE id="SHOyBl" name="Envelope.cpp" compile="1" resource="0" file="Source/Engine/Envelope.cpp"/>
         <FILE id="X7cdDG" name="PitchProcessor.h" compile="0" resource="0"
               file="Source/Engine/PitchProcessor.h"/>
+        <FILE id="nkmpC4" name="PitchProcessor.cpp" compile="1" resource="0"
+              file="Source/Engine/PitchProcessor.cpp"/>
+        <FILE id="Hko8wF" name="MidiProcessor.h" compile="0" resource="0" file="Source/Engine/MidiProcessor.h"/>
         <FILE id="WTSyHd" name="MidiProcessor.cpp" compile="1" resource="0"
               file="Source/Engine/MidiProcessor.cpp"/>
-        <FILE id="Hko8wF" name="MidiProcessor.h" compile="0" resource="0" file="Source/Engine/MidiProcessor.h"/>
-        <FILE id="Vg7ac4" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
-        <FILE id="NkT6bs" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
+        <FILE id="Jom5ya" name="Vca.h" compile="0" resource="0" file="Source/Engine/Vca.h"/>
+        <FILE id="m9Bzeu" name="Vca.cpp" compile="1" resource="0" file="Source/Engine/Vca.cpp"/>
       </GROUP>
       <GROUP id="{5579AD73-E26C-9C8A-A95D-D152B1D9B913}" name="Plugin">
         <FILE id="qT9JVw" name="PluginEditor.cpp" compile="1" resource="0"
