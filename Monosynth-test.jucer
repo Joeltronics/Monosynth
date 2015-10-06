@@ -11,6 +11,8 @@
       </GROUP>
       <GROUP id="{6264D7E2-3BA0-53D2-2125-7F7904BBA979}" name="Engine">
         <GROUP id="{898E51B8-EE78-A81D-8F41-68FC60F81C54}" name="Test">
+          <FILE id="cVAFP8" name="EngineTest.cpp" compile="1" resource="0" file="Source/Engine/Test/EngineTest.cpp"/>
+          <FILE id="BulYFU" name="EngineTest.h" compile="0" resource="0" file="Source/Engine/Test/EngineTest.h"/>
           <FILE id="hPdJgW" name="EnvelopeUnitTest.cpp" compile="1" resource="0"
                 file="Source/Engine/Test/EnvelopeUnitTest.cpp"/>
           <FILE id="WQ2xJa" name="EnvelopeUnitTest.h" compile="0" resource="0"
@@ -24,6 +26,8 @@
           <FILE id="uTyNDJ" name="MidiProcessorUnitTest.h" compile="0" resource="0"
                 file="Source/Engine/Test/MidiProcessorUnitTest.h"/>
         </GROUP>
+        <FILE id="A32Zw1" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
+        <FILE id="tC6NZh" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
         <FILE id="u9psft" name="Envelope.cpp" compile="1" resource="0" file="Source/Engine/Envelope.cpp"/>
         <FILE id="TsPRc3" name="Envelope.h" compile="0" resource="0" file="Source/Engine/Envelope.h"/>
         <FILE id="kWRxUp" name="MidiProcessor.cpp" compile="1" resource="0"

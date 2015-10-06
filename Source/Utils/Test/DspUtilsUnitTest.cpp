@@ -195,6 +195,8 @@ namespace Test {
             expect(Utils::ApproxEqual(Utils::dBtoAmp(15.0f), Utils::dBtoPow(7.5f)));
 
 			expect(Utils::ApproxEqual(Utils::PitchToFreqHz<float>(69.0f), 440.0f));
+			expect(Utils::ApproxEqual(Utils::PitchToFreqHz<double>(69.0f), 440.0));
+			expect(Utils::ApproxEqual(Utils::PitchToFreqHz<double>(69.0), 440.0));
 			expect(Utils::ApproxEqual(Utils::PitchToFreqHz<float>(60.0f), 261.63f, 0.01f));
 			expect(Utils::ApproxEqual(Utils::PitchToFreqHz<float>(81.0f), 880.0f));
         }

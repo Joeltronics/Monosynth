@@ -27,7 +27,7 @@ static void SetupLogger(juce::String const& filename) {
 	juce::Logger::setCurrentLogger(&fl);
 }
 
-#define LOG(MSG) Logger::writeToLog( String::formatted( __FILE__ ":" STRINGIFY(__LINE__) " ") + juce::String(MSG) )
+#define LOG(MSG) juce::Logger::writeToLog( juce::String::formatted( __FILE__ ":" STRINGIFY(__LINE__) " ") + juce::String(MSG) )
 
 #else
 

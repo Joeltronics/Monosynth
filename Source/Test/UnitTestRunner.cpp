@@ -22,6 +22,8 @@
 #include "Engine/Test/MidiProcessorUnitTest.h"
 #include "Engine/Test/PitchProcessorUnitTest.h"
 
+#include "Engine/Test/EngineTest.h"
+
 namespace Test {
     
     // Utils unit tests
@@ -35,6 +37,7 @@ namespace Test {
 	static PitchProcessorUnitTest s_pitchProcTest;
 
     // Performance tests
+	static EngineTest s_engineTest;
     static OnePoleTest s_onePoleTest;
     
     void RunAllUnitTests() {
