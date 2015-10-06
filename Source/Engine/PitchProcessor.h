@@ -17,16 +17,17 @@
 
 #include "Utils/DspUtils.h"
 #include "Utils/Debug.h"
+#include "Utils/OnePole.h"
 
 namespace Engine {
 
 class PitchProcessor {
 public:
 
-	PitchProcessor() : m_sampleRate(0.0) {}
-	~PitchProcessor() {}
+	PitchProcessor();
+	~PitchProcessor();
 
-	void PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) { m_sampleRate = sampleRate; }
+	void PrepareToPlay(double sampleRate, int samplesPerBlock);
 
 	inline float PitchToNormFreq(float pitch) {
 		DEBUG_ASSERT(m_sampleRate > 0.0);
@@ -36,9 +37,13 @@ public:
 	void PitchToFreq(Buffer& buf);
 	void PitchToFreq(Buffer const& inBuf, Buffer& outBuf);
 
+	void ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uint16_t> const& pitchBendEvents, uint32_t pitchBendAmt);
+
 private:
 
 	double m_sampleRate;
+	uint16_t m_lastPitchBend;
+	Utils::OnePole m_pitchBendFilt;
 };
 
 }

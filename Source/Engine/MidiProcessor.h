@@ -63,7 +63,7 @@ public:
 		/*out*/ eventBuf_t<gateEvent_t>& gateEvents,
 		/*out*/ eventBuf_t<uint8_t>& noteEvents,
 		/*out*/ eventBuf_t<uint8_t>& velEvents,
-		/*out*/ eventBuf_t<int>& pitchBendEvents);
+		/*out*/ eventBuf_t<uint16_t>& pitchBendEvents);
 
 	void Clear();
 

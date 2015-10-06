@@ -104,7 +104,7 @@ void MidiProcessor::Process(
 	/*out*/ eventBuf_t<gateEvent_t>& gateEvents,
 	/*out*/ eventBuf_t<uint8_t>& noteEvents,
 	/*out*/ eventBuf_t<uint8_t>& velEvents,
-	/*out*/ eventBuf_t<int>& pitchBendEvents)
+	/*out*/ eventBuf_t<uint16_t>& pitchBendEvents)
 {
 	bool bPrevNoteOn = (m_noteQueue.GetCurrNote().v > 0);
 
@@ -165,7 +165,7 @@ void MidiProcessor::Process(
 			bPrevNoteOn = false;
 		}
 		else if (m.isPitchWheel()) {
-			pitchBendEvents.push_back(timedEvent_t<int>(time, m.getPitchWheelValue()));
+			pitchBendEvents.push_back(timedEvent_t<uint16_t>(time, m.getPitchWheelValue()));
 		}
 		else if (m.isSustainPedalOn()) {
 			m_bSusPedal = true;

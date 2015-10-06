@@ -56,6 +56,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	float outputVol = 1.0f;
 
+	uint32_t pitchBendAmt = 12;
+
 	// Process:
 	// 1. MIDI
 	// 2. Mod sources (Env/LFO)
@@ -70,7 +72,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	eventBuf_t<gateEvent_t> gateEvents;
 	eventBuf_t<uint8_t> noteEvents;
 	eventBuf_t<uint8_t> velEvents;
-	eventBuf_t<int> pitchBendEvents;
+	eventBuf_t<uint16_t> pitchBendEvents;
 
 	// 1. MIDI
 	m_midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
@@ -91,7 +93,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	
 	m_lastNote = Utils::EventBufToBuf<uint8_t, float>(m_lastNote, noteEvents, nSamp, freqPhaseBuf1.Get());
 	
-	// TODO: bend
+	m_pitchProc.ProcessPitchBend(freqPhaseBuf1, pitchBendEvents, pitchBendAmt);
 
 	// TODO: mod
 
