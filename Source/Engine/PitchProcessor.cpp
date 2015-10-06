@@ -43,10 +43,10 @@ void PitchProcessor::ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uin
 	{
 		// First, if near center or end of range, snap
 		if (pb <= k_pbStickiness)
-			return -pbAmt;
+			return -float(pbAmt);
 
 		if (pb >= (0x3FFF - k_pbStickiness))
-			return pbAmt;
+			return float(pbAmt);
 
 		if (pb >= (0x1FFF - k_pbStickiness) &&
 			pb <= (0x2000 + k_pbStickiness))
