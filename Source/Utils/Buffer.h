@@ -36,9 +36,9 @@ public:
 	void Set(sample_t val);
 	void Set(sample_t val, size_t len);
 	void Set(sample_t* buf, size_t len); // doesn't take ownership
-	void Move(Buffer && other); // Takes ownership; same as operator=
-	void Copy(sample_t* buf, size_t len);
-	void Copy(Buffer const& other); // same as operator=
+	void MoveFrom(Buffer && other); // Takes ownership; same as operator=
+	void CopyFrom(sample_t* buf, size_t len);
+	void CopyFrom(Buffer const& other); // same as operator=
 
 	sample_t* Get();
 	sample_t const* GetConst() const;
@@ -47,8 +47,8 @@ public:
 	// ***** Operators *****
 
 	// move & copy
-	Buffer& operator=(Buffer && other); // same as Move()
-	Buffer& operator=(Buffer const& other); // same as Copy()
+	Buffer& operator=(Buffer && other); // same as MoveFrom()
+	Buffer& operator=(Buffer const& other); // same as CopyFrom()
 
 	// dereference
 	sample_t operator[](size_t idx); // get sample
@@ -90,18 +90,15 @@ private:
 
 // ***** Getters & setters *****
 
-inline sample_t* Buffer::Get()
-{
+inline sample_t* Buffer::Get() {
 	return m_p;
 }
 
-inline sample_t const* Buffer::GetConst() const
-{
+inline sample_t const* Buffer::GetConst() const {
 	return m_p;
 }
 
-inline void Buffer::Clear()
-{
+inline void Buffer::Clear() {
 	juce::FloatVectorOperations::clear(m_p, m_len);
 }
 
@@ -110,8 +107,7 @@ inline void Buffer::Clear(size_t len) {
 	juce::FloatVectorOperations::clear(m_p, m_len);
 }
 
-inline void Buffer::Set(sample_t val)
-{
+inline void Buffer::Set(sample_t val) {
 	juce::FloatVectorOperations::fill(m_p, val, m_len);
 }
 
@@ -120,31 +116,30 @@ inline void Buffer::Set(sample_t val, size_t len) {
 	juce::FloatVectorOperations::fill(m_p, val, len);
 }
 
-inline void Buffer::Copy(sample_t* buf, size_t len) {
+inline void Buffer::CopyFrom(sample_t* buf, size_t len) {
 	if (m_len != len) Realloc_(len);
 	juce::FloatVectorOperations::copy(m_p, buf, m_len);
 }
 
 // same as operator=(Buffer)
-inline void Buffer::Copy(Buffer const& other) {
+inline void Buffer::CopyFrom(Buffer const& other) {
 	if (m_len != other.m_len) Realloc_(other.m_len);
 	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
 }
 
-inline size_t Buffer::GetLength() const
-{
+inline size_t Buffer::GetLength() const {
 	return m_len;
 }
 
 // ***** Operators: Move & Copy *****
 
 inline Buffer& Buffer::operator=(Buffer && other) {
-	Move(std::forward<Buffer>(other));
+	MoveFrom(std::forward<Buffer>(other));
 	return *this;
 }
 
 inline Buffer& Buffer::operator=(Buffer const& other) {
-	Copy(other);
+	CopyFrom(other);
 	return *this;
 }
 
@@ -155,8 +150,7 @@ inline sample_t Buffer::operator[](size_t idx) {
 	return m_p[idx];
 }
 
-inline sample_t* Buffer::operator*()
-{
+inline sample_t* Buffer::operator*() {
 	return m_p;
 }
 

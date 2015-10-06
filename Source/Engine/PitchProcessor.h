@@ -16,6 +16,7 @@
 #include <cmath>
 
 #include "Utils/DspUtils.h"
+#include "Utils/Debug.h"
 
 namespace Engine {
 
@@ -28,6 +29,7 @@ public:
 	void PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) { m_sampleRate = sampleRate; }
 
 	inline float PitchToNormFreq(float pitch) {
+		DEBUG_ASSERT(m_sampleRate > 0.0);
 		return float(Utils::PitchToFreqHz<double>(pitch) / m_sampleRate);
 	}
 	

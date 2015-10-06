@@ -48,8 +48,8 @@ void AdsrEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& bu
 	DEBUG_ASSERT(false); // TODO
 }
 
-void AdsrEnvelope::PrepareToPlay(double sampleRate, int samplesPerBlock) {
-	DEBUG_ASSERT(false); // TODO
+void AdsrEnvelope::PrepareToPlay(double /*sampleRate*/, int /*samplesPerBlock*/) {
+	// TODO
 }
 
 }

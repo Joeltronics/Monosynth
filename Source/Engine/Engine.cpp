@@ -17,9 +17,11 @@
 #include "Utils/ApproxEqual.h"
 #include "Utils/DspUtils.h"
 
+#define DONT_REUSE_JUCE_BUF 1
+
 // TODO: randomize initial phase
 SynthEngine::SynthEngine() :
-	m_lastNote(0),
+	m_lastNote(60),
 	m_prevPhaseOsc1(0.0f),
 	m_prevPhaseOsc2(0.0f)
 {}
@@ -32,11 +34,17 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	size_t nSamp = juceBuf.getNumSamples();
 	size_t nChan = juceBuf.getNumChannels();
 
+#ifdef DONT_REUSE_JUCE_BUF
+	Buffer buf(nSamp);
+#else
 	Buffer buf(juceBuf.getWritePointer(0), nSamp);
+#endif
 
 	// Get params
 	// TODO: get actual values
 	float osc2Tuning = 12.01f;
+
+	float outputVol = 1.0f;
 
 	// Process:
 	// 1. MIDI
@@ -47,6 +55,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// 6. Overdrive
 	// 7. VCA
 	// 8. Effects
+	// 9. Output Volume
 
 	eventBuf_t<gateEvent_t> gateEvents;
 	eventBuf_t<uint8_t> noteEvents;
@@ -90,15 +99,31 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// TODO: tuning instability
 
+
+	if (!gateEvents.empty()) {
+		__nop();
+		__nop();
+		__nop();
+	}
+
+
 	// Pitch to freq
 	m_pitchProc.PitchToFreq(freqPhaseBuf1);
-	m_pitchProc.PitchToFreq(freqPhaseBuf1);
+	m_pitchProc.PitchToFreq(freqPhaseBuf2);
+
+
+
+	if (!gateEvents.empty()) {
+		__nop();
+		__nop();
+		__nop();
+	}
+
+
+
 
 	// 4. Oscillators & Mixer
-
-	//Buffer MainBuf(nSamp);
 	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
-
 
 	// 5. Filter
 	// TODO
@@ -108,21 +133,46 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// 7. VCA
 	
-	// TODO: proper implementation
-
+	// TODO: more features
 	buf *= ampEnvBuf;
 
 
-	// If not mono, copy channel 0 to all others
-	for (size_t chan = 1; chan < nChan; ++chan)
-		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), juceBuf.getReadPointer(chan), nSamp);
 
+
+
+
+
+
+
+
+
+#ifdef DONT_REUSE_JUCE_BUF
+	// Copy buffer to output buffer (for all channels)
+	for (size_t chan = 0; chan < nChan; ++chan) {
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), buf.Get(), nSamp);
+	}
+#else
+	// If not mono, copy channel 0 to all others
+	for (size_t chan = 1; chan < nChan; ++chan) {
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), nSamp);
+	}
+#endif
+	
 	// 8. Effects
 	// TODO
+
+	// 9. Output Volume
+	for (size_t chan = 0; chan < nChan; ++chan) {
+		juce::FloatVectorOperations::multiply(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), outputVol, nSamp);
+	}
+	
 }
 
-void SynthEngine::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
+	m_pitchProc.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_filtEnv.PrepareToPlay(sampleRate, samplesPerBlock);
 }
 
 void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, Buffer& FreqPhaseBuf2)
@@ -136,7 +186,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, B
 
 	// Get params
 	// TODO: get actual values
-	float osc1Gain = 1.0f;
+	float osc1Gain = 0.5f;
 	float osc2Gain = 0.0f;
 	float subGain = 0.0f;
 	float ringGain = 0.0f;
@@ -151,9 +201,30 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, B
 	bool bProcOsc2Phase = bProcOsc2Sig;
 
 	// Process phases
+
+#if 1
+	// DEBUG: always process
+	m_prevPhaseOsc1 = Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1);
+	m_prevPhaseOsc2 = Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2);
+#else
 	// If we need the phase signal, process it. Otherwise, just increment the
 	// phase memory by the appropriate amount
 
+	if (bProcOsc1Phase) {
+		m_prevPhaseOsc1 = Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1);
+	}
+	else {
+		m_prevPhaseOsc1 = Utils::FreqToPhaseNoProcess(FreqPhaseBuf1, m_prevPhaseOsc1);
+	}
+
+	if (bProcOsc2Phase) {
+		m_prevPhaseOsc2 = Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2);
+	}
+	else {
+		m_prevPhaseOsc2 = Utils::FreqToPhaseNoProcess(FreqPhaseBuf2, m_prevPhaseOsc2);
+	}
+
+	/*
 	m_prevPhaseOsc1 = (bProcOsc1Phase ?
 		Utils::FreqToPhase(FreqPhaseBuf1, m_prevPhaseOsc1) :
 		Utils::FreqToPhaseNoProcess(FreqPhaseBuf1, m_prevPhaseOsc1));
@@ -161,6 +232,8 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& MainBuf, Buffer& FreqPhaseBuf1, B
 	m_prevPhaseOsc2 = (bProcOsc2Phase ?
 		Utils::FreqToPhase(FreqPhaseBuf2, m_prevPhaseOsc2) :
 		Utils::FreqToPhaseNoProcess(FreqPhaseBuf2, m_prevPhaseOsc2));
+		*/
+#endif
 
 	// Process oscs
 

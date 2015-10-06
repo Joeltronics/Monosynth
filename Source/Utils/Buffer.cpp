@@ -105,7 +105,7 @@ void Buffer::Set(sample_t* buf, size_t len) {
 }
 
 // same as operator=(Buffer&&)
-void Buffer::Move(Buffer && other) {
+void Buffer::MoveFrom(Buffer && other) {
 	if (m_p == other.m_p) return;
 
 	Dealloc_();

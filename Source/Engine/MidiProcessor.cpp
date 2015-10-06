@@ -12,6 +12,8 @@
 
 #include "Types.h"
 
+#include "Utils/Logger.h"
+
 #include <vector>
 
 namespace Engine {
@@ -125,6 +127,11 @@ void MidiProcessor::Process(
 			midiNote_t newNote(m);
 			
 			bool bIsNoteOn = m.isNoteOn() && (newNote.v > 0);
+
+			if (bIsNoteOn)
+				LOG(juce::String::formatted("NoteOn: %u", m.getNoteNumber()));
+			else
+				LOG(juce::String::formatted("NoteOff: %u", m.getNoteNumber()));
 
 			if (m_bSusPedal && !bIsNoteOn) {
 				m_susNotes.push_back(newNote.n);
