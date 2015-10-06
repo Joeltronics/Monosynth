@@ -30,9 +30,9 @@ The main goal is for this to be super accessible and easy to get a good sound ou
 
 ## Status
 
-It doesn't work yet - there's no sound engine. The GUI controls are pretty much all there and ready to be hooked up, but there's no engine to hook them up to.
+It makes sound. At the moment it just makes an aliased sawtooth wave, but hey, it's something. The GUI controls are pretty much ready to be hooked up, but a lot of the engine features aren't implemented yet.
 
-Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - possibly even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to get the sound engine working.
+Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - maybe even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to get the sound engine working.
 
 Here is what the GUI looks like at the moment: *(click to enlarge)*  
 [<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)
@@ -46,7 +46,7 @@ Here is what the GUI looks like at the moment: *(click to enlarge)*
 
 These are all features I'm considering possibly adding in the future, but don't plan on implementing right away:
 
-* Built-in patch storage & management - in the meantime, most DAWs should support it (once I implement state saving, anyway, which is planned for 1.0)
+* Built-in patch storage & management - I do plan on supporting state saving and maybe very basic patch management via the DAW, but there won't be a built-in patch manager yet.
 * More monophony priority modes (besides last-note)
 * Polyphony & unison
 * Sequencer & arpeggiator
