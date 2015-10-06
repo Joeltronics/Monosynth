@@ -40,7 +40,7 @@ Here is what the GUI looks like at the moment: *(click to enlarge)*
 ## Plugin features planned for 1.0
 
 * Fully automatable parameters - so if you want an extra LFO, you could always use automation to act as one
-* "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like "mods" to a hardware synth. They're currently on the front panel, but they won't be staying there forever.
+* "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like "mods" to a hardware synth.
 
 ## Features not planned for 1.0
 
