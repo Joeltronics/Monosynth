@@ -21,57 +21,6 @@
 #include <vector>
 #include <array>
 
-#if _DEBUG
-#define SETUP_DEBUG_PARAMS()
-
-#else
-#define SETUP_DEBUG_PARAMS()
-#endif
-
-// Note: these params must have the same name as the corresponding knob in the GUI!
-// Also, name must be less than 30 characters
-// See MainGui.cpp constructor for details
-
-#define SETUP_PARAMS() \
-addParameter(new EnumParam("Osc 1 Wave", {"Tri","Rect","Saw"}, 2)); \
-addParameter(new FloatParam("Osc 1 Shape")); \
-addParameter(new EnumParam("Osc 2 Wave", {"Tri","Rect","Saw"}, 2)); \
-addParameter(new FloatParam("Osc 2 Shape")); \
-addParameter(new IntParam("Osc 2 Coarse Tune", 0, {-7,19})); \
-addParameter(new FloatParam("Osc 2 Fine Tune", 0.0f, {-1.0f,1.0f})); \
-addParameter(new EnumParam("Sub Osc Octave", {"-2","-1"}, 1)); \
-addParameter(new EnumParam("Sub Osc Wave", {"Tri","Square","Pulse"}, 0)); \
-addParameter(new FloatParam("Osc 1 Mix", 1.0f)); \
-addParameter(new FloatParam("Osc 2 Mix")); \
-addParameter(new FloatParam("Sub Mix")); \
-addParameter(new FloatParam("Ring Mod Mix")); \
-addParameter(new FloatParam("Noise Mix")); \
-addParameter(new FloatParam("Filter Frequency")); /*TODO: range*/ \
-addParameter(new FloatParam("Filter Resonance")); \
-addParameter(new EnumParam("Filter Model", {"IC","Transistor","Diode"}, 0)); \
-addParameter(new BoolParam("Filter KB Track")); \
-addParameter(new EnumParam("Filter Poles", {"2","4"}, 0)); \
-addParameter(new FloatParam("Filter Env Amount", 0.0f, {-1.0f,1.0f})); \
-addParameter(new FloatParam("Filter Vel Amount")); \
-addParameter(new FloatParam("Filter LFO Amount")); \
-addParameter(new EnumParam("Filter LFO Select", {"LFO 1","LFO 2"}, 0)); \
-addParameter(new FloatParam("Filt Env Attack")); \
-addParameter(new FloatParam("Filt Env Decay")); \
-addParameter(new FloatParam("Filt Env Sustain", 1.0f)); \
-addParameter(new FloatParam("Filt Env Release")); \
-addParameter(new FloatParam("Filt Env Velocity")); \
-addParameter(new FloatParam("Amp Env Attack")); \
-addParameter(new FloatParam("Amp Env Decay")); \
-addParameter(new FloatParam("Amp Env Sustain", 1.0f)); \
-addParameter(new FloatParam("Amp Env Release")); \
-addParameter(new FloatParam("Amp Env Velocity")); \
-addParameter(new FloatParam("LFO 1 Freq", 0.5f)); \
-addParameter(new EnumParam("LFO 1 Shape", {"Tri/Squ","Saw","S&H"})); \
-addParameter(new FloatParam("LFO 2 Freq", 0.5f)); \
-addParameter(new EnumParam("LFO 2 Shape", {"Tri/Squ","Saw","S&H","Env"})); \
-addParameter(new FloatParam("LFO 2 Attack")); \
-SETUP_DEBUG_PARAMS()
-
 // ***** Param *****
 
 // Class Param is in range 0-1, as are all overridden virtual methods
@@ -105,13 +54,14 @@ public:
 	bool isMetaParameter() const override { return bMeta; }	
 	
 	// from juce::SliderListener
-	void sliderValueChanged(juce::Slider* slider) override { 
+	void sliderValueChanged(juce::Slider* slider) override {
 		DEBUG_ASSERT(slider);
 		
-		setValueNotifyingHost(float(slider->valueToProportionOfLength(slider->getValue())));
+		// FIXME: this doesn't work
+		//setValueNotifyingHost(float(slider->valueToProportionOfLength(slider->getValue())));
 
-		// This would be better (doesn't need to convert to host range & back), but won't notify host:
-		//SetActualValue(float(slider->getValue()));
+		// This won't notify host, but is otherwise better (doesn't need to convert to host range & back)
+		SetActualValue(float(slider->getValue()));
 	}
 
 	// New methods
@@ -404,6 +354,105 @@ private:
 	size_t const mk_nVals;
 	juce::Atomic<size_t> m_val;
 };
+
+struct ParamStruct {
+private:
+	std::vector<Param*> paramList;
+
+public:
+
+	using EnumParam = ::EnumParam;
+	using FloatParam = ::FloatParam;
+	using IntParam = ::IntParam;
+	using BoolParam = ::BoolParam;
+
+	EnumParam* osc1wave;
+	FloatParam* osc1shape;
+	EnumParam* osc2wave;
+	FloatParam* osc2shape;
+	IntParam* osc2coarse;
+	FloatParam* osc2fine;
+	EnumParam* subOscOct;
+	EnumParam* subOscWave;
+	FloatParam* mixOsc1;
+	FloatParam* mixOsc2;
+	FloatParam* mixSub;
+	FloatParam* mixRing;
+	FloatParam* mixNoise;
+	FloatParam* filtFreq;
+	FloatParam* filtRes;
+	EnumParam* filtModel;
+	BoolParam* bFiltKb;
+	EnumParam* filtPoles;
+	FloatParam* filtEnv;
+	FloatParam* filtVelAmt;
+	FloatParam* filtLfoAmt;
+	EnumParam* filtLfoSel;
+	FloatParam* envAtt;
+	FloatParam* envDec;
+	FloatParam* envSus;
+	FloatParam* envRel;
+	FloatParam* envVel;
+	FloatParam* vcaVel;
+	FloatParam* lfo1freq;
+	EnumParam* lfo1shape;
+	FloatParam* lfo2freq;
+	EnumParam* lfo2shape;
+	FloatParam* lfo2att;
+
+	// Note: these params must have the same name as the corresponding knob in the GUI!
+	// Also, name must be less than 30 characters
+	// See MainGui.cpp constructor for details
+
+	// Something else has to manually delete these!
+	// i.e. these will be added to PluginProcessor, which calls addParameter, which adds them
+	// to juce::OwnedArray, which deletes them on destruction
+
+#define AP(X) paramList.push_back(X)
+	ParamStruct()
+	{
+		AP(osc1wave = new EnumParam("Osc 1 Wave", { "Tri","Rect","Saw" }, 2));
+		AP(osc1shape = new FloatParam("Osc 1 Shape"));
+		AP(osc2wave = new EnumParam("Osc 2 Wave", { "Tri","Rect","Saw" }, 2));
+		AP(osc2shape = new FloatParam("Osc 2 Shape"));
+		AP(osc2coarse = new IntParam("Osc 2 Coarse Tune", 0, { -7,19 }));
+		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.0f, { -1.0f,1.0f }));
+		AP(subOscOct = new EnumParam("Sub Osc Octave", { "-2","-1" }, 1));
+		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri","Square","Pulse" }, 0));
+		AP(mixOsc1 = new FloatParam("Osc 1 Mix", 1.0f));
+		AP(mixOsc2 = new FloatParam("Osc 2 Mix"));
+		AP(mixSub = new FloatParam("Sub Mix"));
+		AP(mixRing = new FloatParam("Ring Mod Mix"));
+		AP(mixNoise = new FloatParam("Noise Mix"));
+		AP(filtFreq = new FloatParam("Filter Frequency")); /*TODO: range*/
+		AP(filtRes = new FloatParam("Filter Resonance"));
+		AP(filtModel = new EnumParam("Filter Model", { "IC","Transistor","Diode" }, 0));
+		AP(bFiltKb = new BoolParam("Filter KB Track"));
+		AP(filtPoles = new EnumParam("Filter Poles", { "2","4" }, 0));
+		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f,1.0f }));
+		AP(filtVelAmt = new FloatParam("Filter Vel Amount"));
+		AP(filtLfoAmt = new FloatParam("Filter LFO Amount"));
+		AP(filtLfoSel = new EnumParam("Filter LFO Select", { "LFO 1","LFO 2" }, 0));
+		AP(envAtt = new FloatParam("Env Attack"));
+		AP(envDec = new FloatParam("Env Decay"));
+		AP(envSus = new FloatParam("Env Sustain", 1.0f));
+		AP(envRel = new FloatParam("Env Release"));
+		AP(envVel = new FloatParam("Env Velocity"));
+		AP(vcaVel = new FloatParam("VCA Velocity"));
+		AP(lfo1freq = new FloatParam("LFO 1 Freq", 0.5f));
+		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri/Squ","Saw","S&H" }));
+		AP(lfo2freq = new FloatParam("LFO 2 Freq", 0.5f));
+		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ","Saw","S&H","Env" }));
+		AP(lfo2att = new FloatParam("LFO 2 Attack"));
+	}
+#undef AP(X)
+
+	std::vector<Param*> const& GetParamList() const { return paramList; }
+};
+
+
+
+
 
 
 

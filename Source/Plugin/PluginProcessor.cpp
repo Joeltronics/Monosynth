@@ -21,7 +21,11 @@ using namespace juce;
 MonosynthAudioProcessor::MonosynthAudioProcessor()
 {
 	Utils::SetupLogger("monosynth.log");
-	SETUP_PARAMS();
+	
+	std::vector<Param*> const& params = engine.GetParamList();
+	for (auto it = params.begin(); it != params.end(); ++it) {
+		addParameter(*it);
+	}
 }
 
 MonosynthAudioProcessor::~MonosynthAudioProcessor()

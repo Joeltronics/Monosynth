@@ -30,7 +30,7 @@ The main goal is for this to be super accessible and easy to get a good sound ou
 
 ## Status
 
-It makes sound. At the moment it just makes an aliased sawtooth wave, but hey, it's something. The GUI controls are pretty much ready to be hooked up, but a lot of the engine features aren't implemented yet.
+It makes sound. At the moment it just makes an aliased sawtooth wave, but hey, it's something. Only a few of the GUI controls are actually hooked up yet.
 
 Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - maybe even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to get the sound engine working.
 

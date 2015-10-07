@@ -14,6 +14,9 @@
 #include "JuceHeader.h"
 
 #include "Types.h"
+
+#include "Params.h"
+
 #include "MidiProcessor.h"
 #include "PitchProcessor.h"
 #include "Envelope.h"
@@ -25,6 +28,8 @@ public:
 	SynthEngine();
 	~SynthEngine();
 
+	std::vector<Param*> const& GetParamList() const;
+
 	void PrepareToPlay(double sampleRate, int samplesPerBlock);
 
 	void Process(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages);
@@ -35,9 +40,6 @@ private:
 	double m_sampleRate;
     
    	uint8_t m_lastNote;
-    
-	float m_prevPhaseOsc1;
-	float m_prevPhaseOsc2;
 
 	Engine::MidiProcessor m_midiProc;
 	Engine::PitchProcessor m_pitchProc;
@@ -49,6 +51,8 @@ private:
 	Engine::Oscillator m_subOsc;
 
 	Engine::Vca m_vca;
+
+	ParamStruct m_params;
 };
 
 

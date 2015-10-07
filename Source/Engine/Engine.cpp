@@ -21,11 +21,14 @@
 
 // TODO: randomize initial phase
 SynthEngine::SynthEngine() :
-	m_lastNote(60),
-	m_prevPhaseOsc1(0.0f),
-	m_prevPhaseOsc2(0.0f)
+	m_lastNote(60)
 {}
+
 SynthEngine::~SynthEngine() {}
+
+std::vector<Param*> const& SynthEngine::GetParamList() const {
+	return m_params.GetParamList();
+}
 
 void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
@@ -52,7 +55,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// Get params
 	// TODO: get actual values
-	float osc2Tuning = 12.01f;
+	float osc2Tuning = float(m_params.osc2coarse->GetInt()) + m_params.osc2fine->GetActualValue();
 
 	float outputVol = 1.0f;
 
@@ -147,11 +150,11 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 
 	// Get params
 	// TODO: get actual values
-	float osc1Gain = 0.5f;
-	float osc2Gain = 0.0f;
-	float subGain = 0.0f;
-	float ringGain = 0.0f;
-	float noiseGain = 0.0f;
+	float osc1Gain = m_params.mixOsc1->GetActualValue();
+	float osc2Gain = m_params.mixOsc2->GetActualValue();
+	float subGain = m_params.mixSub->GetActualValue();
+	float ringGain = m_params.mixSub->GetActualValue();
+	float noiseGain = m_params.mixNoise->GetActualValue();
 
 	float preFiltGain = 1.0f;
 
