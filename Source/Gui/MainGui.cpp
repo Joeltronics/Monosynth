@@ -365,7 +365,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label20->setColour (TextEditor::textColourId, Colours::black);
     label20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_gain = new Slider ("Pre-Filter Gain"));
+    addAndMakeVisible (sli_filt_gain = new Slider ("Filter Gain"));
     sli_filt_gain->setRange (0, 10, 0);
     sli_filt_gain->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_gain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -2403,7 +2403,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="R" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Pre-Filter Gain" id="d11eaf494d445128" memberName="sli_filt_gain"
+  <SLIDER name="Filter Gain" id="d11eaf494d445128" memberName="sli_filt_gain"
           virtualName="" explicitFocusOrder="0" pos="470 153 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>

@@ -26,8 +26,8 @@ enum waveform_t {
 
 class Oscillator {
 public:
-	Oscillator() : m_sampleRate(0.0), m_phase(0.0f) {}
-	~Oscillator() {}
+	Oscillator();
+	~Oscillator();
 
 	// TODO: randomize phase
 	void PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) { m_sampleRate = sampleRate; }
@@ -41,6 +41,7 @@ public:
 private:
 	float m_phase;
 	double m_sampleRate;
+	unsigned int m_phaseNum;
 };
 
 }
