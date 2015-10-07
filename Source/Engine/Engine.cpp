@@ -182,7 +182,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	float osc1Gain = m_params.mixOsc1->GetActualValue();
 	float osc2Gain = m_params.mixOsc2->GetActualValue();
 	float subGain = m_params.mixSub->GetActualValue();
-	float ringGain = m_params.mixSub->GetActualValue();
+	float ringGain = m_params.mixRing->GetActualValue();
 	float noiseGain = m_params.mixNoise->GetActualValue();
 
 	float osc1shape = m_params.osc1shape->GetActualValue();
