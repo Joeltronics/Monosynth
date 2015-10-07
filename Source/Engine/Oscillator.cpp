@@ -18,13 +18,33 @@ void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, wavefor
 
 	m_phase = Utils::FreqToPhase(freqPhaseBuf, m_phase);
 
-	// TODO: this is just temporary implementation (an aliasing sawtooth)
-	audioBuf = freqPhaseBuf - 0.5f;
+	// TODO: these are just temporary (aliasing) implementations
+	if (wave == waveShape_saw) {
+		audioBuf = freqPhaseBuf - 0.5f;
+	}
+	else if (wave == waveShape_pwm) {
+		
+		float pw = (shape * 0.5f) + 0.5f;
+		
+		float* audio = audioBuf.Get();
+		float const* phase = freqPhaseBuf.GetConst();
+
+		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
+			audio[n] = ((phase[n] >= pw) ? 0.5f : -0.5f);
+		}
+	}
+	else if (wave == waveShape_tri) {
+		audioBuf = freqPhaseBuf - 0.5f;
+		juce::FloatVectorOperations::abs(audioBuf.Get(), audioBuf.GetConst(), audioBuf.GetLength());
+		audioBuf -= 0.25f;
+		audioBuf *= 2.0f;
+	}
 }
 
 void Oscillator::ProcessSynced(Buffer& audioBuf, Buffer& freqBuf, Buffer const& syncPhaseBuf, waveform_t wave, float shape) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 
+	// TODO: sync
 	Buffer phaseBuf(freqBuf);
 	m_phase = Utils::FreqToPhase(phaseBuf, m_phase);
 
