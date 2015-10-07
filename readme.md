@@ -30,9 +30,9 @@ The main goal is for this to be super accessible and easy to get a good sound ou
 
 ## Status
 
-It makes sound. At the moment it just makes an aliased sawtooth wave, but hey, it's something. Only a few of the GUI controls are actually hooked up yet.
+It makes sound, and you can mostly control the oscillators. That's about it for now - most of the rest of the GUI controls aren't hooked up yet, there's no filter, no modulation, and the oscillators are just naive waveshapes with no anti-aliasing.
 
-Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - maybe even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to get the sound engine working.
+Although most of the controls are there, the GUI is currently really messy and possibly a bit confusing. I plan on streamlining it eventually - maybe even removing some controls to better fit with my design philosophy. But now that the GUI is in a "good enough for now" state, the next step is to continue to implement the sound engine.
 
 Here is what the GUI looks like at the moment: *(click to enlarge)*  
 [<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)
@@ -42,9 +42,9 @@ Here is what the GUI looks like at the moment: *(click to enlarge)*
 * Fully automatable parameters - so if you want an extra LFO, you could always use automation to act as one
 * "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like "mods" to a hardware synth.
 
-## Features not planned for 1.0
+## Possible future features
 
-These are all features I'm considering possibly adding in the future, but don't plan on implementing right away:
+These are all features I'm considering possibly adding in the future, but don't plan on implementing for 1.0:
 
 * Built-in patch storage & management - I do plan on supporting state saving and maybe very basic patch management via the DAW, but there won't be a built-in patch manager yet.
 * More monophony priority modes (besides last-note)
