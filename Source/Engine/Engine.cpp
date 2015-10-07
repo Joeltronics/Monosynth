@@ -19,6 +19,28 @@
 
 #define DONT_REUSE_JUCE_BUF 1
 
+namespace Detail {
+	static Engine::waveform_t MainOscToWave(size_t n) {
+		switch (n) { // tri/rect/saw
+		case 0: return Engine::waveShape_tri; break;
+		case 1: return Engine::waveShape_pwm; break;
+		case 2: return Engine::waveShape_saw; break;
+		default: DEBUG_ASSERT(false);
+			return Engine::waveShape_saw;
+		}
+	}
+
+	static Engine::waveform_t SubOscToWave(size_t n) {
+		switch (n) { // tri/squ/pulse
+		case 0: return Engine::waveShape_tri;
+		case 1: return Engine::waveShape_squ50;
+		case 2: return Engine::waveShape_pulse25;
+		default: DEBUG_ASSERT(false);
+			return Engine::waveShape_tri;
+		}
+	}
+}
+
 // TODO: randomize initial phase
 SynthEngine::SynthEngine() :
 	m_lastNote(60)
@@ -149,20 +171,31 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	mainBuf.Clear();
 
 	// Get params
-	// TODO: get actual values
 	float osc1Gain = m_params.mixOsc1->GetActualValue();
 	float osc2Gain = m_params.mixOsc2->GetActualValue();
 	float subGain = m_params.mixSub->GetActualValue();
 	float ringGain = m_params.mixSub->GetActualValue();
 	float noiseGain = m_params.mixNoise->GetActualValue();
 
-	float preFiltGain = 1.0f;
+	float osc1shape = m_params.osc1shape->GetActualValue();
+	float osc2shape = m_params.osc2shape->GetActualValue();
+	int subOscOct = m_params.subOscOct->GetInt();
+
+	float preFiltGain = m_params.filtGain->GetActualValue();
 
 	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
 	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);
 
 	bool bProcOsc2Sig = (osc2Gain > 0.0f || ringGain > 0.0f);
 	bool bProcOsc2Phase = bProcOsc2Sig;
+
+	// DEBUG (you know what they say about premature optimization...)
+	bProcOsc1Sig = bProcOsc1Phase = bProcOsc2Sig = bProcOsc2Phase = true;
+
+	// Wave shapes
+	Engine::waveform_t osc1wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
+	Engine::waveform_t osc2wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
+	Engine::waveform_t subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
 	// Allocate memory
 
@@ -174,7 +207,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	if (bProcOsc1Sig) {
 		DEBUG_ASSERT(bProcOsc1Phase);
 
-		m_osc1.ProcessFromFreq(osc1Buf, freqPhaseBuf1);
+		m_osc1.ProcessFromFreq(osc1Buf, freqPhaseBuf1, osc1wave, osc1shape);
 
 		if (osc1Gain > 0.0f) {
 			Buffer tempOscBuf(osc1Buf, osc1Gain);
@@ -185,7 +218,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	if (bProcOsc2Sig) {
 		DEBUG_ASSERT(bProcOsc2Phase);
 
-		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2);
+		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2, osc2wave, osc2shape);
 
 		if (osc2Gain > 0.0f) {
 			Buffer tempOscBuf(osc2Buf, osc2Gain);
@@ -202,7 +235,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 
 	// At this point we're done with the contents of osc1Buf and osc2Buf - can use freely
 	if (subGain > 0.0f) {
-		m_subOsc.ProcessSub(osc1Buf, freqPhaseBuf1);
+		m_subOsc.ProcessSub(osc1Buf, freqPhaseBuf1, subOscWave, subOscOct);
 		osc1Buf *= subGain;
 		mainBuf += osc1Buf;
 	}

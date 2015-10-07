@@ -328,15 +328,19 @@ public:
 	float GetMin() const override { return 0.0f; }
 	float GetMax() const override { return float(mk_nVals - 1); }
 
-	// New functions
-
-	void SetActualValue(float newValue) {
+	void SetActualValue(float newValue) override {
 		m_val.set(Utils::Clip<int>(Utils::RoundTo<int>(newValue), 0, mk_nVals));
 	}
 
-	float GetActualValue() const { return float(m_val.get()); }
+	float GetActualValue() const override { return float(m_val.get()); }
+	
+	// New functions
+	
 	size_t GetNumVals() const { return mk_nVals; }
 	float GetInterval() const override { return 1.0f; }
+
+	void SetInt(size_t newValue) { m_val.set(std::min(newValue, mk_nVals-1)); }
+	size_t GetInt() const { return m_val.get(); }
 
 private:
 
@@ -372,7 +376,7 @@ public:
 	FloatParam* osc2shape;
 	IntParam* osc2coarse;
 	FloatParam* osc2fine;
-	EnumParam* subOscOct;
+	IntParam* subOscOct;
 	EnumParam* subOscWave;
 	FloatParam* mixOsc1;
 	FloatParam* mixOsc2;
@@ -381,6 +385,7 @@ public:
 	FloatParam* mixNoise;
 	FloatParam* filtFreq;
 	FloatParam* filtRes;
+	FloatParam* filtGain;
 	EnumParam* filtModel;
 	BoolParam* bFiltKb;
 	EnumParam* filtPoles;
@@ -417,7 +422,7 @@ public:
 		AP(osc2shape = new FloatParam("Osc 2 Shape"));
 		AP(osc2coarse = new IntParam("Osc 2 Coarse Tune", 0, { -7,19 }));
 		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.0f, { -1.0f,1.0f }));
-		AP(subOscOct = new EnumParam("Sub Osc Octave", { "-2","-1" }, 1));
+		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2,-1 }));
 		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri","Square","Pulse" }, 0));
 		AP(mixOsc1 = new FloatParam("Osc 1 Mix", 1.0f));
 		AP(mixOsc2 = new FloatParam("Osc 2 Mix"));
@@ -426,6 +431,7 @@ public:
 		AP(mixNoise = new FloatParam("Noise Mix"));
 		AP(filtFreq = new FloatParam("Filter Frequency")); /*TODO: range*/
 		AP(filtRes = new FloatParam("Filter Resonance"));
+		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f,2.0f}));
 		AP(filtModel = new EnumParam("Filter Model", { "IC","Transistor","Diode" }, 0));
 		AP(bFiltKb = new BoolParam("Filter KB Track"));
 		AP(filtPoles = new EnumParam("Filter Poles", { "2","4" }, 0));
