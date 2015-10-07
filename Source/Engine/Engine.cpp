@@ -83,6 +83,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	uint32_t pitchBendAmt = 12;
 
+	float vcoRandPitchAmt = 0.01f; // In semitones
+
 	// Process:
 	// 1. MIDI
 	// 2. Mod sources (Env/LFO)
@@ -122,10 +124,16 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// TODO: mod
 
+	// VCO tuning instability
+	// TODO:
+	// - Normal (Gaussian) distribution
+	// - Consistent rate independent of buffer size
+	// - Lowpass
+	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*vcoRandPitchAmt);
+	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*vcoRandPitchAmt);
+
 	Buffer freqPhaseBuf2(freqPhaseBuf1);
 	freqPhaseBuf2 += osc2Tuning;
-
-	// TODO: tuning instability
 
 	// Pitch to freq
 	m_pitchProc.PitchToFreq(freqPhaseBuf1);

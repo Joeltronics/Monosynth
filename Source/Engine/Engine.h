@@ -41,6 +41,8 @@ private:
     
    	uint8_t m_lastNote;
 
+	juce::Random m_random;
+
 	Engine::MidiProcessor m_midiProc;
 	Engine::PitchProcessor m_pitchProc;
 
