@@ -13,10 +13,92 @@
 
 namespace Engine {
 
+namespace Detail {
+
+// Both of these assume upward step - simply negate for downward step
+static float DiffPolyBlepBeforeStep(sample_t x) {
+	// x should be negative
+	return  0.5f*(x*x) + x + 0.5f;
+}
+
+static float DiffPolyBlepAfterStep(sample_t x) {
+	// x should be positive
+	return -0.5f*(x*x) + x - 0.5f;
+}
+
+/**
+ * @param[in] phase: in range [0,1)
+ * @param[in] freq: normalized, i.e. phase increment per sample
+ */
+static float WaveshapeSaw(sample_t phase, sample_t freq) {
+	
+	if (phase < freq) {
+		// First sample after transition
+		sample_t pb = Detail::DiffPolyBlepAfterStep(phase / freq);
+		return phase - 0.5f - pb;
+	}
+	else if (phase > (1.0f - freq)) {
+		// Last sample before transition
+		sample_t pb = Detail::DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
+		return phase - 0.5f - pb;
+	}
+	else {
+		// Middle
+		return phase - 0.5f;
+	}
+}
+
+/**
+* @param[in] phase: in range [0,1)
+* @param[in] freq: normalized, i.e. phase increment per sample
+*/
+static float WaveshapeRect(sample_t phase, sample_t freq, sample_t duty) {
+
+	if (phase > (1.0f - freq)) {
+		// Last sample before downward transition
+		return 0.5f - Detail::DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
+	}
+	else if (phase < freq) {
+		// First sample after downward transition
+		return -0.5f - Detail::DiffPolyBlepAfterStep(phase / freq);
+	}
+	else if (phase < duty && phase > (duty - freq)) {
+		// Last sample before upward transition
+		return -0.5f + Detail::DiffPolyBlepBeforeStep((phase - duty) / freq);
+	}
+	else if (phase >= duty && phase < (duty + freq)) {
+		// First sample after upward transition
+		return 0.5f + Detail::DiffPolyBlepAfterStep((phase - duty) / freq);
+	}
+	else {
+		// Middle
+		return (phase >= duty ? 0.5f : -0.5f);
+	}
+}
+
+/**
+* @param[in] phase: in range [0,1)
+* @param[in] freq: normalized, i.e. phase increment per sample
+*/
+static float WaveshapeTri(sample_t phase, sample_t freq) {
+	// TODO: polyblep
+	return abs(phase - 0.5f) * 2.0f - 0.5f;
+}
+
+} // namespace Detail
+
 Oscillator::Oscillator() :
 	m_sampleRate(0.0),
 	m_phase(0.0f),
-	m_phaseNum(0)
+	m_phaseNum(0),
+	mk_polyblepSize(1.0f)
+{}
+
+Oscillator::Oscillator(sample_t initPhase) :
+	m_sampleRate(0.0),
+	m_phase(initPhase),
+	m_phaseNum(0),
+	mk_polyblepSize(1.0f)
 {}
 
 Oscillator::~Oscillator() {}
@@ -25,28 +107,58 @@ void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, wavefor
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	DEBUG_ASSERT(audioBuf.GetLength() == freqPhaseBuf.GetLength());
 
-	m_phase = Utils::FreqToPhase(freqPhaseBuf, m_phase);
+	
+	// Polybleps aren't great - but they're cheap, so can afford to also oversample
+	// Combination of oversampling & polyblep is a lot better
 
-	// TODO: these are just temporary (aliasing) implementations
+	// TODO: oversample x4, but use twice the polyblep size
+	// (increasing polyblep size will reduce top end, but with oversampling this
+	// will be above audible range)
+
+	// TODO: phaseIncr should actually be average of prev and next freq
+	// (half-sample delay)
+	// will need memory of previous
+
+	float* audio = audioBuf.Get();
+	float* freqPhase = freqPhaseBuf.Get();
+
 	if (wave == waveShape_saw) {
-		audioBuf = freqPhaseBuf - 0.5f;
+		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
+
+			// This is actually next freq (because we increment phase at end of loop)
+			sample_t freq = freqPhase[n];
+
+			audio[n] = Detail::WaveshapeSaw(m_phase, freq * mk_polyblepSize);
+			freqPhase[n] = m_phase;
+
+			m_phase = fmod(m_phase + freq, 1.0f);
+		}
 	}
 	else if (wave == waveShape_pwm) {
-		
+		// TODO: if pw changes and it causes wave to flip, polyBlep!
 		float pw = (shape * 0.5f) + 0.5f;
-		
-		float* audio = audioBuf.Get();
-		float const* phase = freqPhaseBuf.GetConst();
-
 		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
-			audio[n] = ((phase[n] >= pw) ? 0.5f : -0.5f);
+
+			// This is actually next freq (because we increment phase at end of loop)
+			sample_t freq = freqPhase[n];
+
+			audio[n] = Detail::WaveshapeRect(m_phase, freq * mk_polyblepSize, pw);
+			freqPhase[n] = m_phase;
+
+			m_phase = fmod(m_phase + freq, 1.0f);
 		}
 	}
 	else if (wave == waveShape_tri) {
-		audioBuf = freqPhaseBuf - 0.5f;
-		juce::FloatVectorOperations::abs(audioBuf.Get(), audioBuf.GetConst(), audioBuf.GetLength());
-		audioBuf -= 0.25f;
-		audioBuf *= 2.0f;
+		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
+			
+			// This is actually next freq (because we increment phase at end of loop)
+			sample_t freq = freqPhase[n];
+
+			audio[n] = Detail::WaveshapeTri(m_phase, freq * mk_polyblepSize);
+			freqPhase[n] = m_phase;
+
+			m_phase = fmod(m_phase + freq, 1.0f);
+		}
 	}
 	else {
 		DEBUG_ASSERT(false);
@@ -93,19 +205,20 @@ void Oscillator::ProcessSub(Buffer& audioBuf, Buffer const& phaseBuf, waveform_t
 
 	// Now waveshape
 
+	// TODO: polyblep
+	// not sure what to do here, because we don't have freq information at this point
+	// could either hold on to second buffer, or better, roll all oscillators together
+	
+	float* audio = audioBuf.Get();
 	if (wave == waveShape_tri) {
-		audioBuf = audioBuf - 0.5f;
-		juce::FloatVectorOperations::abs(audioBuf.Get(), audioBuf.GetConst(), audioBuf.GetLength());
-		audioBuf -= 0.25f;
-		audioBuf *= 2.0f;
+		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
+			audio[n] = abs(audio[n] - 0.5f) * 2.0f - 0.5f;
+		}
 	}
 	else if (wave == waveShape_pulse25 ||
 			 wave == waveShape_squ50)
 	{
 		float pw = (wave == waveShape_squ50 ? 0.50f : 0.25f);
-
-		float* audio = audioBuf.Get();
-
 		for (size_t n = 0; n < audioBuf.GetLength(); ++n) {
 			audio[n] = ((audio[n] >= pw) ? 0.5f : -0.5f);
 		}

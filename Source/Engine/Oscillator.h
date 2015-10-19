@@ -27,6 +27,7 @@ enum waveform_t {
 class Oscillator {
 public:
 	Oscillator();
+	Oscillator(sample_t initPhase);
 	~Oscillator();
 
 	// TODO: randomize phase
@@ -42,6 +43,7 @@ private:
 	float m_phase;
 	double m_sampleRate;
 	unsigned int m_phaseNum;
+	float const mk_polyblepSize; // number of samples before and after transition to PolyBlep (default 1)
 };
 
 }

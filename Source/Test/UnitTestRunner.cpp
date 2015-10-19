@@ -23,6 +23,7 @@
 #include "Engine/Test/PitchProcessorUnitTest.h"
 
 #include "Engine/Test/EngineTest.h"
+#include "Engine/Test/OscillatorTest.h"
 
 namespace Test {
     
@@ -38,6 +39,7 @@ namespace Test {
 
     // Performance tests
 	static EngineTest s_engineTest;
+	static OscillatorTest s_oscTest;
     static OnePoleTest s_onePoleTest;
     
     void RunAllUnitTests() {

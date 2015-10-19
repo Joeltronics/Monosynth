@@ -43,7 +43,7 @@ void MidiProcessorUnitTest::runTest() {
 		eventBuf_t<gateEvent_t> gateEvents;
 		eventBuf_t<uint8_t> noteEvents;
 		eventBuf_t<uint8_t> velEvents;
-		eventBuf_t<int> pitchBendEvents;
+		eventBuf_t<uint16_t> pitchBendEvents;
 
 		midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 

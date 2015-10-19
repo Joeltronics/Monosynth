@@ -41,7 +41,7 @@ namespace Detail {
 	}
 }
 
-// TODO: randomize initial phase
+// TODO: randomize initial phase via Oscillator constructor arg
 SynthEngine::SynthEngine() :
 	m_lastNote(60)
 {}
