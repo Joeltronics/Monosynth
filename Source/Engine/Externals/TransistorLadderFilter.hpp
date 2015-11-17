@@ -49,17 +49,26 @@ public:
 
 	// cutoff as normalized frequency (eg 0.5 = Nyquist)
 	// resonance from 0 to 1, self-oscillates at settings over 0.9
-	// jgeddert mod: converted to use float* input, size_t nsamples, made in const*
+	// jgeddert mod: converted to use float* inputs
 	void transistorLadder(
-		double cutoff, double resonance,
+		float* cutoff, double resonance,
 		float const* in, float * out, size_t nsamples)
 	{
 		// tuning and feedback
-		double f = tan(M_PI * cutoff);
 		double r = (40.0/9.0) * resonance;
+
+		juce::FloatVectorOperations::clip(cutoff, cutoff, 0.0001f, 0.4999f, nsamples);
+		
+		// TODO: oversample, and use small-angle approximation
+		//juce::FloatVectorOperations::multiply(cutoff, float(M_PI), nsamples);
+		for (size_t n = 0; n < nsamples; ++n) {
+			cutoff[n] = tan(float(M_PI) * cutoff[n]);
+		}
+		
 
 		for(size_t n = 0; n < nsamples; ++n)
 		{
+			double f = double(cutoff[n]);
 			double inn = double(in[n]);
 			
 			// input with half delay, for non-linearities

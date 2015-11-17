@@ -31,6 +31,10 @@
 
 #define DONT_REUSE_JUCE_BUF 1
 
+namespace Engine {
+	const double k_filtCvCutoff_Hz = 10.0;
+}
+
 namespace Detail {
 	static Engine::waveform_t MainOscToWave(size_t n) {
 		switch (n) { // tri/rect/saw
@@ -86,6 +90,8 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_subOsc.PrepareToPlay(sampleRate, samplesPerBlock);
 	m_filter.PrepareToPlay(sampleRate, samplesPerBlock);
 	m_vca.PrepareToPlay(sampleRate, samplesPerBlock);
+
+	m_filtFreqCvFilt.SetFreq(Engine::k_filtCvCutoff_Hz / sampleRate);
 }
 
 void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
@@ -111,8 +117,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	float vcoRandPitchAmt = 0.01f; // In semitones
 
-	double filtCutoff = m_filter.FiltCvToFreq(m_params.filtFreq->getValue()) / m_sampleRate;
-	filtCutoff = Utils::Clip(filtCutoff, 0.0, 0.5);
+	sample_t filtCutoff = sample_t(m_filter.FiltCvToFreq(m_params.filtFreq->getValue()) / m_sampleRate);
 
 	float filtRes = m_params.filtRes->getValue();
 
@@ -176,7 +181,11 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	m_filter.Process(buf, filtCutoff, filtRes, filtModel);
+	{
+		Buffer filtCv(filtCutoff, nSamp);
+		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+		m_filter.Process(buf, filtCv, filtRes, filtModel);
+	}
 
 	// 6. Overdrive
 	// TODO

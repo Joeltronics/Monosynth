@@ -69,6 +69,8 @@ private:
 
 	Engine::Vca m_vca;
 
+	Utils::OnePole m_filtFreqCvFilt;
+
 	ParamStruct m_params;
 };
 
