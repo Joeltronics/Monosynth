@@ -58,6 +58,11 @@ namespace Utils
 		return T(440.0 * pow(2.0, (double(pitch) - 69.0) / 12.0));
 	}
 
+	template <typename T>
+	static inline T FreqHzToPitch(T freq) {
+		return T(69.0 + 12.0*log2(double(freq) / 440.0));
+	}
+
     static inline void CopyAudioSampleBuffer(juce::AudioSampleBuffer const& inBuf, juce::AudioSampleBuffer& outBuf) {
         size_t const nChan = inBuf.getNumChannels();
         size_t const nSamp = inBuf.getNumSamples();
@@ -263,6 +268,17 @@ namespace Utils
                    nSamp);
         }
     }
+
+	template<typename T>
+	static inline T LogInterp(T val0, T val1, T x) {
+
+		double valLog = Interp<T>(
+			log10(val0),
+			log10(val1),
+			x);
+
+		return pow(10.0, valLog);
+	}
     
     static void InterpInPlace(juce::AudioSampleBuffer& val0out, juce::AudioSampleBuffer const& val1, float x)
     {

@@ -116,8 +116,15 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	uint32_t pitchBendAmt = 12;
 
 	float vcoRandPitchAmt = 0.01f; // In semitones
+	float filtCutoffRandAmt_semi = 0.05f; // In semitones
 
-	sample_t filtCutoff = sample_t(m_filter.FiltCvToFreq(m_params.filtFreq->getValue()) / m_sampleRate);
+	// Convert semitones to actual 0-1 range
+	// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
+	// TODO: same things as VCO instability (below)
+	float filtCutoffRandAmt_01 = filtCutoffRandAmt_semi / (9.966f * 12.0f);
+	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
+
+	sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, m_params.filtFreq->getValue() + cutoffRand) / m_sampleRate;
 
 	float filtRes = m_params.filtRes->getValue();
 
@@ -182,6 +189,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// 5. Filter
 	{
+		// TODO: add envelopes, LFO, kb scaling, etc
 		Buffer filtCv(filtCutoff, nSamp);
 		m_filtFreqCvFilt.ProcessLowpass(filtCv);
 		m_filter.Process(buf, filtCv, filtRes, filtModel);

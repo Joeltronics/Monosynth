@@ -75,18 +75,6 @@ void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t mode
 		DEBUG_ASSERT(false);
 		break;
 	}
-
-
-}
-
-double Filter::FiltCvToFreq(double cvVal) const {
-	
-	const double valLog = Utils::Interp<double>(
-		log10(20.0),
-		log10(20000.0),
-		cvVal);
-	
-	return pow(10.0, valLog);
 }
 
 } // namespace Engine
