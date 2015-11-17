@@ -294,7 +294,8 @@ private:
 
 // ***** EnumParam *****
 
-class EnumParam : public Param
+class EnumParam : public Param,
+	public juce::ComboBoxListener
 {
 public:
 	EnumParam(juce::String const& paramName,
@@ -346,8 +347,30 @@ public:
 
 	float GetActualValue() const override { return float(m_val.get()); }
 	
+	// ComboBoxListener functions
+
+	void comboBoxChanged(juce::ComboBox* comboBox) override {
+		// TODO: currently this won't notify host (same issues as sliderValueChanged)
+
+		int val = comboBox->getSelectedItemIndex();
+		
+		if (val >= 0)
+			SetInt(size_t(val));
+		else
+			LOG(juce::String("Tried to set enum parameter ") + getName() + juce::String::formatted(" to value %i", val));
+	}
+
 	// New functions
 	
+	virtual void BindToComboBox(juce::ComboBox* pComboBox) {
+		DEBUG_ASSERT(pComboBox);
+		// TODO: log error if not same number of options
+		pComboBox->setSelectedItemIndex(GetInt());
+		pComboBox->addListener(this);
+
+		LOG(getName() + juce::String::formatted(" = %.2f [%.1f,%.1f,%.1f]", GetActualValue(), GetMin(), GetInterval(), GetMax()));
+	}
+
 	size_t GetNumVals() const { return mk_nVals; }
 	float GetInterval() const override { return 1.0f; }
 
@@ -441,10 +464,10 @@ public:
 		AP(mixSub = new FloatParam("Sub Mix"));
 		AP(mixRing = new FloatParam("Ring Mod Mix"));
 		AP(mixNoise = new FloatParam("Noise Mix"));
-		AP(filtFreq = new FloatParam("Filter Frequency")); /*TODO: range*/
+		AP(filtFreq = new FloatParam("Filter Frequency", 0.5f)); /*TODO: range*/
 		AP(filtRes = new FloatParam("Filter Resonance"));
 		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f,2.0f}));
-		AP(filtModel = new EnumParam("Filter Model", { "IC","Transistor","Diode" }, 0));
+		AP(filtModel = new EnumParam("Filter Model", { "Off","Transistor","Diode","IC" }, 1));
 		AP(bFiltKb = new BoolParam("Filter KB Track"));
 		AP(filtPoles = new EnumParam("Filter Poles", { "2","4" }, 0));
 		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f,1.0f }));
@@ -463,7 +486,7 @@ public:
 		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ","Saw","S&H","Env" }));
 		AP(lfo2att = new FloatParam("LFO 2 Attack"));
 	}
-#undef AP(X)
+#undef AP
 
 	std::vector<Param*> const& GetParamList() const { return paramList; }
 };

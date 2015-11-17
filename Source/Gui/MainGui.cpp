@@ -225,7 +225,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label8->setColour (TextEditor::textColourId, Colours::black);
     label8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_freq = new Slider ("Filter Freq"));
+    addAndMakeVisible (sli_filt_freq = new Slider ("Filter Frequency"));
     sli_filt_freq->setRange (0, 10, 0);
     sli_filt_freq->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_freq->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1135,16 +1135,6 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label36->setColour (TextEditor::textColourId, Colours::black);
     label36->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (comboBox = new ComboBox ("new combo box"));
-    comboBox->setEditableText (false);
-    comboBox->setJustificationType (Justification::centredLeft);
-    comboBox->setTextWhenNothingSelected (TRANS("Filter Model"));
-    comboBox->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    comboBox->addItem (TRANS("Transistor Ladder"), 1);
-    comboBox->addItem (TRANS("Diode Ladder"), 2);
-    comboBox->addItem (TRANS("IC OTA"), 3);
-    comboBox->addListener (this);
-
     addAndMakeVisible (label14 = new Label ("new label",
                                             TRANS("Pre-Filt")));
     label14->setFont (Font (12.00f, Font::plain));
@@ -1555,7 +1545,6 @@ MainGui::~MainGui()
     label126 = nullptr;
     label127 = nullptr;
     label36 = nullptr;
-    comboBox = nullptr;
     label14 = nullptr;
     label15 = nullptr;
     label16 = nullptr;
@@ -1636,8 +1625,8 @@ void MainGui::resized()
     label5->setBounds (406, 104, 40, 16);
     sli_o2_tune->setBounds (154, 135, 48, 48);
     label8->setBounds (151, 112, 56, 16);
-    sli_filt_freq->setBounds (478, 46, 104, 88);
-    label13->setBounds (470, 29, 120, 16);
+    sli_filt_freq->setBounds (478, 36, 104, 88);
+    label13->setBounds (470, 19, 120, 16);
     sli_filt_res->setBounds (532, 153, 56, 48);
     sli_filt_env->setBounds (469, 253, 40, 32);
     sli_filt_lfo->setBounds (549, 253, 40, 32);
@@ -1745,13 +1734,12 @@ void MainGui::resized()
     label76->setBounds (495, 280, 18, 10);
     label77->setBounds (468, 280, 15, 10);
     label123->setBounds (172, 123, 26, 16);
-    label110->setBounds (483, 123, 25, 16);
-    label124->setBounds (552, 123, 36, 16);
-    label125->setBounds (461, 66, 31, 16);
-    label126->setBounds (541, 41, 27, 16);
-    label127->setBounds (567, 101, 36, 16);
+    label110->setBounds (483, 113, 25, 16);
+    label124->setBounds (552, 113, 36, 16);
+    label125->setBounds (461, 56, 31, 16);
+    label126->setBounds (541, 31, 27, 16);
+    label127->setBounds (567, 91, 36, 16);
     label36->setBounds (712, 152, 64, 12);
-    comboBox->setBounds (472, 13, 120, 16);
     label14->setBounds (724, 197, 54, 10);
     label15->setBounds (724, 213, 54, 10);
     label16->setBounds (724, 229, 54, 10);
@@ -2070,21 +2058,6 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void MainGui::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
-{
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
-    if (comboBoxThatHasChanged == comboBox)
-    {
-        //[UserComboBoxCode_comboBox] -- add your combo box handling code here..
-        //[/UserComboBoxCode_comboBox]
-    }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -2122,9 +2095,10 @@ void MainGui::SetSliderIDs_() {
 		DEBUG_ASSERT(pComp);
 
 		Slider* pSlider = dynamic_cast<Slider*>(pComp);
-		if (!pSlider) continue;
+		ComboBox* pComboBox = dynamic_cast<ComboBox*>(pComp);
+		if (!pSlider && !pComboBox) continue;
 
-		if (pSlider->getName().startsWith("new"))
+		if (pSlider && pSlider->getName().startsWith("new"))
 		{
 			numNewSlider++;
 			continue;
@@ -2164,12 +2138,25 @@ void MainGui::BindParamsToSliders_() {
 		}
 
 		Slider* pSlider = dynamic_cast<Slider*>(pComp);
-		if (!pSlider) {
-			LOG(String("Found component matching ") + paramName + " that isn't a slider");
+		ComboBox* pComboBox = dynamic_cast<ComboBox*>(pComp);
+		if (pSlider) {
+			pParam->BindToSlider(pSlider);
+		}
+		else if (pComboBox) {
+			EnumParam* pEnumParam = dynamic_cast<EnumParam*>(pParam);
+
+			if (pEnumParam) {
+				pEnumParam->BindToComboBox(pComboBox);
+			}
+			else {
+				LOG(String("Found param matching ") + paramName + " that isn't an EnumParam");
+				continue;
+			}
+		}
+		else {
+			LOG(String("Found component matching ") + paramName + " that isn't an implemented component type");
 			continue;
 		}
-
-		pParam->BindToSlider(pSlider);
 	}
 }
 
@@ -2182,11 +2169,11 @@ void MainGui::SetSpecialKnobs_() {
 	else
 		LOG("Could not find component \"Osc 2 Coarse Tune\"");
 
-	pComp = this->findChildWithID("Filter Freq");
+	pComp = this->findChildWithID("Filter Frequency");
 	if (pComp)
 		pComp->setLookAndFeel(&freqLookAndFeel);
 	else
-		LOG("Could not find component \"Filter Freq\"");
+		LOG("Could not find component \"Filter Frequency\"");
 }
 
 } // namespace Gui
@@ -2319,12 +2306,12 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Tuning" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Filter Freq" id="922a8512e459ea78" memberName="sli_filt_freq"
-          virtualName="" explicitFocusOrder="0" pos="478 46 104 88" min="0"
+  <SLIDER name="Filter Frequency" id="922a8512e459ea78" memberName="sli_filt_freq"
+          virtualName="" explicitFocusOrder="0" pos="478 36 104 88" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="688179c92518c30a" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="470 29 120 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="470 19 120 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Frequency" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -2821,27 +2808,27 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="b19745e0adb6724e" memberName="label110"
-         virtualName="" explicitFocusOrder="0" pos="483 123 25 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="483 113 25 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="20" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="944c47c83029687f" memberName="label124"
-         virtualName="" explicitFocusOrder="0" pos="552 123 36 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="552 113 36 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="20k" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="62201f3d19ea01a7" memberName="label125"
-         virtualName="" explicitFocusOrder="0" pos="461 66 31 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="461 56 31 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="100" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="2aad2e8c6ad2f227" memberName="label126"
-         virtualName="" explicitFocusOrder="0" pos="541 41 27 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="541 31 27 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1k" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="a896398c2324146" memberName="label127" virtualName=""
-         explicitFocusOrder="0" pos="567 101 36 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="567 91 36 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="10k" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
@@ -2850,10 +2837,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Velocity" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <COMBOBOX name="new combo box" id="66a4871135953e41" memberName="comboBox"
-            virtualName="" explicitFocusOrder="0" pos="472 13 120 16" editable="0"
-            layout="33" items="Transistor Ladder&#10;Diode Ladder&#10;IC OTA"
-            textWhenNonSelected="Filter Model" textWhenNoItems="(no choices)"/>
   <LABEL name="new label" id="244dc8a10230e796" memberName="label14" virtualName=""
          explicitFocusOrder="0" pos="724 197 54 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Pre-Filt" editableSingleClick="0"
