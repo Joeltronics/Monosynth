@@ -34,6 +34,7 @@
 #include "Envelope.h"
 #include "Oscillator.h"
 #include "Vca.h"
+#include "Filter.h"
 
 class SynthEngine {
 public:
@@ -63,6 +64,8 @@ private:
 	Engine::Oscillator m_osc1;
 	Engine::Oscillator m_osc2;
 	Engine::Oscillator m_subOsc;
+
+	Engine::Filter m_filter;
 
 	Engine::Vca m_vca;
 

@@ -194,6 +194,7 @@ namespace Utils
         
         // Alternative implementation - might be slightly slower
         // likely exactly the same speed
+		// however, I think this one is numerically stable and the other might not be
         //return x*val1 + (static_cast<T>(1.0)-x)*val0;
     }
 

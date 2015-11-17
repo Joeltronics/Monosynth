@@ -61,6 +61,9 @@ public:
 	// res = in range [0, 1]
 	void Process(Buffer& buf /*inOut*/, double fc /*in*/, double res /*in*/, filterModel_t model /*in*/);
 
+	// Converts cv in range 0-1 (or even beyond 1) to actual filter freq (in Hz)
+	double FiltCvToFreq(double cvVal) const;
+
 private:
 	
 	double m_sampleRate;

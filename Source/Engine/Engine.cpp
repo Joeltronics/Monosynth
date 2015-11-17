@@ -51,6 +51,19 @@ namespace Detail {
 			return Engine::waveShape_tri;
 		}
 	}
+
+	static Engine::filterModel_t ConvertFiltModel(size_t n)
+	{
+		switch (n) {
+		case 1: return Engine::filterModel_transLadder;
+		case 2: return Engine::filterModel_diodeLadder;
+		case 3: return Engine::filterModel_ota;
+		
+		case 0:
+		default:
+			return Engine::filterModel_none;
+		}
+	}
 }
 
 // TODO: randomize initial phase via Oscillator constructor arg
@@ -71,6 +84,7 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_osc1.PrepareToPlay(sampleRate, samplesPerBlock);
 	m_osc2.PrepareToPlay(sampleRate, samplesPerBlock);
 	m_subOsc.PrepareToPlay(sampleRate, samplesPerBlock);
+	m_filter.PrepareToPlay(sampleRate, samplesPerBlock);
 	m_vca.PrepareToPlay(sampleRate, samplesPerBlock);
 }
 
@@ -96,6 +110,13 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	uint32_t pitchBendAmt = 12;
 
 	float vcoRandPitchAmt = 0.01f; // In semitones
+
+	double filtCutoff = m_filter.FiltCvToFreq(m_params.filtFreq->getValue()) / m_sampleRate;
+	filtCutoff = Utils::Clip(filtCutoff, 0.0, 0.5);
+
+	float filtRes = m_params.filtRes->getValue();
+
+	Engine::filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
 
 	// Process:
 	// 1. MIDI
@@ -155,7 +176,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	// TODO
+	m_filter.Process(buf, filtCutoff, filtRes, filtModel);
 
 	// 6. Overdrive
 	// TODO

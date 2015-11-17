@@ -21,6 +21,9 @@
 */
 
 #include "Filter.h"
+#include "Utils/DspUtils.h"
+#include "Utils/ApproxEqual.h"
+#include "Utils/Logger.h"
 
 namespace Engine {
 
@@ -45,12 +48,14 @@ void Filter::Process(Buffer& buf, double fc, double res, filterModel_t model) {
 		break;
 
 	case filterModel_transLadder:
+		fc = Utils::Clip(fc, 0.001, 0.499);
 		transFilt.transistorLadder(fc, res, inBuf, outBuf, nSamp);
 		break;
 
 	case filterModel_diodeLadder:
 		// Diode filter freqs are normalized so Nyquist = 1.0, so scale freqs accordingly
 		fc = fc * 2.0;
+		fc = Utils::Clip(fc, 0.001, 0.999);
 		diodeFilt.set_q(res);
 		diodeFilt.set_feedback_hpf_cutoff(k_diodeResHpfCutoff_Hz / m_sampleRate * 2.0);
 
@@ -69,6 +74,16 @@ void Filter::Process(Buffer& buf, double fc, double res, filterModel_t model) {
 	}
 
 
+}
+
+double Filter::FiltCvToFreq(double cvVal) const {
+	
+	const double valLog = Utils::Interp<double>(
+		log10(20.0),
+		log10(20000.0),
+		cvVal);
+	
+	return pow(10.0, valLog);
 }
 
 } // namespace Engine
