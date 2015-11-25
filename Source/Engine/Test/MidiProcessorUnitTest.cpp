@@ -79,7 +79,7 @@ void MidiProcessorUnitTest::runTest() {
 		expect(midiMessages.getNumEvents() == 0);
 
 		if (gateEvents.size() == 5) {
-			expect(gateEvents[0] == Utils::timedEvent_t<gateEvent_t>(100, gateEvent_on));
+			expect(gateEvents[0] == Utils::timedEvent_t<gateEvent_t>(100, gateEvent_on_trig));
 			expect(gateEvents[1] == Utils::timedEvent_t<gateEvent_t>(130, gateEvent_retrig));
 			expect(gateEvents[2] == Utils::timedEvent_t<gateEvent_t>(150, gateEvent_retrig));
 			expect(gateEvents[3] == Utils::timedEvent_t<gateEvent_t>(200, gateEvent_retrig));

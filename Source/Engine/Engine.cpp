@@ -130,6 +130,25 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	Engine::filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
 
+	{
+		float attVal = m_params.envAtt->getValue();
+		float decVal = m_params.envDec->getValue();
+		float susVal = m_params.envSus->getValue();
+		float relVal = m_params.envRel->getValue();
+		
+		DEBUG_ASSERT(attVal >= 0.0 && attVal <= 1.0);
+		DEBUG_ASSERT(decVal >= 0.0 && decVal <= 1.0);
+		DEBUG_ASSERT(relVal >= 0.0 && relVal <= 1.0);
+
+		// Times in seconds (log-interp 1ms to 4s)
+		double attTime = Utils::LogInterp<double>(0.001, 4.0, attVal);
+		double decTime = Utils::LogInterp<double>(0.001, 4.0, decVal);
+		double relTime = Utils::LogInterp<double>(0.001, 4.0, relVal);
+
+		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
+	}
+
+
 	// Process:
 	// 1. MIDI
 	// 2. Mod sources (Env/LFO)
@@ -150,11 +169,10 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	m_midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
 	// 2. Envelope & LFO
-
-#if 0 // TODO
 	Buffer filtEnvBuf(nSamp);
 	m_filtEnv.Process(gateEvents, filtEnvBuf);
 
+#if 0 // TODO
 	Buffer lfo1(nSamp);
 	Buffer lfo2(nSamp);
 #endif

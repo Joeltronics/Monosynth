@@ -400,11 +400,6 @@ private:
 
 public:
 
-	using EnumParam = ::EnumParam;
-	using FloatParam = ::FloatParam;
-	using IntParam = ::IntParam;
-	using BoolParam = ::BoolParam;
-
 	EnumParam* osc1wave;
 	FloatParam* osc1shape;
 	EnumParam* osc2wave;

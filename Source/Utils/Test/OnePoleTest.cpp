@@ -85,6 +85,7 @@ OnePoleTest::OnePoleTest()
 
 void OnePoleTest::runTest() {
     BasicTest_(k_basicTestFilename);
+	RiseTimeTest_();
     FreqSweepTest_(k_freqSweepFilename);
 }
 
@@ -189,6 +190,80 @@ void OnePoleTest::FreqSweepTest_(std::string filename) {
     }
     
     Detail::BufToCsv(outBuf, k_freqSweepFilename);
+}
+
+void OnePoleTest::RiseTimeTest_() {
+
+	beginTest("Rise time test");
+
+	double sampleRate = 44100.0;
+	
+	// 0.63212
+	sample_t const k_riseVal = sample_t(1.0 - 1.0 / exp(1.0));
+
+	std::vector<double> riseTimes_s;
+	riseTimes_s.push_back(0.01);
+	riseTimes_s.push_back(0.1);
+	riseTimes_s.push_back(1.0);
+	riseTimes_s.push_back(10.0);
+
+	Utils::OnePole filt;
+
+	for (auto it = riseTimes_s.begin(); it != riseTimes_s.end(); ++it) {
+		
+		double riseTime_s = *it;
+
+		// in samples
+		size_t riseTime_samp = RoundTo<size_t>(riseTime_s * sampleRate);
+		size_t nSamp = 2*riseTime_samp;
+
+		filt.SetRiseTime(riseTime_s, sampleRate);
+		filt.Clear();
+
+		size_t measuredRiseTime_samp = 0;
+
+		sample_t opVal;
+		sample_t valueAtRiseTime = 0.0f;
+		for (size_t n = 0; n < nSamp; ++n)
+		{
+			opVal = filt.ProcessLowpass(1.0f);
+
+			if (n == riseTime_samp) {
+				valueAtRiseTime = opVal;
+			}
+
+			if (opVal > k_riseVal) {
+				measuredRiseTime_samp = n;
+				break;
+			}
+		}
+
+		size_t marginOfError = size_t(std::ceil( double(riseTime_samp) * 0.1 ));
+
+		size_t minRiseTime_samp = riseTime_samp - marginOfError;
+		size_t maxRiseTime_samp = riseTime_samp + marginOfError;
+
+		if (measuredRiseTime_samp) {
+			if (measuredRiseTime_samp < minRiseTime_samp || measuredRiseTime_samp > maxRiseTime_samp)
+			{
+				std::cout << "ERROR: rise time " << measuredRiseTime_samp << ", expected " << riseTime_samp
+					<< " (range " << minRiseTime_samp << " to " << maxRiseTime_samp << ")" << std::endl;
+			}
+
+			if (!Utils::ApproxEqual(valueAtRiseTime, k_riseVal, 0.01f))
+			{
+				std::cout << "ERROR: value at rise time " << valueAtRiseTime << ", expected " << k_riseVal << std::endl;
+			}
+		}
+		else {
+			std::cout << "ERROR: never hit rise time " << riseTime_samp << " samples final value " << opVal << std::endl;
+		}
+
+		expect(measuredRiseTime_samp > minRiseTime_samp && measuredRiseTime_samp < maxRiseTime_samp);
+		expect(Utils::ApproxEqual(valueAtRiseTime, k_riseVal, 0.01f));
+	}
+	
+
 }
 
 } // namespace Test

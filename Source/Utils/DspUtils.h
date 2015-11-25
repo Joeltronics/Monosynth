@@ -271,6 +271,8 @@ namespace Utils
 
 	template<typename T>
 	static inline T LogInterp(T val0, T val1, T x) {
+		DEBUG_ASSERT(val0 > 0);
+		DEBUG_ASSERT(val1 > 0);
 
 		double valLog = Interp<T>(
 			log10(val0),

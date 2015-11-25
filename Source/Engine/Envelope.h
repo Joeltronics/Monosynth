@@ -56,13 +56,43 @@ private:
 class AdsrEnvelope : public Envelope {
 public:
 	AdsrEnvelope();
+
 	~AdsrEnvelope() {}
 
 	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
 	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
 
+	void SetVals(double attTime, double decTime, double susVal, double relVal);
+
 private:
-	sample_t m_memory;
+
+	enum State_t {
+		state_off = 0,
+		state_att,
+		state_dec,
+		state_sus,
+		state_rel
+	};
+
+	sample_t ProcessState_();
+	void TransitionTo_(State_t toState);
+	sample_t StateAtt_();
+	sample_t StateDec_();
+	sample_t StateSus_();
+	sample_t StateRel_();
+	
+	void UpdateRates_();
+
+	Utils::OnePole m_filt;
+
+	State_t m_state;
+	double m_sampleRate;
+
+	double m_attFreq;
+	double m_decFreq;
+	sample_t m_susVal;
+	sample_t m_susTarget;
+	double m_relFreq;
 };
 
 }

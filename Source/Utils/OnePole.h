@@ -54,13 +54,23 @@ public:
     void ProcessHighpass (sample_t* buf /*inout*/, uint32_t nSamp /*in*/);
     
     // Single sample
-    float ProcessLowpass  (sample_t samp /*in*/);
-    float ProcessHighpass (sample_t samp /*in*/);
-    
+    float ProcessLowpass  (float samp /*in*/);
+    float ProcessHighpass (float samp /*in*/);
+	double ProcessLowpass  (double samp /*in*/);
+	double ProcessHighpass (double samp /*in*/);
+
     // Other public functions:
     
     void SetFreq(double wc);
-    void Clear();
+
+	void Clear();
+	void SetVal(sample_t val);
+
+	// helper functions to set freq
+	inline void SetFreq(double fc, double sampleRate) { SetFreq(fc*sampleRate); }
+
+	inline void SetRiseTime(double time_samp) { SetFreq(1.0 / (2.0 * M_PI * time_samp)); }
+	inline void SetRiseTime(double time_s, double sampleRate) { SetFreq(1.0 / (2.0 * M_PI * time_s * sampleRate));  }
     
 protected:
     

@@ -35,6 +35,7 @@ namespace Test {
     private:
         void BasicTest_(std::string filename);
         void FreqSweepTest_(std::string filename);
+		void RiseTimeTest_();
     };
 
 } // namespace Test

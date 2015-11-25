@@ -66,11 +66,11 @@ void OnePole::ProcessHighpass(Buffer const& inBuf, Buffer& outBuf) {
 	ProcessBufHighpass_(inBuf, outBuf);
 }
 
-void OnePole::ProcessLowpass(float* buf /*inout*/, uint32_t nSamp) {
+void OnePole::ProcessLowpass(sample_t* buf /*inout*/, uint32_t nSamp) {
 	ProcessBufLowpass_(buf, buf, nSamp);
 }
     
-void OnePole::ProcessHighpass(float* buf /*inout*/, uint32_t nSamp) {
+void OnePole::ProcessHighpass(sample_t* buf /*inout*/, uint32_t nSamp) {
 	ProcessBufHighpass_(buf, buf, nSamp);
 }
 
@@ -90,6 +90,16 @@ float OnePole::ProcessLowpass(float samp) {
 float OnePole::ProcessHighpass(float samp) {
 	z1 = b0*double(samp) + a1*z1;
 	return samp - float(z1);
+}
+
+double OnePole::ProcessLowpass(double samp) {
+	z1 = b0*samp + a1*z1;
+	return z1;
+}
+
+double OnePole::ProcessHighpass(double samp) {
+	z1 = b0*samp + a1*z1;
+	return samp - z1;
 }
     
 // ***** Private processing functions *****
@@ -146,6 +156,8 @@ void OnePole::ProcessBufHighpass_(Buffer const& inBuf /*in*/, Buffer& outBuf /*o
 void OnePole::SetFreq(double wc) { CalcCoeffs_(wc); }
 
 void OnePole::Clear() { z1 = 0.0; }
+
+void OnePole::SetVal(sample_t val) { z1 = val; }
 
 // ***** Other Private functions *****
 

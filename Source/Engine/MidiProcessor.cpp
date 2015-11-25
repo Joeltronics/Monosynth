@@ -67,7 +67,7 @@ namespace Detail {
 	static gateEvent_t GetGateEvent_(bool bPrevNoteOn, bool bNewNoteOn, bool bRetrig) {
 		if (bNewNoteOn) {
 			if (!bPrevNoteOn)
-				return gateEvent_on;
+				return (bRetrig ? gateEvent_on_trig : gateEvent_on_legato);
 			else
 				return (bRetrig ? gateEvent_retrig : gateEvent_legato);
 		}

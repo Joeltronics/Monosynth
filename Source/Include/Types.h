@@ -42,9 +42,17 @@ uint8_t const k_defaultMidiVel = 100;
 // GateBuf
 enum gateEvent_t {
 	gateEvent_off = 0,
-	gateEvent_on,
+	gateEvent_on_trig,
+	gateEvent_on_legato,
 	gateEvent_legato,
 	gateEvent_retrig,
+
+	// on_trig and on_legato are both triggering a note from off, but depending on if
+	// in legato or retrig mode. Both should behave like a note trigger, but one slight
+	// difference: on_trig will always reset envelope to zero, while on_legato won't.
+	// Usually this doesn't matter because envelope is already at zero, but it will be
+	// different if triggering new note while still in release phase of previous note
+	// (similar to vintage Minimoog envelope behavior)
 };
 
 // MIDI types:
