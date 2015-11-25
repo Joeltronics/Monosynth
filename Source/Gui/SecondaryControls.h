@@ -63,7 +63,8 @@ using ScopedPointer = juce::ScopedPointer<T>;
                                                                     //[/Comments]
 */
 class SecondaryControls  : public Component,
-                           public SliderListener
+                           public SliderListener,
+                           public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -77,6 +78,7 @@ public:
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
 
 
@@ -125,6 +127,7 @@ private:
     ScopedPointer<Label> label35;
     ScopedPointer<Slider> swi_lfo2_att;
     ScopedPointer<Label> label3;
+    ScopedPointer<ComboBox> comboBox;
 
 
     //==============================================================================

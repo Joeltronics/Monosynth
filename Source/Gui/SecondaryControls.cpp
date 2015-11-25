@@ -366,6 +366,16 @@ SecondaryControls::SecondaryControls ()
     label3->setColour (TextEditor::textColourId, Colours::black);
     label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (comboBox = new ComboBox ("Filter Model"));
+    comboBox->setEditableText (false);
+    comboBox->setJustificationType (Justification::centredLeft);
+    comboBox->setTextWhenNothingSelected (TRANS("Filter Model"));
+    comboBox->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    comboBox->addItem (TRANS("Off"), 1);
+    comboBox->addItem (TRANS("Transistor Ladder"), 2);
+    comboBox->addItem (TRANS("Diode Ladder"), 3);
+    comboBox->addListener (this);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -422,6 +432,7 @@ SecondaryControls::~SecondaryControls()
     label35 = nullptr;
     swi_lfo2_att = nullptr;
     label3 = nullptr;
+    comboBox = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -485,6 +496,7 @@ void SecondaryControls::resized()
     label35->setBounds (148, 244, 49, 10);
     swi_lfo2_att->setBounds (133, 220, 16, 40);
     label3->setBounds (112, 208, 96, 15);
+    comboBox->setBounds (272, 120, 120, 16);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -557,6 +569,21 @@ void SecondaryControls::sliderValueChanged (Slider* sliderThatWasMoved)
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
+}
+
+void SecondaryControls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+{
+    //[UsercomboBoxChanged_Pre]
+    //[/UsercomboBoxChanged_Pre]
+
+    if (comboBoxThatHasChanged == comboBox)
+    {
+        //[UserComboBoxCode_comboBox] -- add your combo box handling code here..
+        //[/UserComboBoxCode_comboBox]
+    }
+
+    //[UsercomboBoxChanged_Post]
+    //[/UsercomboBoxChanged_Post]
 }
 
 
@@ -770,6 +797,10 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="LFO 2 Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
+  <COMBOBOX name="Filter Model" id="66a4871135953e41" memberName="comboBox"
+            virtualName="" explicitFocusOrder="0" pos="272 120 120 16" editable="0"
+            layout="33" items="Off&#10;Transistor Ladder&#10;Diode Ladder"
+            textWhenNonSelected="Filter Model" textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
