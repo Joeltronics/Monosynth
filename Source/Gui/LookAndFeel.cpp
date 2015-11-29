@@ -65,7 +65,7 @@ namespace Gui {
 		float rOuter = dim / 2.0f;
 		if (bBigKnobStyle) {
 			r3 = rOuter * 2.0f/3.0f;
-			r2 = rOuter * 0.38f;
+			r2 = rOuter * 0.42f;
 			r1 = r2 * 0.25f;
 			return ImageCache::getFromMemory(BinaryData::bigknob88_png, BinaryData::bigknob88_pngSize);
 		}
