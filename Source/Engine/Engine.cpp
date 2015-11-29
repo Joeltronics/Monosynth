@@ -335,10 +335,10 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
 	filtCv *= filtEnvAmt;
 	filtCv += filtCutoff_01;
 	
-	// TODO: LFO, velocity, kb scaling
+	// TODO: LFO, velocity, kb tracking
 
-	// TODO: approximate this
-	Utils::LogInterp(20.0f, 20000.0f, filtCv);
+	// TODO: test accuracty, possibly use exact log interp when KB tracking with high resonance
+	Utils::FastLogInterp(20.0f, 20000.0f, filtCv);
 	filtCv /= m_sampleRate;
 
 	m_filtFreqCvFilt.ProcessLowpass(filtCv);

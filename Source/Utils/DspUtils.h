@@ -297,6 +297,65 @@ namespace Utils
 		}
 	}
 
+	static inline int FloatPunToInt(float x) {
+		union { float f; int i; } u;
+		u.f = x;
+		return u.i;
+	}
+
+	static inline float IntPunToFloat(int x) {
+		union { float f; int i; } u;
+		u.i = x;
+		return u.f;
+	}
+
+	static inline float FastLogInterp(float val0, float val1, float x) {
+		int ia = FloatPunToInt(val0);
+		int ib = FloatPunToInt(val1);
+		float diff = float(ib - ia);
+		
+		int interp = ia + int(x * diff);
+		return IntPunToFloat(interp);
+	}
+
+	static inline void FastLogInterp(sample_t val0, sample_t val1, Buffer const& x, Buffer& y /*out*/) {
+		DEBUG_ASSERT(x.GetLength() == y.GetLength());
+		
+		int ia = FloatPunToInt(val0);
+		int ib = FloatPunToInt(val1);
+		float diff = float(ib - ia);
+
+		size_t nSamp = x.GetLength();
+		sample_t const* xp = x.GetConst();
+		sample_t* yp = y.Get();
+
+		juce::FloatVectorOperations::multiply(yp, xp, diff, nSamp);
+
+		// TODO: SIMD this (both the add and the cast)
+		for (size_t n = 0; n < nSamp; ++n) {
+			int interp = ia + int(yp[n]);
+			yp[n] = IntPunToFloat(interp);
+		}
+	}
+
+	// in place
+	static inline void FastLogInterp(sample_t val0, sample_t val1, Buffer& x /*inout*/) {
+		int ia = FloatPunToInt(val0);
+		int ib = FloatPunToInt(val1);
+		float diff = float(ib - ia);
+
+		size_t nSamp = x.GetLength();
+		sample_t* xp = x.Get();
+
+		juce::FloatVectorOperations::multiply(xp, xp, diff, nSamp);
+
+		// TODO: SIMD this (both the add and the cast)
+		for (size_t n = 0; n < nSamp; ++n) {
+			int interp = ia + int(xp[n]);
+			xp[n] = IntPunToFloat(interp);
+		}
+	}
+
     static void InterpInPlace(juce::AudioSampleBuffer& val0out, juce::AudioSampleBuffer const& val1, float x)
     {
         size_t const nChan = val0out.getNumChannels();
