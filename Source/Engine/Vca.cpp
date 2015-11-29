@@ -29,16 +29,19 @@ void Vca::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
 }
 
-void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents) {
+void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv) {
 
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 
-	// TODO: more features
+	if (bUseEnv) {
+		buf *= env;
+	}
+	else {
+		Buffer ampEnvBuf(buf.GetLength());
+		m_ampEnv.Process(gateEvents, ampEnvBuf);
 
-	Buffer ampEnvBuf(buf.GetLength());
-	m_ampEnv.Process(gateEvents, ampEnvBuf);
-
-	buf *= ampEnvBuf;
+		buf *= ampEnvBuf;
+	}
 }
 
 }

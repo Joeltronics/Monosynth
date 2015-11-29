@@ -49,6 +49,7 @@ public:
 	
 private:
 	void ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& osc1freq /*inout*/, Buffer& osc2freq /*inout*/);
+	void SynthEngine::ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/);
 
 	double m_sampleRate;
     

@@ -69,6 +69,8 @@ public:
 	void sliderValueChanged(juce::Slider* slider) override {
 		DEBUG_ASSERT(slider);
 		
+		//LOG(getName() + juce::String::formatted(" slider changed: %f", slider->getValue()));
+
 		// FIXME: this doesn't work
 		//setValueNotifyingHost(float(slider->valueToProportionOfLength(slider->getValue())));
 
@@ -428,6 +430,7 @@ public:
 	FloatParam* envSus;
 	FloatParam* envRel;
 	FloatParam* envVel;
+	EnumParam* vcaSource;
 	FloatParam* vcaVel;
 	FloatParam* lfo1freq;
 	EnumParam* lfo1shape;
@@ -462,7 +465,7 @@ public:
 		AP(filtFreq = new FloatParam("Filter Frequency", 0.5f)); /*TODO: range*/
 		AP(filtRes = new FloatParam("Filter Resonance"));
 		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f,2.0f}));
-		AP(filtModel = new EnumParam("Filter Model", { "Off","Transistor","Diode","IC" }, 1));
+		AP(filtModel = new EnumParam("Filter Model", { "Off","Transistor","Diode" }, 1));
 		AP(bFiltKb = new BoolParam("Filter KB Track"));
 		AP(filtPoles = new EnumParam("Filter Poles", { "2","4" }, 0));
 		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f,1.0f }));
@@ -474,6 +477,7 @@ public:
 		AP(envSus = new FloatParam("Env Sustain", 1.0f));
 		AP(envRel = new FloatParam("Env Release"));
 		AP(envVel = new FloatParam("Env Velocity"));
+		AP(vcaSource = new EnumParam("VCA Source", {"Gate","Envelope"}, 0));
 		AP(vcaVel = new FloatParam("VCA Velocity"));
 		AP(lfo1freq = new FloatParam("LFO 1 Freq", 0.5f));
 		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri/Squ","Saw","S&H" }));

@@ -282,6 +282,21 @@ namespace Utils
 		return pow(10.0, valLog);
 	}
     
+	static inline void LogInterp(sample_t val0, sample_t val1, Buffer& x /*inout*/) {
+		float* p = x.Get();
+		for (size_t n = 0; n < x.GetLength(); ++n) {
+			p[n] = LogInterp(val0, val1, p[n]);
+		}
+	}
+
+	static inline void LogInterp(sample_t val0, sample_t val1, Buffer const& x /*in*/, Buffer& y /*out*/) {
+		float const* rp = x.GetConst();
+		float* wp = y.Get();
+		for (size_t n = 0; n < x.GetLength(); ++n) {
+			wp[n] = LogInterp(val0, val1, rp[n]);
+		}
+	}
+
     static void InterpInPlace(juce::AudioSampleBuffer& val0out, juce::AudioSampleBuffer const& val1, float x)
     {
         size_t const nChan = val0out.getNumChannels();

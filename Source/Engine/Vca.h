@@ -36,7 +36,7 @@ public:
 	~Vca() {}
 
 	void PrepareToPlay(double sampleRate, int samplesPerBlock);
-	void Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents);
+	void Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv);
 
 private:
 	double m_sampleRate;

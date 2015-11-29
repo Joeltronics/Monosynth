@@ -33,6 +33,8 @@
 
 namespace Engine {
 	const double k_filtCvCutoff_Hz = 10.0;
+	float k_vcoRandPitchAmt = 0.01f; // In semitones
+	float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
 }
 
 namespace Detail {
@@ -115,21 +117,6 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	uint32_t pitchBendAmt = 12;
 
-	float vcoRandPitchAmt = 0.01f; // In semitones
-	float filtCutoffRandAmt_semi = 0.05f; // In semitones
-
-	// Convert semitones to actual 0-1 range
-	// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
-	// TODO: same things as VCO instability (below)
-	float filtCutoffRandAmt_01 = filtCutoffRandAmt_semi / (9.966f * 12.0f);
-	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
-
-	sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, m_params.filtFreq->getValue() + cutoffRand) / m_sampleRate;
-
-	float filtRes = m_params.filtRes->getValue();
-
-	Engine::filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
-
 	{
 		float attVal = m_params.envAtt->getValue();
 		float decVal = m_params.envDec->getValue();
@@ -148,6 +135,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
 	}
 
+	bool bVcaEnv = m_params.vcaSource->GetInt();
 
 	// Process:
 	// 1. MIDI
@@ -192,8 +180,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// - Normal (Gaussian) distribution
 	// - Consistent rate independent of buffer size
 	// - Lowpass
-	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*vcoRandPitchAmt);
-	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*vcoRandPitchAmt);
+	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*Engine::k_vcoRandPitchAmt);
+	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*Engine::k_vcoRandPitchAmt);
 
 	Buffer freqPhaseBuf2(freqPhaseBuf1);
 	freqPhaseBuf2 += osc2Tuning;
@@ -206,18 +194,13 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	{
-		// TODO: add envelopes, LFO, kb scaling, etc
-		Buffer filtCv(filtCutoff, nSamp);
-		m_filtFreqCvFilt.ProcessLowpass(filtCv);
-		m_filter.Process(buf, filtCv, filtRes, filtModel);
-	}
+	ProcessFilter_(buf, filtEnvBuf);
 
 	// 6. Overdrive
 	// TODO
 
 	// 7. VCA
-	m_vca.Process(buf, gateEvents);
+	m_vca.Process(buf, gateEvents, filtEnvBuf, bVcaEnv);
 	
 #ifdef DONT_REUSE_JUCE_BUF
 	// Copy buffer to output buffer (for all channels)
@@ -327,4 +310,37 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	if (!Utils::ApproxEqual(preFiltGain, 1.0f)) {
 		mainBuf *= preFiltGain;
 	}
+}
+
+void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
+{
+	float filtRes = m_params.filtRes->getValue();
+
+	Engine::filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
+
+	// Convert semitones to actual 0-1 range
+	// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
+	float filtCutoffRandAmt_01 = Engine::k_filtCutoffRandAmt_semi / (9.966f * 12.0f);
+	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
+
+	sample_t filtCutoff_01 = m_params.filtFreq->getValue() + cutoffRand;
+	//sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, filtCutoff_01) / m_sampleRate;
+
+	float filtEnvAmt = m_params.filtEnv->GetActualValue();
+	
+	// TODO: apply curve to filtEnvAmt
+
+	//Buffer filtCv(filtCutoff, nSamp);
+	Buffer filtCv(envBuf);
+	filtCv *= filtEnvAmt;
+	filtCv += filtCutoff_01;
+	
+	// TODO: LFO, velocity, kb scaling
+
+	// TODO: approximate this
+	Utils::LogInterp(20.0f, 20000.0f, filtCv);
+	filtCv /= m_sampleRate;
+
+	m_filtFreqCvFilt.ProcessLowpass(filtCv);
+	m_filter.Process(buf, filtCv, filtRes, filtModel);
 }

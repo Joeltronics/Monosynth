@@ -256,7 +256,7 @@ private:
     ScopedPointer<Slider> sli_lfo1_sh;
     ScopedPointer<Label> label38;
     ScopedPointer<Label> label39;
-    ScopedPointer<Slider> swi_pitchmod_scale2;
+    ScopedPointer<Slider> swi_vcasource;
     ScopedPointer<Slider> sli_drive2;
     ScopedPointer<Label> label12;
     ScopedPointer<Label> label22;

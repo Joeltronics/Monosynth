@@ -1279,11 +1279,11 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label39->setColour (TextEditor::textColourId, Colours::black);
     label39->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_pitchmod_scale2 = new Slider ("new slider"));
-    swi_pitchmod_scale2->setRange (0, 1, 1);
-    swi_pitchmod_scale2->setSliderStyle (Slider::LinearVertical);
-    swi_pitchmod_scale2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_pitchmod_scale2->addListener (this);
+    addAndMakeVisible (swi_vcasource = new Slider ("VCA Source"));
+    swi_vcasource->setRange (0, 1, 1);
+    swi_vcasource->setSliderStyle (Slider::LinearVertical);
+    swi_vcasource->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    swi_vcasource->addListener (this);
 
     addAndMakeVisible (sli_drive2 = new Slider ("Reverb Amount"));
     sli_drive2->setRange (0, 10, 0);
@@ -1562,7 +1562,7 @@ MainGui::~MainGui()
     sli_lfo1_sh = nullptr;
     label38 = nullptr;
     label39 = nullptr;
-    swi_pitchmod_scale2 = nullptr;
+    swi_vcasource = nullptr;
     sli_drive2 = nullptr;
     label12 = nullptr;
     label22 = nullptr;
@@ -1589,6 +1589,11 @@ void MainGui::paint (Graphics& g)
     g.fillAll (Colour (0xff1c1c1c));
 
     //[UserPaint] Add your own custom painting code here..
+
+	Image bg = ImageCache::getFromMemory(BinaryData::bg_png, BinaryData::bg_pngSize);
+
+	g.drawImage(bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);
+
     //[/UserPaint]
 }
 
@@ -1626,7 +1631,7 @@ void MainGui::resized()
     sli_o2_tune->setBounds (154, 135, 48, 48);
     label8->setBounds (151, 112, 56, 16);
     sli_filt_freq->setBounds (478, 36, 104, 88);
-    label13->setBounds (470, 19, 120, 16);
+    label13->setBounds (470, 15, 120, 16);
     sli_filt_res->setBounds (532, 153, 56, 48);
     sli_filt_env->setBounds (469, 253, 40, 32);
     sli_filt_lfo->setBounds (549, 253, 40, 32);
@@ -1757,7 +1762,7 @@ void MainGui::resized()
     sli_lfo1_sh->setBounds (418, 194, 32, 32);
     label38->setBounds (642, 149, 67, 10);
     label39->setBounds (642, 164, 59, 10);
-    swi_pitchmod_scale2->setBounds (627, 140, 16, 40);
+    swi_vcasource->setBounds (627, 140, 16, 40);
     sli_drive2->setBounds (704, 282, 56, 48);
     label12->setBounds (704, 267, 56, 16);
     label22->setBounds (630, 267, 56, 16);
@@ -2033,10 +2038,10 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_sli_lfo1_sh] -- add your slider handling code here..
         //[/UserSliderCode_sli_lfo1_sh]
     }
-    else if (sliderThatWasMoved == swi_pitchmod_scale2)
+    else if (sliderThatWasMoved == swi_vcasource)
     {
-        //[UserSliderCode_swi_pitchmod_scale2] -- add your slider handling code here..
-        //[/UserSliderCode_swi_pitchmod_scale2]
+        //[UserSliderCode_swi_vcasource] -- add your slider handling code here..
+        //[/UserSliderCode_swi_vcasource]
     }
     else if (sliderThatWasMoved == sli_drive2)
     {
@@ -2311,7 +2316,7 @@ BEGIN_JUCER_METADATA
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="688179c92518c30a" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="470 19 120 16" textCol="ffffffff"
+         explicitFocusOrder="0" pos="470 15 120 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Frequency" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -2919,7 +2924,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Gate" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="7e89d72d33aa2bf1" memberName="swi_pitchmod_scale2"
+  <SLIDER name="VCA Source" id="7e89d72d33aa2bf1" memberName="swi_vcasource"
           virtualName="" explicitFocusOrder="0" pos="627 140 16 40" min="0"
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
