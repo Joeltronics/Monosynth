@@ -27,6 +27,10 @@
 
 #include <vector>
 
+namespace IirCoeffs {
+#include "DownsamplingIirCoeffs.h"
+}
+
 namespace  Utils {
     
     // ***** Static functions *****
@@ -47,6 +51,7 @@ namespace  Utils {
     public:
         virtual ~IResampler() {}
         virtual void Process(Buffer& outBuf, Buffer const& inBuf) = 0;
+		virtual void Clear() {};
     };
     
     // ***** Upsamplers *****
@@ -64,7 +69,7 @@ namespace  Utils {
         ~ZeroPadUpsampler() {}
         
         // inlined below
-        void Process(Buffer& outBuf, Buffer const& inBuf);
+        void Process(Buffer& outBuf, Buffer const& inBuf) override;
         
     private:
         uint8_t const m_nUpsamp;
@@ -83,7 +88,7 @@ namespace  Utils {
         ~NearestUpsampler() {}
         
         // inlined below
-        void Process(Buffer& outBuf, Buffer const& inBuf);
+        void Process(Buffer& outBuf, Buffer const& inBuf) override;
         
     private:
         uint8_t const m_nUpsamp;
@@ -101,7 +106,7 @@ namespace  Utils {
     public:
         LinearInterpUpsampler(uint8_t nUpsamp, uint8_t nChannels, bool bMinGroupDelay = false);
         ~LinearInterpUpsampler() {}
-        void Process(Buffer& outBuf, Buffer const& inBuf);
+        void Process(Buffer& outBuf, Buffer const& inBuf) override;
         
     private:
         void Reset_();
@@ -130,7 +135,7 @@ namespace  Utils {
         ~NaiveDownsampler() {}
         
         // inlined below
-        void Process(Buffer& outBuf, Buffer const& inBuf);
+        void Process(Buffer& outBuf, Buffer const& inBuf) override;
         
     private:
         uint8_t const m_nDownsamp;
@@ -150,13 +155,89 @@ namespace  Utils {
         ~AveragingDownsampler() {}
         
         // inlined below
-        void Process(Buffer& outBuf, Buffer const& inBuf);
+        void Process(Buffer& outBuf, Buffer const& inBuf) override;
         
     private:
         uint8_t const m_nDownsamp;
         bool const m_bScale;
     };
+
+	// ***** IIR Downsamplers *****
+	// (Defined in DownsamplingIir.cpp)
+
+	/*
+	These should work very well for resampling from 176.4 kHz and 192 kHz, with almost no
+	aliasing below 20 kHz (max -83 dB, but realistically even less)
+
+	The catches:
+	- they're not that efficient (6-10 order IIR filters running at the higher sample rate)
+	- they're not linear-phase
+
+	These could possibly be vectorized, though vectorizing an IIR filter is black magic
+	*/
+
+	// 176.4 kHz ---4x--> 44.1 kHz
+	class IirDownsampler_176_44 : public IResampler {
+	public:
+		IirDownsampler_176_44();
+		~IirDownsampler_176_44() {}
+		void Process(Buffer& outBuf, Buffer const& inBuf) override;
+		void Clear() override;
+
+	private:
+		static const size_t nResamp = 4;
+		static const size_t order = IirCoeffs::order_176_44;
+		static const size_t nBiquad = IirCoeffs::nBiquad_176_44;
+		sample_t z[order];
+	};
+
+	// 192 kHz ---4x--> 48 kHz
+	class IirDownsampler_192_48 : public IResampler {
+	public:
+		IirDownsampler_192_48();
+		~IirDownsampler_192_48() {}
+		void Process(Buffer& outBuf, Buffer const& inBuf) override;
+		void Clear() override;
+
+	private:
+		static const size_t nResamp = 4;
+		static const size_t order = IirCoeffs::order_192_48;
+		static const size_t nBiquad = IirCoeffs::nBiquad_192_48;
+		sample_t z[order];
+	};
+
+	// 176.4 kHz ---2x--> 88.2 kHz
+	class IirDownsampler_176_88 : public IResampler {
+	public:
+		IirDownsampler_176_88();
+		~IirDownsampler_176_88() {}
+		void Process(Buffer& outBuf, Buffer const& inBuf) override;
+		void Clear() override;
+
+	private:
+		static const size_t nResamp = 2;
+		static const size_t order = IirCoeffs::order_176_88;
+		static const size_t nBiquad = IirCoeffs::nBiquad_176_88;
+		sample_t z[order];
+	};
+
+	// 192 kHz ---2x--> 96 kHz
+	class IirDownsampler_192_96 : public IResampler {
+	public:
+		IirDownsampler_192_96();
+		~IirDownsampler_192_96() {}
+		void Process(Buffer& outBuf, Buffer const& inBuf) override;
+		void Clear() override;
+
+	private:
+		static const size_t nResamp = 2;
+		static const size_t order = IirCoeffs::order_192_96;
+		static const size_t nBiquad = IirCoeffs::nBiquad_192_96;
+		sample_t z[order];
+	};
     
+	// ***** Inline Functions *****
+
 	inline void ZeroPadUpsampler::Process(Buffer& outBuf, Buffer const& inBuf)
         { ZeroPadUpsample(outBuf, inBuf, m_nUpsamp, m_bScale); }
     

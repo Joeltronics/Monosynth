@@ -92,5 +92,7 @@ typedef bool const DEBUG_BOOL;
 
 #endif
 
+#define DEBUG_ASSERT_MSG(x, msg) DEBUG_ASSERT((msg, x))
+#define DEBUG_ASSERT_FAIL(msg) DEBUG_ASSERT((msg, false))
 
 #endif  // DEBUG_H_INCLUDED

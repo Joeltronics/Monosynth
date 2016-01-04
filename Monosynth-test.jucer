@@ -84,6 +84,10 @@
         <FILE id="ntwwza" name="OnePole.h" compile="0" resource="0" file="Source/Utils/OnePole.h"/>
         <FILE id="K0EH0y" name="Resampling.cpp" compile="1" resource="0" file="Source/Utils/Resampling.cpp"/>
         <FILE id="bmePWy" name="Resampling.h" compile="0" resource="0" file="Source/Utils/Resampling.h"/>
+        <FILE id="MlTdzs" name="DownsamplingIir.cpp" compile="1" resource="0"
+              file="Source/Utils/DownsamplingIir.cpp"/>
+        <FILE id="U47p4D" name="DownsamplingIirCoeffs.h" compile="0" resource="0"
+              file="Source/Utils/DownsamplingIirCoeffs.h"/>
         <FILE id="mALyyW" name="SlewFilter.cpp" compile="1" resource="0" file="Source/Utils/SlewFilter.cpp"/>
         <FILE id="sWJidd" name="SlewFilter.h" compile="0" resource="0" file="Source/Utils/SlewFilter.h"/>
         <FILE id="dKHBba" name="ApproxEqual.h" compile="0" resource="0" file="Source/Utils/ApproxEqual.h"/>

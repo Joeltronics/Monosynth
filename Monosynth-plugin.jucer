@@ -90,6 +90,10 @@
         <FILE id="gsRLbx" name="OnePole.h" compile="0" resource="0" file="Source/Utils/OnePole.h"/>
         <FILE id="zLvdpY" name="Resampling.cpp" compile="1" resource="0" file="Source/Utils/Resampling.cpp"/>
         <FILE id="PHfwMv" name="Resampling.h" compile="0" resource="0" file="Source/Utils/Resampling.h"/>
+        <FILE id="Ayeu9R" name="DownsamplingIir.cpp" compile="1" resource="0"
+              file="Source/Utils/DownsamplingIir.cpp"/>
+        <FILE id="NbN8gd" name="DownsamplingIirCoeffs.h" compile="0" resource="0"
+              file="Source/Utils/DownsamplingIirCoeffs.h"/>
         <FILE id="AVHCTE" name="SlewFilter.cpp" compile="1" resource="0" file="Source/Utils/SlewFilter.cpp"/>
         <FILE id="whusOH" name="SlewFilter.h" compile="0" resource="0" file="Source/Utils/SlewFilter.h"/>
       </GROUP>

@@ -24,17 +24,23 @@
 
 #include "Debug.h"
 
+#include "JuceHeader.h"
+
+#define SETUP_RESAMP() \
+sample_t const* rp = inBuf.GetConst(); \
+sample_t* wp = outBuf.Get()
+
 #define SETUP_UPSAMP(N) \
 DEBUG_ASSERT(outBuf.GetLength() == inBuf.GetLength() * (N)); \
 size_t const nSamp = inBuf.GetLength(); \
-sample_t const* rp = inBuf.GetConst(); \
-sample_t* wp = outBuf.Get()
+SETUP_RESAMP()
 
 #define SETUP_DOWNSAMP(N) \
 DEBUG_ASSERT(inBuf.GetLength() == outBuf.GetLength() * (N)); \
 size_t const nSamp = outBuf.GetLength(); \
-sample_t const* rp = inBuf.GetConst(); \
-sample_t* wp = outBuf.Get()
+SETUP_RESAMP()
+
+#define ENABLE_FTZ juce::FloatVectorOperations::enableFlushToZeroMode(true)
 
 namespace  Utils {
     
@@ -78,6 +84,7 @@ namespace  Utils {
     
     void AveragingDownsample(Buffer& outBuf, Buffer const& inBuf, uint8_t nDownsamp, bool bScale) {
         SETUP_DOWNSAMP(nDownsamp);
+		ENABLE_FTZ;
         
 		outBuf.Clear();
             
@@ -93,7 +100,7 @@ namespace  Utils {
     
     // ***** LinearInterpUpsampler *****
     
-        LinearInterpUpsampler::LinearInterpUpsampler(uint8_t nUpsamp, uint8_t nChan, bool bMinGroupDelay) :
+    LinearInterpUpsampler::LinearInterpUpsampler(uint8_t nUpsamp, uint8_t nChan, bool bMinGroupDelay) :
         m_nUpsamp(nUpsamp),
         m_nChan(nChan),
         m_bMinDelay(bMinGroupDelay)
@@ -103,7 +110,8 @@ namespace  Utils {
     
     void LinearInterpUpsampler::Process(Buffer& outBuf, Buffer const& inBuf) {
         SETUP_UPSAMP(m_nUpsamp);
-        
+		ENABLE_FTZ;
+		
         float const interpMult = 1.0f/float(m_nUpsamp);
         
         /*
@@ -142,7 +150,7 @@ namespace  Utils {
     void LinearInterpUpsampler::Reset_() {
 		m_lastSamp = 0.f;
     }
-}
+} // namespace Utils
 
 
 

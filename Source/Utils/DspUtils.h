@@ -397,6 +397,15 @@ namespace Utils
         return phase;
     }
     
+	// freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
+	// phase = normalized, 0-1
+	// returns phase value
+	static float GenerateSine(Buffer& outBuf, float freq, float phase = 0.0f) {
+		size_t const nSamp = outBuf.GetLength();
+		phase = GenerateSine(outBuf.Get(), nSamp, freq, phase);
+		return phase;
+	}
+
     // freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
     // phase = normalized, 0-1
     // returns phase value

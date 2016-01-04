@@ -26,7 +26,47 @@
 
 #include "Utils/Utils.h"
 
+#include <utility>
+typedef std::pair<float, float> floatPair;
+
 using namespace Utils;
+
+namespace Detail {
+	
+	static float CalcAliasedFreq(float freq, float sampleRate) {
+		double wn = freq / sampleRate;
+		wn = fmod(wn, 1.0);
+		if (wn < 0.0) wn += 1.0;
+		if (wn > 0.5) wn = 1.0 - wn;
+		return float(wn * double(sampleRate));
+	}
+
+	static float GetRmsPow(float const* pBuf, uint32_t nSamp, uint32_t startSamp) {
+		Buffer squBuf(nSamp);
+		float* pSquBuf = squBuf.Get();
+
+		juce::FloatVectorOperations::multiply(squBuf.Get(), pBuf, pBuf, nSamp);
+
+		float sumSquPow = 0;
+		for (uint32_t n = startSamp; n < nSamp; ++n) {
+			sumSquPow += pSquBuf[n];
+		}
+
+		return sqrt(sumSquPow / float(nSamp - startSamp));
+	}
+
+	// Convert RMS power to amplitude (ONLY works for sines!)
+	static float SinRmsToAmp(float rms) {
+		return rms * M_SQRT2;
+	}
+
+	static float GetSinAmpdB(Buffer const& buf, size_t startSamp) {
+		float rms = Detail::GetRmsPow(buf.GetConst(), buf.GetLength(), startSamp);
+		float amp = Detail::SinRmsToAmp(rms);
+		float dB = Utils::AmpTodB(amp);
+		return dB;
+	}
+}
 
 namespace Test {
 
@@ -60,7 +100,9 @@ static inline bool CheckEquals_(Buffer const& actual, Buffer const& expected) {
     
 void ResamplingUnitTest::runTest()
 {
-    juce::ScopedPointer<Utils::IResampler> pResamp;
+    juce::ScopedPointer<IResampler> pResamp;
+
+	// Basic Upsamplers
     {
 		Buffer inBuf0(4);
 		Buffer inBuf1(4);
@@ -141,6 +183,7 @@ void ResamplingUnitTest::runTest()
         }
     }
     
+	// Basic Downsamplers
     {
         Buffer inBuf0(16);
 		Buffer inBuf1(16);
@@ -198,6 +241,136 @@ void ResamplingUnitTest::runTest()
 			pResamp->Process(outBuf, inBuf1);
 			expect(CheckEquals_(outBuf, Buffer(expVals1, 4)));
         }
+	}
+	
+	// IIR Downsamplers
+	/*
+	These tests fail. I'm not sure why.
+	
+	I suspect it's an error in measuring the sine amplitude, but it's also
+	possible there's a problem with the filter itself - either something's
+	wrong with the filter design, or it's a digital precision issue, or it's
+	a good-ol' bug in the IIR downsamplers.
+	
+	I'm guessing it's not a precision issue, because if so, I suspect the
+	high-order version would perform much worse than the cascaded-biquad
+	version, and they actually do quite similarly.
+	*/
+	{
+		size_t const nSamp = 65536;
+		Buffer buf(nSamp);
+		
+		std::vector<float> const freqs = {
+			100.f, 440.f, 1000.f, 3000.f, 10000.f, 20000.f, // Audible freqs
+			22000.f, 24100.f, 28000.f,
+			40e3f, 47e3f, 49e3f, 60e3f,
+			68.2e3f, 76e3f, // Will alias to 20 kHz at 44.1 and 48, respectively
+			80e3f, 88.1e3f, 90e3f, 95.9e3f
+		};
+
+		for (size_t n = 0; n < 4; ++n) {
+
+			juce::String testName;
+			float sampleRate;
+			size_t nResamp;
+
+			switch (n) {
+			case 0:
+				pResamp = new Utils::IirDownsampler_176_44();
+				testName = "Testing IIR resampler 176.4 kHz -> 44.1 kHz";
+				sampleRate = 176400.f;
+				nResamp = 4;
+				break;
+			case 1:
+				pResamp = new Utils::IirDownsampler_192_48();
+				testName = "Testing IIR resampler 192 kHz -> 48 kHz";
+				sampleRate = 192000.f;
+				nResamp = 4;
+				break;
+			case 2:
+				pResamp = new Utils::IirDownsampler_176_88();
+				testName = "Testing IIR resampler 176.4 kHz -> 88.2 kHz";
+				sampleRate = 176400.f;
+				nResamp = 2;
+				break;
+			case 3:
+				pResamp = new Utils::IirDownsampler_192_96();
+				testName = "Testing IIR resampler 192 kHz -> 96 kHz";
+				sampleRate = 192000.f;
+				nResamp = 2;
+				break;
+			default:
+				std::cout << "ERROR: n out of bounds\n";
+				expect(false);
+			}
+
+			
+			beginTest(testName);
+
+			Buffer downBuf(nSamp / nResamp);
+
+			std::vector<floatPair> results;
+
+			sample_t phase = 0.f;
+			for (auto it = freqs.begin(); it != freqs.end(); ++it) {
+
+				float f = *it;
+
+				float w = f / sampleRate;
+
+				if (w > 0.5f) break;
+
+				phase = GenerateSine(buf, w, phase);
+
+				downBuf.Clear(); // Shouldn't be necessary?
+
+				pResamp->Process(downBuf, buf);
+
+				float ampl = Detail::GetSinAmpdB(downBuf, 1000);
+				results.push_back(floatPair(f, ampl));
+			}
+
+			float const passbandFailThresh = 0.75f;
+			float const aliasFailThresh = -60.0f;
+			float maxPassbandError = 0.0f;
+			float maxAlias = -99999.9f;
+
+			for (auto it = results.begin(); it != results.end(); ++it) {
+				float const inFreq = it->first;
+				float const finalFreq = Detail::CalcAliasedFreq(inFreq, sampleRate/nResamp);
+				bool const bAlias = !Utils::ApproxEqual(inFreq, finalFreq, 1.0f);
+				
+				float const ampl = it->second;
+
+				if (inFreq <= 20001.f) {
+					maxPassbandError = std::max(maxPassbandError, abs(ampl));
+					std::cout << "Audible:    " << inFreq << ", ampl: " << ampl << " dB\n";
+				}
+				else if (finalFreq <= 20001.f) {
+					maxAlias = std::max(maxAlias, ampl);
+					std::cout << "Alias:      " << inFreq << " => " << finalFreq << ", ampl: " << ampl << " dB\n";
+				}
+				else {
+					// Don't care about value, but print
+					if (!bAlias) {
+						std::cout << "Transition: " << inFreq << ", ampl: " << ampl << " dB\n";
+					} 
+					else {
+						std::cout << "Transition: " << inFreq << " => " << finalFreq << ", ampl: " << ampl << " dB\n";
+					}
+				}
+			}
+
+			if (maxPassbandError > passbandFailThresh)
+				std::cout << "Fail: max passband error " << maxPassbandError << " dB\n";
+
+			expect(maxPassbandError <= passbandFailThresh);
+
+			if (maxAlias > aliasFailThresh)
+				std::cout << "Fail: max aliasing " << maxAlias << " dB\n";
+
+			expect(maxAlias <= aliasFailThresh);
+		}
     }
 }
 
