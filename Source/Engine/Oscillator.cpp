@@ -25,6 +25,18 @@
 
 namespace Engine {
 
+/*
+This oscillator uses PolyBLEPs for anti-aliasing
+
+Polybleps aren't that great - but they're cheap to compute, so can afford
+to also oversample. And the combination of Polyblep + oversampling is
+good.
+
+Polyblep size (i.e. number of samples on each side of transition) can be
+increased (normally it's 1) - increasing it reduces the top end a bit, but
+with oversampling, the HF loss is all above the audible range.
+*/
+
 namespace Detail {
 
 // Both of these assume upward step - simply negate for downward step
@@ -103,29 +115,31 @@ Oscillator::Oscillator() :
 	m_sampleRate(0.0),
 	m_phase(0.0f),
 	m_phaseNum(0),
-	mk_polyblepSize(1.0f)
+	m_polyblepSize(1.0f)
 {}
 
 Oscillator::Oscillator(sample_t initPhase) :
 	m_sampleRate(0.0),
 	m_phase(initPhase),
 	m_phaseNum(0),
-	mk_polyblepSize(1.0f)
+	m_polyblepSize(1.0f)
 {}
 
 Oscillator::~Oscillator() {}
 
+// TODO: randomize phase
+void Oscillator::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+	m_sampleRate = sampleRate;
+
+	if (sampleRate > 100e3f)
+		m_polyblepSize = 2.f;
+	else
+		m_polyblepSize = 1.f;
+}
+
 void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, waveform_t wave, float shape) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	DEBUG_ASSERT(audioBuf.GetLength() == freqPhaseBuf.GetLength());
-
-	
-	// Polybleps aren't great - but they're cheap, so can afford to also oversample
-	// Combination of oversampling & polyblep is a lot better
-
-	// TODO: oversample x4, but use twice the polyblep size
-	// (increasing polyblep size will reduce top end, but with oversampling this
-	// will be above audible range)
 
 	// TODO: phaseIncr should actually be average of prev and next freq
 	// (half-sample delay)
@@ -140,7 +154,7 @@ void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, wavefor
 			// This is actually next freq (because we increment phase at end of loop)
 			sample_t freq = freqPhase[n];
 
-			audio[n] = Detail::WaveshapeSaw(m_phase, freq * mk_polyblepSize);
+			audio[n] = Detail::WaveshapeSaw(m_phase, freq * m_polyblepSize);
 			freqPhase[n] = m_phase;
 
 			m_phase = fmod(m_phase + freq, 1.0f);
@@ -154,7 +168,7 @@ void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, wavefor
 			// This is actually next freq (because we increment phase at end of loop)
 			sample_t freq = freqPhase[n];
 
-			audio[n] = Detail::WaveshapeRect(m_phase, freq * mk_polyblepSize, pw);
+			audio[n] = Detail::WaveshapeRect(m_phase, freq * m_polyblepSize, pw);
 			freqPhase[n] = m_phase;
 
 			m_phase = fmod(m_phase + freq, 1.0f);
@@ -166,7 +180,7 @@ void Oscillator::ProcessFromFreq(Buffer& audioBuf, Buffer& freqPhaseBuf, wavefor
 			// This is actually next freq (because we increment phase at end of loop)
 			sample_t freq = freqPhase[n];
 
-			audio[n] = Detail::WaveshapeTri(m_phase, freq * mk_polyblepSize);
+			audio[n] = Detail::WaveshapeTri(m_phase, freq * m_polyblepSize);
 			freqPhase[n] = m_phase;
 
 			m_phase = fmod(m_phase + freq, 1.0f);
