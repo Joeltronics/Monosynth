@@ -112,6 +112,7 @@ void MidiProcessor::Clear() {
 
 void MidiProcessor::Process(
 	/*in*/ size_t /*nSamp*/,
+	/*in*/ size_t nOversamp,
 	/*inOut*/ juce::MidiBuffer& midiMessages,
 	/*out*/ eventBuf_t<gateEvent_t>& gateEvents,
 	/*out*/ eventBuf_t<uint8_t>& noteEvents,
@@ -134,6 +135,8 @@ void MidiProcessor::Process(
 	
 	for (juce::MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
 	{
+		size_t oversampledTime = time*nOversamp;
+		
 		if (m.isNoteOn() || m.isNoteOff()) {
 
 			midiNote_t newNote(m);
@@ -156,7 +159,7 @@ void MidiProcessor::Process(
 				// If the current note didn't change, do nothing
 				// (e.g. if NoteOff on a note that isn't the current note, don't retrigger)
 				if (currNote != m_prevNote)
-					bPrevNoteOn = Detail::PushNewNote_(time, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
+					bPrevNoteOn = Detail::PushNewNote_(oversampledTime, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
 
 				m_prevNote = currNote;
 
@@ -173,11 +176,11 @@ void MidiProcessor::Process(
 			m_noteQueue.Clear();
 			m_susNotes.clear();
 			// Always assume previous note was on, to force noteOff gate event in case something went wrong
-			Detail::PushNewNote_(time, midiNote_t(0, 0), true, m_bRetrig, gateEvents, noteEvents, velEvents);
+			Detail::PushNewNote_(oversampledTime, midiNote_t(0, 0), true, m_bRetrig, gateEvents, noteEvents, velEvents);
 			bPrevNoteOn = false;
 		}
 		else if (m.isPitchWheel()) {
-			pitchBendEvents.push_back(timedEvent_t<uint16_t>(time, m.getPitchWheelValue()));
+			pitchBendEvents.push_back(timedEvent_t<uint16_t>(oversampledTime, m.getPitchWheelValue()));
 		}
 		else if (m.isSustainPedalOn()) {
 			m_bSusPedal = true;
@@ -190,10 +193,10 @@ void MidiProcessor::Process(
 				currNote = m_noteQueue.Remove(uint8_t(*it));
 			m_susNotes.clear();
 			
-			bPrevNoteOn = Detail::PushNewNote_(time, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
+			bPrevNoteOn = Detail::PushNewNote_(oversampledTime, currNote, bPrevNoteOn, m_bRetrig, gateEvents, noteEvents, velEvents);
 		}
 		else {
-			skippedMidiMsgs.addEvent(m, time);
+			skippedMidiMsgs.addEvent(m, oversampledTime);
 		}
 	}
 

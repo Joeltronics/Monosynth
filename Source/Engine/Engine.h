@@ -36,6 +36,10 @@
 #include "Vca.h"
 #include "Filter.h"
 
+namespace Utils {
+	class IResampler;
+}
+
 class SynthEngine {
 public:
 	SynthEngine();
@@ -51,7 +55,9 @@ private:
 	void ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& osc1freq /*inout*/, Buffer& osc2freq /*inout*/);
 	void SynthEngine::ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/);
 
-	double m_sampleRate;
+	double m_sampleRateNative;
+	size_t m_nOversample;
+	double m_sampleRateOver;
     
    	uint8_t m_lastNote;
 
@@ -71,6 +77,8 @@ private:
 	Engine::Vca m_vca;
 
 	Utils::OnePole m_filtFreqCvFilt;
+
+	juce::ScopedPointer<Utils::IResampler> m_pResampler;
 
 	ParamStruct m_params;
 };

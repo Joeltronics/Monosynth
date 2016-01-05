@@ -28,8 +28,8 @@
 
 #include "Utils/ApproxEqual.h"
 #include "Utils/DspUtils.h"
-
-#define DONT_REUSE_JUCE_BUF 1
+#include "Utils/Resampling.h"
+#include "Utils/Logger.h"
 
 namespace Engine {
 	const double k_filtCvCutoff_Hz = 10.0;
@@ -70,6 +70,62 @@ namespace Detail {
 			return Engine::filterModel_none;
 		}
 	}
+
+	// returns amount to oversample by
+	static size_t DetermineUpsampling(
+		double nativeSampleRate,
+		juce::ScopedPointer<Utils::IResampler>& pResampler /*inOut*/)
+	{
+		// TODO: add quality setting that will change the behavior of this
+
+		DEBUG_ASSERT(nativeSampleRate > 0.f);
+
+		uint32_t roundedSampleRate = Utils::RoundTo<uint32_t>(nativeSampleRate);
+
+		if (roundedSampleRate < 44100) {
+
+			// Sample rate < 44.1
+			// Use 44.1k resampler
+
+			LOG(juce::String::formatted("Low sample rate %f, using 44.1 kHz resampling filter", nativeSampleRate));
+			roundedSampleRate = 44100;
+		}
+		else if (roundedSampleRate > 100000) {
+			
+			// Sample rate > 100k
+			// i.e. 176.4 kHz, 192 kHz
+			// (but would also catch any weird-but-high-enough sample rate)
+			// no need to oversample
+			
+			pResampler = nullptr;
+			return 1;
+		}
+
+		switch (roundedSampleRate) {
+		
+		// 44.1 kHz-based
+		case 44100:
+			pResampler = new Utils::IirDownsampler_176_44;
+			return 4;
+		case 88200:
+			pResampler = new Utils::IirDownsampler_176_88;
+			return 2;
+
+		// 48 kHz-based
+		case 48000:
+			pResampler = new Utils::IirDownsampler_192_48;
+			return 4;
+		case 96000:
+			pResampler = new Utils::IirDownsampler_192_96;
+			return 2;
+			
+		// Unusual sample rate
+		default:
+			LOG(juce::String::formatted("Not oversampling due to unusual sample rate %f", nativeSampleRate));
+			pResampler = nullptr;
+			return 1;
+		}
+	}
 }
 
 // TODO: randomize initial phase via Oscillator constructor arg
@@ -84,38 +140,43 @@ std::vector<Param*> const& SynthEngine::GetParamList() const {
 }
 
 void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
-	m_sampleRate = sampleRate;
-	m_pitchProc.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_filtEnv.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_osc1.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_osc2.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_subOsc.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_filter.PrepareToPlay(sampleRate, samplesPerBlock);
-	m_vca.PrepareToPlay(sampleRate, samplesPerBlock);
 
-	m_filtFreqCvFilt.SetFreq(Engine::k_filtCvCutoff_Hz / sampleRate);
+	LOG(juce::String::formatted("PrepareToPlay(%f, %i)" , sampleRate , samplesPerBlock));
+
+	m_sampleRateNative = sampleRate;
+	m_nOversample = Detail::DetermineUpsampling(sampleRate, m_pResampler);
+	m_sampleRateOver = sampleRate * double(m_nOversample);
+
+	if (m_pResampler) m_pResampler->Clear();
+
+	m_pitchProc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_filtEnv.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_osc1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_osc2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_subOsc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_filter.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+
+	m_filtFreqCvFilt.SetFreq(Engine::k_filtCvCutoff_Hz / m_sampleRateOver);
 }
 
 void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
 	
 	juce::FloatVectorOperations::enableFlushToZeroMode(true);
 
-	size_t nSamp = juceBuf.getNumSamples();
+	size_t nSampNative = juceBuf.getNumSamples();
+	size_t nSampOver = nSampNative * m_nOversample;
 	size_t nChan = juceBuf.getNumChannels();
 
-#ifdef DONT_REUSE_JUCE_BUF
-	Buffer buf(nSamp);
-#else
-	Buffer buf(juceBuf.getWritePointer(0), nSamp);
-#endif
+	// Oversampled buf
+	Buffer overBuf(nSampOver);
 
 	// Get params
-	// TODO: get actual values
+	// TODO: get actual values for all of these
 	float osc2Tuning = float(m_params.osc2coarse->GetInt()) + m_params.osc2fine->GetActualValue();
-
 	float outputVol = 1.0f;
-
 	uint32_t pitchBendAmt = 12;
+	bool bVcaEnv = m_params.vcaSource->GetInt();
 
 	{
 		float attVal = m_params.envAtt->getValue();
@@ -135,8 +196,6 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
 	}
 
-	bool bVcaEnv = m_params.vcaSource->GetInt();
-
 	// Process:
 	// 1. MIDI
 	// 2. Mod sources (Env/LFO)
@@ -154,10 +213,10 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	eventBuf_t<uint16_t> pitchBendEvents;
 
 	// 1. MIDI
-	m_midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
+	m_midiProc.Process(nSampOver, m_nOversample, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
 	// 2. Envelope & LFO
-	Buffer filtEnvBuf(nSamp);
+	Buffer filtEnvBuf(nSampOver);
 	m_filtEnv.Process(gateEvents, filtEnvBuf);
 
 #if 0 // TODO
@@ -167,9 +226,9 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// 3. Pitch
 
-	Buffer freqPhaseBuf1(nSamp);
+	Buffer freqPhaseBuf1(nSampOver);
 	
-	m_lastNote = Utils::EventBufToBuf<uint8_t, float>(m_lastNote, noteEvents, nSamp, freqPhaseBuf1.Get());
+	m_lastNote = Utils::EventBufToBuf<uint8_t, float>(m_lastNote, noteEvents, nSampOver, freqPhaseBuf1.Get());
 	
 	m_pitchProc.ProcessPitchBend(freqPhaseBuf1, pitchBendEvents, pitchBendAmt);
 
@@ -191,35 +250,51 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	m_pitchProc.PitchToFreq(freqPhaseBuf2);
 
 	// 4. Oscillators & Mixer
-	ProcessOscsAndMixer_(buf, freqPhaseBuf1, freqPhaseBuf2);
+	ProcessOscsAndMixer_(overBuf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	ProcessFilter_(buf, filtEnvBuf);
+	ProcessFilter_(overBuf, filtEnvBuf);
 
 	// 6. Overdrive
 	// TODO
 
 	// 7. VCA
-	m_vca.Process(buf, gateEvents, filtEnvBuf, bVcaEnv);
+	m_vca.Process(overBuf, gateEvents, filtEnvBuf, bVcaEnv);
+
+	// Downsample to native sample rate
+	// Technically we could do this before VCA, but the envelope is at oversampled rate
 	
-#ifdef DONT_REUSE_JUCE_BUF
-	// Copy buffer to output buffer (for all channels)
-	for (size_t chan = 0; chan < nChan; ++chan) {
-		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), buf.Get(), nSamp);
+	if (m_nOversample <= 1)
+	{
+		DEBUG_ASSERT(overBuf.GetLength() == nSampNative);
+
+		// Copy buffer to output buffer (for all channels)
+		for (size_t chan = 0; chan < nChan; ++chan) {
+			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), overBuf.Get(), nSampNative);
+		}
 	}
-#else
-	// If not mono, copy channel 0 to all others
-	for (size_t chan = 1; chan < nChan; ++chan) {
-		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), nSamp);
+	else
+	{
+		// Can downsample staight into Juce buffer
+		Buffer buf(juceBuf.getWritePointer(0), nSampNative);
+
+		DEBUG_ASSERT(Utils::ApproxEqual(m_sampleRateNative*m_nOversample, m_sampleRateOver));
+		DEBUG_ASSERT(m_pResampler);
+
+		m_pResampler->Process(buf, overBuf);
+
+		// Copy buffer to output buffer (for channels > 0)
+		for (size_t chan = 1; chan < nChan; ++chan) {
+			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), buf.Get(), nSampNative);
+		}
 	}
-#endif
 	
 	// 8. Effects
 	// TODO
 
 	// 9. Output Volume
 	for (size_t chan = 0; chan < nChan; ++chan) {
-		juce::FloatVectorOperations::multiply(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), outputVol, nSamp);
+		juce::FloatVectorOperations::multiply(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), outputVol, nSampNative);
 	}
 	
 }
@@ -324,7 +399,7 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
 	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
 
 	sample_t filtCutoff_01 = m_params.filtFreq->getValue() + cutoffRand;
-	//sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, filtCutoff_01) / m_sampleRate;
+	//sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, filtCutoff_01) / m_sampleRateOver;
 
 	float filtEnvAmt = m_params.filtEnv->GetActualValue();
 	
@@ -339,7 +414,7 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
 
 	// TODO: test accuracty, possibly use exact log interp when KB tracking with high resonance
 	Utils::FastLogInterp(20.0f, 20000.0f, filtCv);
-	filtCv /= m_sampleRate;
+	filtCv /= m_sampleRateOver;
 
 	m_filtFreqCvFilt.ProcessLowpass(filtCv);
 	m_filter.Process(buf, filtCv, filtRes, filtModel);
