@@ -17,7 +17,7 @@ The main goal is for this to be super accessible and easy to get a good sound ou
   * Pulse width modulation for square wave
   * Some sort of other similar timbral control for saw & tri waves
 * Analog imperfections:
-  * Slight tuning instability
+  * Slight VCO tuning instability
   * Imperfect oscillator waveforms
 * Dirtiness:
   * Ring mod
@@ -25,12 +25,12 @@ The main goal is for this to be super accessible and easy to get a good sound ou
   * Post-filter distortion
 * High quality:
   * Anti-aliased oscillators
-  * High-quality filters (without a unit delay in the feedback path)
-  * Upsampling
+  * High-quality filters (without unit delay in the feedback path)
+  * Oversampling (typically to 176.4 or 192 kHz)
 
 ## Status
 
-It makes sound, and you can mostly control the oscillators. That's about it for now - most of the rest of the GUI controls aren't hooked up yet, and there are a bunch of sound quality improvements it needs (e.g. it doesn't oversample yet). It could also use a lot more optimization (it currently does a lot of unnecessary memory allocation), and it has a minor memory leak because I haven't figured out one particular Juce quirk yet.
+The core features are all implemented, and most quality features are in place (though the oversampling could still be improved a bit). But several parts aren't implemented yet (like most modulation options), and their GUI controls won't do anything. It could also use a lot more optimization (for one, it currently does a lot of unnecessary memory allocation), and it has a very minor memory leak (due to a Juce quirk I haven't figured out yet).
 
 Although most of the controls are there, the GUI is currently pretty messy and possibly a bit confusing. I plan on streamlining it eventually - maybe even removing some controls to better fit with my design philosophy. I also want to add some visual aids you wouldn't see on a real hardware synth, like an "arc" on the filter cutoff knob to show how it's being modulated by the envelope and LFO. But now that the GUI is in a "good enough to use" state, my focus is more on the sound engine for now.
 
@@ -44,10 +44,10 @@ Here is what the GUI looks like at the moment: *(click to enlarge)*
 
 ## Possible future features
 
-These are all features I'm considering possibly adding in the future, but don't plan on implementing for 1.0:
+These are all features I'm considering adding in the future, but don't plan on implementing for 1.0:
 
-* Built-in patch storage & management - I do plan on supporting state saving and maybe very basic patch management via the DAW, but there won't be a built-in patch manager yet.
-* More monophony priority modes (besides last-note)
 * Polyphony & unison
 * Sequencer & arpeggiator
+* More monophony priority modes (besides last-note)
+* Built-in patch storage & management - I do plan on supporting state saving and DAW-based patch management, but there won't be a built-in patch manager yet.
 * Filter/VCA feedback distortion (until then, there are 2 other kinds of distortion)
