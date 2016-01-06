@@ -43,7 +43,8 @@ namespace Detail {
 		case 0: return Engine::waveShape_tri; break;
 		case 1: return Engine::waveShape_pwm; break;
 		case 2: return Engine::waveShape_saw; break;
-		default: DEBUG_ASSERT(false);
+		default:
+			DEBUG_ASSERT(false);
 			return Engine::waveShape_saw;
 		}
 	}
@@ -53,8 +54,34 @@ namespace Detail {
 		case 0: return Engine::waveShape_tri;
 		case 1: return Engine::waveShape_squ50;
 		case 2: return Engine::waveShape_pulse25;
-		default: DEBUG_ASSERT(false);
+		default:
+			DEBUG_ASSERT(false);
 			return Engine::waveShape_tri;
+		}
+	}
+
+	static Engine::waveform_t Lfo1ToWave(size_t n) {
+		switch (n) {
+		case 0: return Engine::waveShape_tri;
+		case 1: return Engine::waveShape_sin;
+		case 2: return Engine::waveShape_squ50;
+		case 3: return Engine::waveShape_saw;
+		case 4: return Engine::waveShape_sawDown;
+		default:
+			DEBUG_ASSERT(false);
+			return Engine::waveShape_sin;
+		}
+	}
+
+	static Engine::waveform_t Lfo2ToWave(size_t n) {
+		switch (n) {
+		case 0: return Engine::waveShape_triSinSqu;
+		case 1: return Engine::waveShape_sawTriSaw;
+		case 2: return Engine::waveShape_sampleHold;
+		case 3: return Engine::waveShape_envelope;
+		default:
+			DEBUG_ASSERT(false);
+			return Engine::waveShape_triSinSqu;
 		}
 	}
 
@@ -63,7 +90,6 @@ namespace Detail {
 		switch (n) {
 		case 1: return Engine::filterModel_transLadder;
 		case 2: return Engine::filterModel_diodeLadder;
-		case 3: return Engine::filterModel_ota;
 		
 		case 0:
 		default:
@@ -128,7 +154,6 @@ namespace Detail {
 	}
 }
 
-// TODO: randomize initial phase via Oscillator constructor arg
 SynthEngine::SynthEngine() :
 	m_lastNote(60)
 {}
@@ -179,19 +204,22 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	bool bVcaEnv = m_params.vcaSource->GetInt();
 
 	{
-		float attVal = m_params.envAtt->getValue();
-		float decVal = m_params.envDec->getValue();
-		float susVal = m_params.envSus->getValue();
-		float relVal = m_params.envRel->getValue();
+		double attVal, decVal, susVal, relVal;
+		double attTime, decTime, relTime;
+
+		attVal = m_params.envAtt->getValue();
+		decVal = m_params.envDec->getValue();
+		susVal = m_params.envSus->getValue();
+		relVal = m_params.envRel->getValue();
 		
 		DEBUG_ASSERT(attVal >= 0.0 && attVal <= 1.0);
 		DEBUG_ASSERT(decVal >= 0.0 && decVal <= 1.0);
 		DEBUG_ASSERT(relVal >= 0.0 && relVal <= 1.0);
 
-		// Times in seconds (log-interp 1ms to 4s)
-		double attTime = Utils::LogInterp<double>(0.001, 4.0, attVal);
-		double decTime = Utils::LogInterp<double>(0.001, 4.0, decVal);
-		double relTime = Utils::LogInterp<double>(0.001, 4.0, relVal);
+		// Times in seconds (range 1ms to 4s)
+		attTime = std::max(4.0 * (attVal*attVal), 0.001);
+		decTime = std::max(4.0 * (decVal*decVal), 0.001);
+		relTime = std::max(4.0 * (relVal*relVal), 0.001);
 
 		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
 	}
@@ -363,7 +391,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	// This is the last we need to use osc2Buf, so can use it for ring mod
 	if (ringGain > 0.0f) {
 		osc2Buf *= osc1Buf;
-		osc2Buf *= ringGain;
+		osc2Buf *= (ringGain * 4.f); // oscs have amplitude 0.5 so multiply ring by 4
 		mainBuf += osc2Buf;
 	}
 
@@ -403,16 +431,17 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
 
 	float filtEnvAmt = m_params.filtEnv->GetActualValue();
 	
-	// TODO: apply curve to filtEnvAmt
+	// Apply curve (x^2 with sign) to filtEnvAmt
+	//filtEnvAmt = copysign(filtEnvAmt*filtEnvAmt, filtEnvAmt);
 
-	//Buffer filtCv(filtCutoff, nSamp);
 	Buffer filtCv(envBuf);
 	filtCv *= filtEnvAmt;
 	filtCv += filtCutoff_01;
 	
 	// TODO: LFO, velocity, kb tracking
 
-	// TODO: test accuracty, possibly use exact log interp when KB tracking with high resonance
+	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance
+	// NOTE: at this point, filtCv can exceed range [0,1]. This is acceptable.
 	Utils::FastLogInterp(20.0f, 20000.0f, filtCv);
 	filtCv /= m_sampleRateOver;
 

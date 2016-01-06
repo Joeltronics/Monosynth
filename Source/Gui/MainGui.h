@@ -96,6 +96,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<GroupComponent> groupComponent10;
     ScopedPointer<GroupComponent> groupComponent12;
     ScopedPointer<GroupComponent> groupComponent11;
     ScopedPointer<Label> label70;
@@ -149,10 +150,7 @@ private:
     ScopedPointer<Label> label7;
     ScopedPointer<Label> label25;
     ScopedPointer<GroupComponent> groupComponent9;
-    ScopedPointer<GroupComponent> groupComponent10;
     ScopedPointer<Slider> sli_glide_amt;
-    ScopedPointer<Slider> sli_bend_range;
-    ScopedPointer<Label> label26;
     ScopedPointer<Label> label28;
     ScopedPointer<Slider> sli_lfo2_freq;
     ScopedPointer<Label> label29;
@@ -227,9 +225,6 @@ private:
     ScopedPointer<Label> label101;
     ScopedPointer<Label> label105;
     ScopedPointer<Label> label106;
-    ScopedPointer<Label> label107;
-    ScopedPointer<Label> label108;
-    ScopedPointer<Label> label109;
     ScopedPointer<Label> label76;
     ScopedPointer<Label> label77;
     ScopedPointer<Label> label123;
@@ -248,12 +243,10 @@ private:
     ScopedPointer<Label> label41;
     ScopedPointer<Label> label44;
     ScopedPointer<Label> label68;
-    ScopedPointer<Label> label81;
     ScopedPointer<Slider> sli_lfo2_sh;
     ScopedPointer<Label> label89;
     ScopedPointer<Label> label27;
     ScopedPointer<Label> label33;
-    ScopedPointer<Slider> sli_lfo1_sh;
     ScopedPointer<Label> label38;
     ScopedPointer<Label> label39;
     ScopedPointer<Slider> swi_vcasource;
@@ -268,6 +261,8 @@ private:
     ScopedPointer<Label> label43;
     ScopedPointer<Slider> swi_pitchmod_dest2;
     ScopedPointer<Label> label46;
+    ScopedPointer<Label> label26;
+    ScopedPointer<Label> label34;
 
 
     //==============================================================================

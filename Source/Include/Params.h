@@ -462,7 +462,7 @@ public:
 		AP(mixSub = new FloatParam("Sub Mix"));
 		AP(mixRing = new FloatParam("Ring Mod Mix"));
 		AP(mixNoise = new FloatParam("Noise Mix"));
-		AP(filtFreq = new FloatParam("Filter Frequency", 0.5f)); /*TODO: range*/
+		AP(filtFreq = new FloatParam("Filter Frequency", 1.0f));
 		AP(filtRes = new FloatParam("Filter Resonance"));
 		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f,2.0f}));
 		AP(filtModel = new EnumParam("Filter Model", { "Off","Transistor","Diode" }, 1));
@@ -480,7 +480,7 @@ public:
 		AP(vcaSource = new EnumParam("VCA Source", {"Gate","Envelope"}, 0));
 		AP(vcaVel = new FloatParam("VCA Velocity"));
 		AP(lfo1freq = new FloatParam("LFO 1 Freq", 0.5f));
-		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri/Squ","Saw","S&H" }));
+		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
 		AP(lfo2freq = new FloatParam("LFO 2 Freq", 0.5f));
 		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ","Saw","S&H","Env" }));
 		AP(lfo2att = new FloatParam("LFO 2 Attack"));
