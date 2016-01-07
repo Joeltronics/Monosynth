@@ -406,7 +406,8 @@ public:
 	FloatParam* osc1shape;
 	EnumParam* osc2wave;
 	FloatParam* osc2shape;
-	IntParam* osc2coarse;
+	IntParam* osc2oct;
+	FloatParam* osc2coarse;
 	FloatParam* osc2fine;
 	IntParam* subOscOct;
 	EnumParam* subOscWave;
@@ -419,7 +420,7 @@ public:
 	FloatParam* filtRes;
 	FloatParam* filtGain;
 	EnumParam* filtModel;
-	BoolParam* bFiltKb;
+	EnumParam* filtKb;
 	EnumParam* filtPoles;
 	FloatParam* filtEnv;
 	FloatParam* filtVelAmt;
@@ -453,10 +454,11 @@ public:
 		AP(osc1shape = new FloatParam("Osc 1 Shape"));
 		AP(osc2wave = new EnumParam("Osc 2 Wave", { "Tri","Rect","Saw" }, 2));
 		AP(osc2shape = new FloatParam("Osc 2 Shape"));
-		AP(osc2coarse = new IntParam("Osc 2 Coarse Tune", 0, { -7,19 }));
-		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.0f, { -1.0f,1.0f }));
-		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2,-1 }));
-		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri","Square","Pulse" }, 0));
+		AP(osc2oct = new IntParam("Osc 2 Octave", 0, { 0, 1 }));
+		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.0f, 7.0f }));
+		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.0f, { -1.0f, 1.0f }));
+		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2, -1 }));
+		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri", "Square", "Pulse" }, 0));
 		AP(mixOsc1 = new FloatParam("Osc 1 Mix", 1.0f));
 		AP(mixOsc2 = new FloatParam("Osc 2 Mix"));
 		AP(mixSub = new FloatParam("Sub Mix"));
@@ -464,25 +466,25 @@ public:
 		AP(mixNoise = new FloatParam("Noise Mix"));
 		AP(filtFreq = new FloatParam("Filter Frequency", 1.0f));
 		AP(filtRes = new FloatParam("Filter Resonance"));
-		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f,2.0f}));
-		AP(filtModel = new EnumParam("Filter Model", { "Off","Transistor","Diode" }, 1));
-		AP(bFiltKb = new BoolParam("Filter KB Track"));
-		AP(filtPoles = new EnumParam("Filter Poles", { "2","4" }, 0));
-		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f,1.0f }));
+		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f, 2.0f}));
+		AP(filtModel = new EnumParam("Filter Model", { "Off", "Transistor", "Diode" }, 1));
+		AP(filtKb = new EnumParam("Filter KB Track", { "0", "0.5", "1" }, 2));
+		AP(filtPoles = new EnumParam("Filter Poles", { "2", "4" }, 0));
+		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f, 1.0f }));
 		AP(filtVelAmt = new FloatParam("Filter Vel Amount"));
 		AP(filtLfoAmt = new FloatParam("Filter LFO Amount"));
-		AP(filtLfoSel = new EnumParam("Filter LFO Select", { "LFO 1","LFO 2" }, 0));
+		AP(filtLfoSel = new EnumParam("Filter LFO Select", { "LFO 1", "LFO 2" }, 0));
 		AP(envAtt = new FloatParam("Env Attack"));
 		AP(envDec = new FloatParam("Env Decay"));
 		AP(envSus = new FloatParam("Env Sustain", 1.0f));
 		AP(envRel = new FloatParam("Env Release"));
 		AP(envVel = new FloatParam("Env Velocity"));
-		AP(vcaSource = new EnumParam("VCA Source", {"Gate","Envelope"}, 0));
+		AP(vcaSource = new EnumParam("VCA Source", {"Gate", "Envelope"}, 0));
 		AP(vcaVel = new FloatParam("VCA Velocity"));
 		AP(lfo1freq = new FloatParam("LFO 1 Freq", 0.5f));
 		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
 		AP(lfo2freq = new FloatParam("LFO 2 Freq", 0.5f));
-		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ","Saw","S&H","Env" }));
+		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ", "Saw", "S&H", "Env" }));
 		AP(lfo2att = new FloatParam("LFO 2 Attack"));
 	}
 #undef AP

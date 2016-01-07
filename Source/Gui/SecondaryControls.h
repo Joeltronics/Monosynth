@@ -137,6 +137,12 @@ private:
     ScopedPointer<Label> label15;
     ScopedPointer<Slider> sli_shape_instab3;
     ScopedPointer<Label> label16;
+    ScopedPointer<Label> label17;
+    ScopedPointer<Label> label18;
+    ScopedPointer<Slider> swi_tune_type2;
+    ScopedPointer<Label> label19;
+    ScopedPointer<Label> label20;
+    ScopedPointer<Slider> swi_filt_lfosrc4;
 
 
     //==============================================================================

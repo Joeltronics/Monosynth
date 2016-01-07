@@ -168,8 +168,6 @@ private:
     ScopedPointer<Slider> sli_aenv_vel;
     ScopedPointer<Slider> swi_lfo1_sh;
     ScopedPointer<Slider> swi_lfo2_sh;
-    ScopedPointer<Label> label48;
-    ScopedPointer<Label> label49;
     ScopedPointer<Slider> sli_lfo1_freq;
     ScopedPointer<Label> label51;
     ScopedPointer<Label> label53;
@@ -218,16 +216,12 @@ private:
     ScopedPointer<Slider> swi_pitchmod_src;
     ScopedPointer<Label> label96;
     ScopedPointer<Slider> swi_lfo1_kb;
-    ScopedPointer<Label> label50;
-    ScopedPointer<Label> label52;
-    ScopedPointer<Label> label47;
     ScopedPointer<Label> label100;
     ScopedPointer<Label> label101;
     ScopedPointer<Label> label105;
     ScopedPointer<Label> label106;
     ScopedPointer<Label> label76;
     ScopedPointer<Label> label77;
-    ScopedPointer<Label> label123;
     ScopedPointer<Label> label110;
     ScopedPointer<Label> label124;
     ScopedPointer<Label> label125;
@@ -263,6 +257,10 @@ private:
     ScopedPointer<Label> label46;
     ScopedPointer<Label> label26;
     ScopedPointer<Label> label34;
+    ScopedPointer<Label> label35;
+    ScopedPointer<Label> label47;
+    ScopedPointer<Slider> swi_vco2_oct;
+    ScopedPointer<Label> label48;
 
 
     //==============================================================================

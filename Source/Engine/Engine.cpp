@@ -197,8 +197,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	Buffer overBuf(nSampOver);
 
 	// Get params
-	// TODO: get actual values for all of these
-	float osc2Tuning = float(m_params.osc2coarse->GetInt()) + m_params.osc2fine->GetActualValue();
+	float osc2Tuning = m_params.osc2coarse->GetActualValue() + m_params.osc2fine->GetActualValue() + 12.0f*float(m_params.osc2oct->GetInt());
 	float outputVol = 1.0f;
 	uint32_t pitchBendAmt = 12;
 	bool bVcaEnv = m_params.vcaSource->GetInt();

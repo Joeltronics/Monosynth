@@ -142,7 +142,7 @@ namespace Gui {
 		// Max Radius
 		int minDim = std::min(w, h);
 		float rOuter = minDim / 2.0f;
-		float rMiniTick = (r3 + rOuter) * 0.5f;
+		float rMiniTick = r3 + 0.55f*(rOuter - r3);
 
 		// Draw ticks
 		g.setColour(Colours::whitesmoke);
@@ -246,11 +246,18 @@ namespace Gui {
 		std::vector<float> miniTicks;
 		for (int32_t n = intMinVal; n <= intMaxVal; ++n)
 		{
+#if 1
+			if (n == 0 || n == 7 || n == -7)
+				ticks.push_back(float(sl.valueToProportionOfLength(n)));
+			else
+				miniTicks.push_back(float(sl.valueToProportionOfLength(n)));
+#else
 			int nMod = n % 12;
 			if (nMod == 0 || nMod == 7 || nMod == -5)
 				ticks.push_back(float(sl.valueToProportionOfLength(n)));
 			else
 				miniTicks.push_back(float(sl.valueToProportionOfLength(n)));
+#endif
 		}
 
 		DrawKnob_(
