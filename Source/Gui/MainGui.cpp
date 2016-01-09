@@ -45,17 +45,17 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent10 = new GroupComponent ("new group",
                                                               TRANS("LFO2")));
-    groupComponent10->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent10->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent10->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent12 = new GroupComponent ("new group",
                                                               TRANS("Effects")));
-    groupComponent12->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent12->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent12->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent11 = new GroupComponent ("new group",
                                                               TRANS("Pitch Mod")));
-    groupComponent11->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent11->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent11->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (label70 = new Label ("new label",
@@ -84,12 +84,12 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent2 = new GroupComponent ("new group",
                                                              TRANS("Mixer")));
-    groupComponent2->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent2->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent2->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent6 = new GroupComponent ("new group",
                                                              TRANS("Overdrive & VCA")));
-    groupComponent6->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent6->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent6->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent13 = new GroupComponent ("new group",
@@ -99,7 +99,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent3 = new GroupComponent ("new group",
                                                              TRANS("Filter")));
-    groupComponent3->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent3->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent3->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (swi_filt_poles = new Slider ("Filter Poles"));
@@ -110,12 +110,12 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent4 = new GroupComponent ("new group",
                                                              TRANS("Osc2")));
-    groupComponent4->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent4->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent4->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent = new GroupComponent ("new group",
                                                             TRANS("Osc1")));
-    groupComponent->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (sli_o1_sh = new Slider ("Osc 1 Shape"));
@@ -126,12 +126,12 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent8 = new GroupComponent ("new group",
                                                              TRANS("Input")));
-    groupComponent8->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent8->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent8->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (groupComponent5 = new GroupComponent ("new group",
                                                              TRANS("Sub")));
-    groupComponent5->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent5->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent5->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (sli_o2_sh = new Slider ("Osc 2 Shape"));
@@ -325,7 +325,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent7 = new GroupComponent ("new group",
                                                              TRANS("Envelope")));
-    groupComponent7->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent7->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent7->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (sli_env_att = new Slider ("Env Attack"));
@@ -411,7 +411,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     addAndMakeVisible (groupComponent9 = new GroupComponent ("new group",
                                                              TRANS("LFO1")));
-    groupComponent9->setColour (GroupComponent::outlineColourId, Colour (0x66ffffff));
+    groupComponent9->setColour (GroupComponent::outlineColourId, Colour (0x99ffffff));
     groupComponent9->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (sli_glide_amt = new Slider ("new slider"));
@@ -1537,10 +1537,10 @@ void MainGui::resized()
 
     groupComponent10->setBounds (278, 247, 181, 118);
     groupComponent12->setBounds (607, 253, 178, 91);
-    groupComponent11->setBounds (160, 237, 112, 128);
-    label70->setBounds (162, 259, 38, 8);
-    label80->setBounds (189, 271, 56, 10);
-    swi_pitchmod_dest->setBounds (188, 253, 56, 20);
+    groupComponent11->setBounds (160, 247, 112, 118);
+    label70->setBounds (162, 269, 38, 8);
+    label80->setBounds (189, 281, 56, 10);
+    swi_pitchmod_dest->setBounds (188, 263, 56, 20);
     groupComponent2->setBounds (278, 0, 181, 128);
     groupComponent6->setBounds (607, 129, 178, 122);
     groupComponent13->setBounds (1400, -128, 240, 80);
@@ -1585,7 +1585,7 @@ void MainGui::resized()
     label20->setBounds (711, 16, 24, 16);
     sli_filt_gain->setBounds (471, 153, 56, 48);
     label21->setBounds (470, 137, 56, 16);
-    sli_pitchmod_amt->setBounds (223, 305, 40, 40);
+    sli_pitchmod_amt->setBounds (223, 311, 40, 40);
     label7->setBounds (13, 159, 40, 10);
     label25->setBounds (15, 62, 40, 10);
     groupComponent9->setBounds (278, 128, 181, 116);
@@ -1626,7 +1626,7 @@ void MainGui::resized()
     label64->setBounds (90, 308, 39, 12);
     label65->setBounds (90, 324, 32, 10);
     swi_glide->setBounds (76, 285, 20, 56);
-    label69->setBounds (231, 259, 38, 8);
+    label69->setBounds (231, 269, 38, 8);
     label23->setBounds (575, 219, 16, 10);
     label72->setBounds (531, 219, 16, 10);
     label73->setBounds (541, 206, 40, 10);
@@ -1647,16 +1647,16 @@ void MainGui::resized()
     label88->setBounds (309, 206, 36, 12);
     label90->setBounds (309, 221, 36, 12);
     swi_lfo1_range->setBounds (296, 198, 16, 40);
-    label91->setBounds (186, 308, 40, 10);
-    label92->setBounds (186, 323, 40, 10);
-    label93->setBounds (186, 338, 40, 10);
-    swi_pitchmod_src->setBounds (171, 300, 20, 56);
+    label91->setBounds (186, 314, 40, 10);
+    label92->setBounds (186, 329, 40, 10);
+    label93->setBounds (186, 344, 40, 10);
+    swi_pitchmod_src->setBounds (171, 306, 20, 56);
     label96->setBounds (385, 223, 61, 10);
     swi_lfo1_kb->setBounds (353, 220, 40, 16);
     label100->setBounds (60, 110, 56, 14);
     label101->setBounds (60, 12, 56, 14);
-    label105->setBounds (223, 289, 40, 16);
-    label106->setBounds (163, 289, 64, 16);
+    label105->setBounds (223, 295, 40, 16);
+    label106->setBounds (163, 295, 64, 16);
     label76->setBounds (538, 280, 18, 10);
     label77->setBounds (511, 280, 15, 10);
     label110->setBounds (486, 113, 25, 16);
@@ -2123,59 +2123,59 @@ BEGIN_JUCER_METADATA
                  initialHeight="400">
   <BACKGROUND backgroundColour="ff1c1c1c"/>
   <GROUPCOMPONENT name="new group" id="2f9f6ffa0d9e55e2" memberName="groupComponent10"
-                  virtualName="" explicitFocusOrder="0" pos="278 247 181 118" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="278 247 181 118" outlinecol="99ffffff"
                   textcol="ffffffff" title="LFO2"/>
   <GROUPCOMPONENT name="new group" id="9da2be2e767c916e" memberName="groupComponent12"
-                  virtualName="" explicitFocusOrder="0" pos="607 253 178 91" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="607 253 178 91" outlinecol="99ffffff"
                   textcol="ffffffff" title="Effects"/>
   <GROUPCOMPONENT name="new group" id="303c96ba3a6d7786" memberName="groupComponent11"
-                  virtualName="" explicitFocusOrder="0" pos="160 237 112 128" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="160 247 112 118" outlinecol="99ffffff"
                   textcol="ffffffff" title="Pitch Mod"/>
   <LABEL name="new label" id="331f3423dbdd9216" memberName="label70" virtualName=""
-         explicitFocusOrder="0" pos="162 259 38 8" textCol="ffffffff"
+         explicitFocusOrder="0" pos="162 269 38 8" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <LABEL name="new label" id="37e280526a434fe5" memberName="label80" virtualName=""
-         explicitFocusOrder="0" pos="189 271 56 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="189 281 56 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="1+2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="6fa656f8bb87a7db" memberName="swi_pitchmod_dest"
-          virtualName="" explicitFocusOrder="0" pos="188 253 56 20" min="1"
+          virtualName="" explicitFocusOrder="0" pos="188 263 56 20" min="1"
           max="2" int="0.5" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <GROUPCOMPONENT name="new group" id="2bd57dadf55e124b" memberName="groupComponent2"
-                  virtualName="" explicitFocusOrder="0" pos="278 0 181 128" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="278 0 181 128" outlinecol="99ffffff"
                   textcol="ffffffff" title="Mixer"/>
   <GROUPCOMPONENT name="new group" id="d354cd4b1913022f" memberName="groupComponent6"
-                  virtualName="" explicitFocusOrder="0" pos="607 129 178 122" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="607 129 178 122" outlinecol="99ffffff"
                   textcol="ffffffff" title="Overdrive &amp; VCA"/>
   <GROUPCOMPONENT name="new group" id="4290aa3f94cba83c" memberName="groupComponent13"
                   virtualName="" explicitFocusOrder="0" pos="1400 -128 240 80"
                   outlinecol="66ffffff" textcol="ffffffff" title="Effects"/>
   <GROUPCOMPONENT name="new group" id="b5f4751ee1ed8057" memberName="groupComponent3"
-                  virtualName="" explicitFocusOrder="0" pos="465 0 136 304" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="465 0 136 304" outlinecol="99ffffff"
                   textcol="ffffffff" title="Filter"/>
   <SLIDER name="Filter Poles" id="9366d7598a118d48" memberName="swi_filt_poles"
           virtualName="" explicitFocusOrder="0" pos="542 216 40 16" min="2"
           max="4" int="2" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <GROUPCOMPONENT name="new group" id="3c0dca09a310f370" memberName="groupComponent4"
-                  virtualName="" explicitFocusOrder="0" pos="8 98 264 102" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="8 98 264 102" outlinecol="99ffffff"
                   textcol="ffffffff" title="Osc2"/>
   <GROUPCOMPONENT name="new group" id="9fb59b5f6494cccc" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="8 0 144 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="8 0 144 96" outlinecol="99ffffff"
                   textcol="ffffffff" title="Osc1"/>
   <SLIDER name="Osc 1 Shape" id="13d0d9d98ecd6c62" memberName="sli_o1_sh"
           virtualName="" explicitFocusOrder="0" pos="48 28 56 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <GROUPCOMPONENT name="new group" id="d9483dc1d74a73c9" memberName="groupComponent8"
-                  virtualName="" explicitFocusOrder="0" pos="8 223 128 142" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="8 223 128 142" outlinecol="99ffffff"
                   textcol="ffffffff" title="Input"/>
   <GROUPCOMPONENT name="new group" id="f6c32fd096d279ac" memberName="groupComponent5"
-                  virtualName="" explicitFocusOrder="0" pos="177 0 94 96" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="177 0 94 96" outlinecol="99ffffff"
                   textcol="ffffffff" title="Sub"/>
   <SLIDER name="Osc 2 Shape" id="cc7559654e6a39df" memberName="sli_o2_sh"
           virtualName="" explicitFocusOrder="0" pos="48 125 56 48" min="0"
@@ -2293,7 +2293,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <GROUPCOMPONENT name="new group" id="8e4a429367bb6ed1" memberName="groupComponent7"
-                  virtualName="" explicitFocusOrder="0" pos="607 0 178 128" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="607 0 178 128" outlinecol="99ffffff"
                   textcol="ffffffff" title="Envelope"/>
   <SLIDER name="Env Attack" id="9256184baa5e0e12" memberName="sli_env_att"
           virtualName="" explicitFocusOrder="0" pos="615 32 24 88" min="0"
@@ -2329,7 +2329,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="new slider" id="12fca17f8b6adf7a" memberName="sli_pitchmod_amt"
-          virtualName="" explicitFocusOrder="0" pos="223 305 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="223 311 40 40" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="208afd31b5af01cf" memberName="label7" virtualName=""
@@ -2343,7 +2343,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12"
          bold="0" italic="0" justification="36"/>
   <GROUPCOMPONENT name="new group" id="d530435b1472d6bd" memberName="groupComponent9"
-                  virtualName="" explicitFocusOrder="0" pos="278 128 181 116" outlinecol="66ffffff"
+                  virtualName="" explicitFocusOrder="0" pos="278 128 181 116" outlinecol="99ffffff"
                   textcol="ffffffff" title="LFO1"/>
   <SLIDER name="new slider" id="ca4ffa3f27169af8" memberName="sli_glide_amt"
           virtualName="" explicitFocusOrder="0" pos="22 291 56 48" min="0"
@@ -2514,7 +2514,7 @@ BEGIN_JUCER_METADATA
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="f621af72285c3ecd" memberName="label69" virtualName=""
-         explicitFocusOrder="0" pos="231 259 38 8" textCol="ffffffff"
+         explicitFocusOrder="0" pos="231 269 38 8" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
@@ -2613,22 +2613,22 @@ BEGIN_JUCER_METADATA
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="c9563633985aee29" memberName="label91" virtualName=""
-         explicitFocusOrder="0" pos="186 308 40 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="186 314 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="LFO1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="178f041b11b3989c" memberName="label92" virtualName=""
-         explicitFocusOrder="0" pos="186 323 40 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="186 329 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="LFO2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="5993e8b0b82bffbf" memberName="label93" virtualName=""
-         explicitFocusOrder="0" pos="186 338 40 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="186 344 40 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Env" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="2786e978180c30a5" memberName="swi_pitchmod_src"
-          virtualName="" explicitFocusOrder="0" pos="171 300 20 56" min="0"
+          virtualName="" explicitFocusOrder="0" pos="171 306 20 56" min="0"
           max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="5fbafef03a41acb0" memberName="label96" virtualName=""
@@ -2651,12 +2651,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="4f9e29710ea85f8b" memberName="label105"
-         virtualName="" explicitFocusOrder="0" pos="223 289 40 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="223 295 40 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Amt" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="3e6b1bc0984a82f6" memberName="label106"
-         virtualName="" explicitFocusOrder="0" pos="163 289 64 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="163 295 64 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Source" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>

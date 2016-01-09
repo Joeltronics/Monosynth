@@ -480,4 +480,63 @@ namespace Gui {
 		return Font::getDefaultTypefaceForFont(f);
 	}
 
+	// Copied and modified from juce::LookAndFeel_V2
+	void DefaultLookAndFeel::drawGroupComponentOutline(
+		Graphics& g,
+		int width, int height,
+		const String& text,
+		const Justification& position,
+		GroupComponent& group)
+	{
+		const float lineWidth = 4.0f;
+		const float textH = 15.0f;
+		const float indent = 3.0f;
+		const float textEdgeGap = 4.0f;
+		float cs = 5.0f;
+		
+		Font f(textH);
+
+		//Path p;
+		float x = indent;
+		float y = f.getAscent() - 3.0f;
+		float w = jmax(0.0f, width - x * 2.0f);
+		float h = jmax(0.0f, height - y - indent);
+		cs = jmin(cs, w * 0.5f, h * 0.5f);
+		const float cs2 = 2.0f * cs;
+
+		float textW = text.isEmpty() ? 0 : jlimit(0.0f, jmax(0.0f, w - cs2 - textEdgeGap * 2), f.getStringWidth(text) + textEdgeGap * 2.0f);
+		float textX = cs + textEdgeGap;
+
+		if (position.testFlags(Justification::horizontallyCentred))
+			textX = cs + (w - cs2 - textW) * 0.5f;
+		else if (position.testFlags(Justification::right))
+			textX = w - cs - textW - textEdgeGap;
+
+		const float alpha = group.isEnabled() ? 1.0f : 0.5f;
+
+		g.setColour(group.findColour(GroupComponent::outlineColourId)
+			.withMultipliedAlpha(alpha));
+		
+		const float lineY = y-1;
+
+		g.drawLine(
+			x + textX + textW, lineY,
+			x + w, lineY,
+			lineWidth);
+
+		g.drawLine(
+			x + textX, lineY,
+			x, lineY,
+			lineWidth);
+
+		g.setColour(group.findColour(GroupComponent::textColourId)
+			.withMultipliedAlpha(alpha));
+		g.setFont(f);
+		g.drawText(text,
+			roundToInt(x + textX), 0,
+			roundToInt(textW),
+			roundToInt(textH),
+			Justification::centred, true);
+	}
+
 } // namespace Gui
