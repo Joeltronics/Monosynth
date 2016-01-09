@@ -466,7 +466,7 @@ public:
 		AP(mixNoise = new FloatParam("Noise Mix"));
 		AP(filtFreq = new FloatParam("Filter Frequency", 1.0f));
 		AP(filtRes = new FloatParam("Filter Resonance"));
-		AP(filtGain = new FloatParam("Filter Gain", 1.0f, {0.0f, 2.0f}));
+		AP(filtGain = new FloatParam("Filter Gain", 0.5f));
 		AP(filtModel = new EnumParam("Filter Model", { "Off", "Transistor", "Diode" }, 1));
 		AP(filtKb = new EnumParam("Filter KB Track", { "0", "0.5", "1" }, 2));
 		AP(filtPoles = new EnumParam("Filter Poles", { "2", "4" }, 0));

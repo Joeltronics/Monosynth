@@ -343,6 +343,8 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	int subOscOct = m_params.subOscOct->GetInt();
 
 	float preFiltGain = m_params.filtGain->GetActualValue();
+	preFiltGain = preFiltGain*preFiltGain;
+	preFiltGain = Utils::Interp(0.1f, 4.0f, preFiltGain);
 
 	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
 	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);

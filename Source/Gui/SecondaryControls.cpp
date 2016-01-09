@@ -449,7 +449,7 @@ SecondaryControls::SecondaryControls ()
     label16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label17 = new Label ("new label",
-                                            TRANS("Semi")));
+                                            TRANS("Semitone")));
     label17->setFont (Font (12.00f, Font::plain));
     label17->setJustificationType (Justification::centredLeft);
     label17->setEditable (false, false, false);
@@ -595,10 +595,10 @@ void SecondaryControls::resized()
     label97->setBounds (428, 42, 43, 10);
     label98->setBounds (359, 42, 45, 10);
     swi_noise_color->setBounds (396, 39, 40, 16);
-    label111->setBounds (290, 185, 30, 10);
-    label112->setBounds (233, 185, 34, 10);
-    swi_tune_type->setBounds (259, 182, 40, 16);
-    label113->setBounds (233, 168, 88, 15);
+    label111->setBounds (281, 182, 30, 10);
+    label112->setBounds (224, 182, 34, 10);
+    swi_tune_type->setBounds (250, 179, 40, 16);
+    label113->setBounds (224, 165, 88, 15);
     label114->setBounds (149, 107, 35, 10);
     label115->setBounds (149, 123, 40, 10);
     label116->setBounds (149, 139, 40, 10);
@@ -607,8 +607,8 @@ void SecondaryControls::resized()
     sli_tune_instab->setBounds (219, 29, 24, 24);
     label119->setBounds (240, 28, 103, 24);
     label22->setBounds (400, 127, 80, 34);
-    label121->setBounds (264, 265, 104, 12);
-    swi_filt_lfosrc2->setBounds (233, 263, 40, 16);
+    label121->setBounds (264, 261, 104, 12);
+    swi_filt_lfosrc2->setBounds (233, 259, 40, 16);
     label104->setBounds (44, 264, 61, 32);
     swi_lfo1_kb2->setBounds (12, 272, 40, 16);
     label2->setBounds (264, 238, 95, 12);
@@ -624,10 +624,10 @@ void SecondaryControls::resized()
     swi_glide_type3->setBounds (18, 97, 19, 56);
     label12->setBounds (16, 88, 72, 15);
     label14->setBounds (377, 20, 75, 15);
-    label34->setBounds (145, 223, 49, 10);
-    label35->setBounds (145, 238, 49, 10);
-    swi_lfo2_att->setBounds (130, 214, 16, 40);
-    label3->setBounds (109, 202, 96, 15);
+    label34->setBounds (41, 227, 49, 10);
+    label35->setBounds (41, 242, 49, 10);
+    swi_lfo2_att->setBounds (26, 218, 16, 40);
+    label3->setBounds (5, 206, 96, 15);
     comboBox->setBounds (376, 208, 120, 16);
     sli_bend_range->setBounds (129, 26, 56, 48);
     label26->setBounds (111, 12, 96, 16);
@@ -641,10 +641,10 @@ void SecondaryControls::resized()
     label15->setBounds (240, 101, 82, 24);
     sli_shape_instab3->setBounds (219, 53, 24, 24);
     label16->setBounds (240, 53, 82, 24);
-    label17->setBounds (290, 154, 30, 10);
-    label18->setBounds (233, 154, 34, 10);
-    swi_tune_type2->setBounds (259, 151, 40, 16);
-    label19->setBounds (233, 137, 88, 15);
+    label17->setBounds (281, 151, 50, 10);
+    label18->setBounds (224, 151, 34, 10);
+    swi_tune_type2->setBounds (250, 148, 40, 16);
+    label19->setBounds (224, 134, 88, 15);
     label20->setBounds (408, 85, 83, 33);
     swi_filt_lfosrc4->setBounds (374, 93, 40, 16);
     //[UserResized] Add your own custom resize handling here..
@@ -803,21 +803,21 @@ BEGIN_JUCER_METADATA
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="f7d41627cbc579bd" memberName="label111"
-         virtualName="" explicitFocusOrder="0" pos="290 185 30 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="281 182 30 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="ea554e618021a2b2" memberName="label112"
-         virtualName="" explicitFocusOrder="0" pos="233 185 34 10" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="224 182 34 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Cents" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="a6b0788b80c26159" memberName="swi_tune_type"
-          virtualName="" explicitFocusOrder="0" pos="259 182 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="250 179 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="69e8630ce6b29c9c" memberName="label113"
-         virtualName="" explicitFocusOrder="0" pos="233 168 88 15" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="224 165 88 15" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 2 Fine Tune"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>
@@ -860,12 +860,12 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="637cab065add0171" memberName="label121"
-         virtualName="" explicitFocusOrder="0" pos="264 265 104 12" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="264 261 104 12" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Enable Overdrive"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="new slider" id="3a62912dcdeb23ff" memberName="swi_filt_lfosrc2"
-          virtualName="" explicitFocusOrder="0" pos="233 263 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="233 259 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="bc675c8fe449178f" memberName="label104"
@@ -940,22 +940,22 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="2a9ab2f0ac301cfa" memberName="label34" virtualName=""
-         explicitFocusOrder="0" pos="145 223 49 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="41 227 49 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="66430b8dfb9a92cd" memberName="label35" virtualName=""
-         explicitFocusOrder="0" pos="145 238 49 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="41 242 49 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Decay" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <SLIDER name="LFO2 Attack/Decay" id="ca40100f8534db76" memberName="swi_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="130 214 16 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="26 218 16 40" min="0"
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="addbe50fe3c13f62" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="109 202 96 15" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="LFO 2 Attack" editableSingleClick="0"
+         explicitFocusOrder="0" pos="5 206 96 15" textCol="ffffffff" edTextCol="ff000000"
+         edBkgCol="0" labelText="LFO 2 Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <COMBOBOX name="Filter Model" id="66a4871135953e41" memberName="comboBox"
@@ -1019,21 +1019,21 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="781a247fe691fa95" memberName="label17" virtualName=""
-         explicitFocusOrder="0" pos="290 154 30 10" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Semi" editableSingleClick="0"
+         explicitFocusOrder="0" pos="281 151 50 10" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Semitone" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
   <LABEL name="new label" id="d01b84de7d0c6957" memberName="label18" virtualName=""
-         explicitFocusOrder="0" pos="233 154 34 10" textCol="ffffffff"
+         explicitFocusOrder="0" pos="224 151 34 10" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Free" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="34"/>
   <SLIDER name="new slider" id="327121bf9e4d462a" memberName="swi_tune_type2"
-          virtualName="" explicitFocusOrder="0" pos="259 151 40 16" min="0"
+          virtualName="" explicitFocusOrder="0" pos="250 148 40 16" min="0"
           max="1" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="11f29ac2b78b1444" memberName="label19" virtualName=""
-         explicitFocusOrder="0" pos="233 137 88 15" textCol="ffffffff"
+         explicitFocusOrder="0" pos="224 134 88 15" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 2 Coarse Tune"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="12" bold="0" italic="0" justification="36"/>

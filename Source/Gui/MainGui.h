@@ -161,7 +161,6 @@ private:
     ScopedPointer<Slider> sli_env_dec;
     ScopedPointer<Slider> sli_env_sus;
     ScopedPointer<Slider> sli_env_rel;
-    ScopedPointer<Slider> sli_pitchmod_scale;
     ScopedPointer<Label> label32;
     ScopedPointer<Label> label24;
     ScopedPointer<Slider> sli_env_vel;
@@ -206,10 +205,9 @@ private:
     ScopedPointer<Label> label85;
     ScopedPointer<Label> label86;
     ScopedPointer<Slider> swi_o2_sh;
-    ScopedPointer<Label> label87;
     ScopedPointer<Label> label88;
     ScopedPointer<Label> label90;
-    ScopedPointer<Slider> swi_pitchmod_scale;
+    ScopedPointer<Slider> swi_lfo1_range;
     ScopedPointer<Label> label91;
     ScopedPointer<Label> label92;
     ScopedPointer<Label> label93;
@@ -253,7 +251,7 @@ private:
     ScopedPointer<Slider> swi_glide2;
     ScopedPointer<Label> label37;
     ScopedPointer<Label> label43;
-    ScopedPointer<Slider> swi_pitchmod_dest2;
+    ScopedPointer<Slider> swi_retrig_mode;
     ScopedPointer<Label> label46;
     ScopedPointer<Label> label26;
     ScopedPointer<Label> label34;
@@ -261,6 +259,8 @@ private:
     ScopedPointer<Label> label47;
     ScopedPointer<Slider> swi_vco2_oct;
     ScopedPointer<Label> label48;
+    ScopedPointer<Slider> swi_glide_vel;
+    ScopedPointer<Label> label49;
 
 
     //==============================================================================
