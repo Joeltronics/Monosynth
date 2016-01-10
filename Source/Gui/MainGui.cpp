@@ -1325,7 +1325,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
 
     //[/UserPreSize]
 
-    setSize (795, 400);
+    setSize (795, 372);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -1593,8 +1593,8 @@ void MainGui::resized()
     label28->setBounds (288, 142, 56, 14);
     sli_lfo2_freq->setBounds (288, 278, 56, 48);
     label29->setBounds (288, 265, 56, 14);
-    sli_lfo2_att->setBounds (333, 322, 40, 40);
-    label31->setBounds (333, 312, 40, 14);
+    sli_lfo2_att->setBounds (335, 322, 40, 40);
+    label31->setBounds (335, 312, 40, 14);
     label30->setBounds (471, 237, 40, 16);
     sli_filt_vel->setBounds (472, 253, 40, 32);
     sli_env_dec->setBounds (647, 32, 24, 88);
@@ -2120,7 +2120,7 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component" constructorParams="MonosynthAudioProcessor&amp; p"
                  variableInitialisers="processor(p)" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="795"
-                 initialHeight="400">
+                 initialHeight="372">
   <BACKGROUND backgroundColour="ff1c1c1c"/>
   <GROUPCOMPONENT name="new group" id="2f9f6ffa0d9e55e2" memberName="groupComponent10"
                   virtualName="" explicitFocusOrder="0" pos="278 247 181 118" outlinecol="99ffffff"
@@ -2364,11 +2364,11 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="LFO 1 Attack" id="adf7d9bbe7bedc02" memberName="sli_lfo2_att"
-          virtualName="" explicitFocusOrder="0" pos="333 322 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="335 322 40 40" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="677e03b32f7824b6" memberName="label31" virtualName=""
-         explicitFocusOrder="0" pos="333 312 40 14" textCol="ffffffff"
+         explicitFocusOrder="0" pos="335 312 40 14" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Attack" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
