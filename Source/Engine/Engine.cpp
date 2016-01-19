@@ -356,10 +356,6 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	float osc2shape = m_params.osc2shape->GetActualValue();
 	int subOscOct = m_params.subOscOct->GetInt();
 
-	float preFiltGain = m_params.filtGain->GetActualValue();
-	preFiltGain = preFiltGain*preFiltGain;
-	preFiltGain = Utils::Interp(0.1f, 4.0f, preFiltGain);
-
 	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
 	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);
 
@@ -424,10 +420,6 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 		mainBuf += osc2Buf;
 	}
 	*/
-
-	if (!Utils::ApproxEqual(preFiltGain, 1.0f)) {
-		mainBuf *= preFiltGain;
-	}
 }
 
 void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const& filtLfoBuf)
@@ -451,7 +443,7 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const
 	// Or don't
 
 	float filtLfoAmt = m_params.filtLfoAmt->GetActualValue();
-	// Apply curve to LFO amt
+	// Apply curve (x^2) to LFO amt
 	filtLfoAmt *= filtLfoAmt;
 
 	Buffer filtCv(envBuf);
@@ -473,5 +465,35 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const
 	filtCv /= m_sampleRateOver;
 
 	m_filtFreqCvFilt.ProcessLowpass(filtCv);
+
+	/*
+	Pre- & post-filter gain values:
+
+	Simple gain knob would cause overall volume change (obviously).
+	So we add post-filter gain in order to make gain knob roughly volume-neutral.
+
+	If we just made post-gain 1/pre, then we would actually lose volume at the
+	top of the knob, as clipping starts to reduce the volume. That's even worse
+	because it's the opposite of what the user might expect. So we have to be
+	smarter with what we make the post-gain.
+	
+	It's impossible to calculate exactly how to set the post-gain for perfect
+	volume-neutral behavior, since not only does it depend on freq and resonance,
+	but also on the waveform going into the filter.
+
+	Empirically, adding 0.25 overall seems to make it roughly linear, and since
+	it's added uniformly across the whole range it won't cause any weird
+	discontinuous behavior.
+	*/
+	sample_t preFiltGain = m_params.filtGain->GetActualValue();
+	preFiltGain = preFiltGain*preFiltGain*preFiltGain;
+	preFiltGain = Utils::Interp(0.1f, 8.0f, preFiltGain);
+
+	sample_t postFiltGain = 1.f / preFiltGain + 0.25f;
+
+	// Do the processing!
+
+	buf *= preFiltGain;
 	m_filter.Process(buf, filtCv, filtRes, filtModel);
+	buf *= postFiltGain;
 }
