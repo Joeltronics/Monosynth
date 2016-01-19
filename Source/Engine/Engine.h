@@ -32,6 +32,7 @@
 #include "MidiProcessor.h"
 #include "PitchProcessor.h"
 #include "Envelope.h"
+#include "Lfo.h"
 #include "Oscillator.h"
 #include "Vca.h"
 #include "Filter.h"
@@ -53,7 +54,7 @@ public:
 	
 private:
 	void ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& osc1freq /*inout*/, Buffer& osc2freq /*inout*/);
-	void SynthEngine::ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/);
+	void SynthEngine::ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/, Buffer const& filtLfoBuf /*in*/);
 
 	double m_sampleRateNative;
 	size_t m_nOversample;
@@ -67,6 +68,9 @@ private:
 	Engine::PitchProcessor m_pitchProc;
 
 	Engine::AdsrEnvelope m_filtEnv;
+
+	Engine::Lfo m_lfo1;
+	Engine::Lfo m_lfo2;
 
 	Engine::Oscillator m_osc1;
 	Engine::Oscillator m_osc2;

@@ -79,6 +79,7 @@ namespace Detail {
 		case 1: return Engine::waveShape_sawTriSaw;
 		case 2: return Engine::waveShape_sampleHold;
 		case 3: return Engine::waveShape_envelope;
+		case 4: return Engine::waveShape_envelopeDown;
 		default:
 			DEBUG_ASSERT(false);
 			return Engine::waveShape_triSinSqu;
@@ -176,6 +177,8 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 
 	m_pitchProc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_filtEnv.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_lfo1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_lfo2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_osc1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_osc2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_subOsc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
@@ -223,6 +226,13 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
 	}
 
+	// TODO: LFO1 high freq range & KB tracking
+	sample_t lfo1freq = Utils::LogInterp<double>(0.1, 10., m_params.lfo1freq->getValue()) / m_sampleRateOver;
+	sample_t lfo2freq = Utils::LogInterp<double>(0.1, 10., m_params.lfo2freq->getValue()) / m_sampleRateOver;
+	Engine::waveform_t lfo1wave = Detail::Lfo1ToWave(m_params.lfo1shape->GetInt());
+	Engine::waveform_t lfo2wave = Detail::Lfo2ToWave(m_params.lfo2shape->GetInt());
+	sample_t lfo2shape = m_params.lfo2shapeTweak->getValue();
+
 	// Process:
 	// 1. MIDI
 	// 2. Mod sources (Env/LFO)
@@ -246,10 +256,13 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	Buffer filtEnvBuf(nSampOver);
 	m_filtEnv.Process(gateEvents, filtEnvBuf);
 
-#if 0 // TODO
-	Buffer lfo1(nSamp);
-	Buffer lfo2(nSamp);
-#endif
+	Buffer lfo1Buf(nSampOver);
+	Buffer lfo2Buf(nSampOver);
+
+	// TODO: put keyboard tracking data into lfo1Buf
+
+	m_lfo1.ProcessWithKbTracking(gateEvents, lfo1freq, lfo1wave, lfo1Buf);
+	m_lfo2.Process(gateEvents, lfo2freq, lfo2wave, lfo2shape, lfo2Buf);
 
 	// 3. Pitch
 
@@ -280,7 +293,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(overBuf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	ProcessFilter_(overBuf, filtEnvBuf);
+	Buffer const& filtLfoBuf = (m_params.filtLfoSel->GetInt() ? lfo2Buf : lfo1Buf );
+	ProcessFilter_(overBuf, filtEnvBuf, filtLfoBuf);
 
 	// 6. Overdrive
 	// TODO
@@ -416,7 +430,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	}
 }
 
-void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
+void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const& filtLfoBuf)
 {
 	float filtRes = m_params.filtRes->getValue();
 
@@ -432,13 +446,25 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf)
 
 	float filtEnvAmt = m_params.filtEnv->GetActualValue();
 	
-	// Apply curve (x^2 with sign) to filtEnvAmt
+	// Apply curve (x^2 with sign) to env amt
 	//filtEnvAmt = copysign(filtEnvAmt*filtEnvAmt, filtEnvAmt);
+	// Or don't
+
+	float filtLfoAmt = m_params.filtLfoAmt->GetActualValue();
+	// Apply curve to LFO amt
+	filtLfoAmt *= filtLfoAmt;
 
 	Buffer filtCv(envBuf);
 	filtCv *= filtEnvAmt;
 	filtCv += filtCutoff_01;
 	
+	if (!Utils::ApproxEqual(filtLfoAmt, 0.f))
+	{
+		Buffer tempLfoBuf(filtLfoBuf);
+		tempLfoBuf *= filtLfoAmt;
+		filtCv += tempLfoBuf;
+	}
+
 	// TODO: LFO, velocity, kb tracking
 
 	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance

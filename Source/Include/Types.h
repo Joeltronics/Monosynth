@@ -88,4 +88,22 @@ static bool operator!=(midiNote_t const& lhs, midiNote_t const& rhs) {
 	return !(lhs == rhs);
 }
 
+namespace Engine {
+	// Used for both VCO and LFO
+	enum waveform_t {
+		waveShape_saw = 0,
+		waveShape_sawDown,
+		waveShape_sawTriSaw,
+		waveShape_pwm,
+		waveShape_squ50,
+		waveShape_pulse25,
+		waveShape_tri,
+		waveShape_sin,
+		waveShape_triSinSqu,
+		waveShape_sampleHold,
+		waveShape_envelope,
+		waveShape_envelopeDown
+	};
+}
+
 #endif  // TYPES_H_INCLUDED

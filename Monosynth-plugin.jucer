@@ -54,6 +54,8 @@
         <FILE id="pQQoZ1" name="Oscillator.cpp" compile="1" resource="0" file="Source/Engine/Oscillator.cpp"/>
         <FILE id="xBeVnl" name="Filter.cpp" compile="1" resource="0" file="Source/Engine/Filter.cpp"/>
         <FILE id="jEoXKN" name="Filter.h" compile="0" resource="0" file="Source/Engine/Filter.h"/>
+        <FILE id="fVUBBS" name="Lfo.h" compile="0" resource="0" file="Source/Engine/Lfo.h"/>
+        <FILE id="FyxwCK" name="Lfo.cpp" compile="1" resource="0" file="Source/Engine/Lfo.cpp"/>
         <FILE id="VIEtZz" name="Envelope.h" compile="0" resource="0" file="Source/Engine/Envelope.h"/>
         <FILE id="SHOyBl" name="Envelope.cpp" compile="1" resource="0" file="Source/Engine/Envelope.cpp"/>
         <FILE id="X7cdDG" name="PitchProcessor.h" compile="0" resource="0"

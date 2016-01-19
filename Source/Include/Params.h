@@ -437,6 +437,7 @@ public:
 	EnumParam* lfo1shape;
 	FloatParam* lfo2freq;
 	EnumParam* lfo2shape;
+	FloatParam* lfo2shapeTweak;
 	FloatParam* lfo2att;
 
 	// Note: these params must have the same name as the corresponding knob in the GUI!
@@ -485,6 +486,7 @@ public:
 		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
 		AP(lfo2freq = new FloatParam("LFO 2 Freq", 0.5f));
 		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ", "Saw", "S&H", "Env" }));
+		AP(lfo2shapeTweak = new FloatParam("LFO 2 Shape Tweak"));
 		AP(lfo2att = new FloatParam("LFO 2 Attack"));
 	}
 #undef AP
