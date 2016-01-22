@@ -96,18 +96,20 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<GroupComponent> groupComponent15;
+    ScopedPointer<GroupComponent> groupComponent11;
+    ScopedPointer<GroupComponent> groupComponent4;
+    ScopedPointer<GroupComponent> groupComponent14;
     ScopedPointer<GroupComponent> groupComponent10;
     ScopedPointer<GroupComponent> groupComponent12;
-    ScopedPointer<GroupComponent> groupComponent11;
     ScopedPointer<Label> label70;
     ScopedPointer<Label> label80;
-    ScopedPointer<Slider> swi_pitchmod_dest;
+    ScopedPointer<Slider> swi_pitchmod_src;
     ScopedPointer<GroupComponent> groupComponent2;
     ScopedPointer<GroupComponent> groupComponent6;
     ScopedPointer<GroupComponent> groupComponent13;
     ScopedPointer<GroupComponent> groupComponent3;
     ScopedPointer<Slider> swi_filt_poles;
-    ScopedPointer<GroupComponent> groupComponent4;
     ScopedPointer<GroupComponent> groupComponent;
     ScopedPointer<Slider> sli_o1_sh;
     ScopedPointer<GroupComponent> groupComponent8;
@@ -154,19 +156,13 @@ private:
     ScopedPointer<Label> label28;
     ScopedPointer<Slider> sli_lfo2_freq;
     ScopedPointer<Label> label29;
-    ScopedPointer<Slider> sli_lfo2_att;
-    ScopedPointer<Label> label31;
-    ScopedPointer<Label> label30;
-    ScopedPointer<Slider> sli_filt_vel;
     ScopedPointer<Slider> sli_env_dec;
     ScopedPointer<Slider> sli_env_sus;
     ScopedPointer<Slider> sli_env_rel;
     ScopedPointer<Label> label32;
-    ScopedPointer<Label> label24;
     ScopedPointer<Slider> sli_env_vel;
     ScopedPointer<Slider> sli_aenv_vel;
     ScopedPointer<Slider> swi_lfo1_sh;
-    ScopedPointer<Slider> swi_lfo2_sh;
     ScopedPointer<Slider> sli_lfo1_freq;
     ScopedPointer<Label> label51;
     ScopedPointer<Label> label53;
@@ -205,15 +201,11 @@ private:
     ScopedPointer<Label> label85;
     ScopedPointer<Label> label86;
     ScopedPointer<Slider> swi_o2_sh;
-    ScopedPointer<Label> label88;
-    ScopedPointer<Label> label90;
     ScopedPointer<Slider> swi_lfo1_range;
     ScopedPointer<Label> label91;
     ScopedPointer<Label> label92;
     ScopedPointer<Label> label93;
-    ScopedPointer<Slider> swi_pitchmod_src;
-    ScopedPointer<Label> label96;
-    ScopedPointer<Slider> swi_lfo1_kb;
+    ScopedPointer<Slider> swi_pitchmod_dest;
     ScopedPointer<Label> label100;
     ScopedPointer<Label> label101;
     ScopedPointer<Label> label105;
@@ -231,12 +223,6 @@ private:
     ScopedPointer<Label> label16;
     ScopedPointer<Slider> swi_pitchmod_src2;
     ScopedPointer<Label> label66;
-    ScopedPointer<Label> label40;
-    ScopedPointer<Label> label41;
-    ScopedPointer<Label> label44;
-    ScopedPointer<Label> label68;
-    ScopedPointer<Slider> sli_lfo2_sh;
-    ScopedPointer<Label> label89;
     ScopedPointer<Label> label27;
     ScopedPointer<Label> label33;
     ScopedPointer<Label> label38;
@@ -261,6 +247,35 @@ private:
     ScopedPointer<Label> label48;
     ScopedPointer<Slider> swi_glide_vel;
     ScopedPointer<Label> label49;
+    ScopedPointer<Slider> sli_lfo2_delay;
+    ScopedPointer<Label> label31;
+    ScopedPointer<Label> label40;
+    ScopedPointer<Label> label41;
+    ScopedPointer<Label> label44;
+    ScopedPointer<Slider> swi_o2_sh2;
+    ScopedPointer<Label> label50;
+    ScopedPointer<Label> label52;
+    ScopedPointer<Label> label68;
+    ScopedPointer<Label> label71;
+    ScopedPointer<Label> label81;
+    ScopedPointer<Label> label87;
+    ScopedPointer<Label> label88;
+    ScopedPointer<Slider> sli_fm_amt;
+    ScopedPointer<Label> label89;
+    ScopedPointer<Label> label90;
+    ScopedPointer<Label> label94;
+    ScopedPointer<Label> label95;
+    ScopedPointer<Label> label24;
+    ScopedPointer<Slider> sli_env_ampl;
+    ScopedPointer<Label> label96;
+    ScopedPointer<Label> label97;
+    ScopedPointer<Label> label30;
+    ScopedPointer<Label> label98;
+    ScopedPointer<Label> label99;
+    ScopedPointer<Slider> sli_filt_lfo2;
+    ScopedPointer<Slider> swi_o2_sh3;
+    ScopedPointer<Label> label102;
+    ScopedPointer<Label> label103;
 
 
     //==============================================================================

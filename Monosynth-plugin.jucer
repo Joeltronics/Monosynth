@@ -12,7 +12,7 @@
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.2.0">
   <MAINGROUP id="bCKf4H" name="Monosynth-plugin">
     <GROUP id="{8426121E-D963-B936-643E-F22052A12080}" name="Resources">
-      <FILE id="Qw55QI" name="bg.png" compile="0" resource="1" file="Resources/bg.png"/>
+      <FILE id="Eyh1MR" name="bg.png" compile="0" resource="1" file="Resources/bg.png"/>
       <FILE id="Q0U7Ua" name="Muli-Regular.ttf" compile="0" resource="1"
             file="Resources/Muli-Regular.ttf"/>
       <FILE id="d98sqs" name="bigknob.png" compile="0" resource="1" file="Resources/bigknob.png"/>
