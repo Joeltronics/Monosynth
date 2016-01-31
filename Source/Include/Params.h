@@ -133,6 +133,8 @@ public:
 		m_range(paramRange)
 	{}
 
+	~FloatParam() {}
+
 	// AudioProcessorParameter functions
 
 	float getValue() const override
@@ -195,6 +197,8 @@ public:
 		m_val(defaultParamValue),
 		m_range(paramRange)
 	{}
+
+	~IntParam() {}
 
 	// AudioProcessorParameter functions
 
@@ -260,6 +264,8 @@ public:
 		mk_names(valueNames)
 	{}
 
+	~BoolParam() {}
+
 	// AudioProcessorParameter functions
 
 	float getValue() const override
@@ -314,6 +320,8 @@ public:
 		mk_nVals(paramEnumValueNames.size()),
 		m_val(defaultParamValue)
 	{}
+
+	~EnumParam() {}
 
 	// AudioProcessorParameter functions
 
@@ -446,11 +454,14 @@ public:
 	// Also, name must be less than 30 characters
 	// See MainGui.cpp constructor for details
 
-	// Something else has to manually delete these!
-	// i.e. these will be added to PluginProcessor, which calls addParameter, which adds them
-	// to juce::OwnedArray, which deletes them on destruction
+	/*
+	Something else has to manually delete these!
+	i.e. these will be added to PluginProcessor, which calls addParameter, which adds them
+	to juce::OwnedArray, which deletes them on destruction
 	
-	// Really this whole thing needs to be overhauled.
+	However, this process doesn't happen in unit test, so the memory leaks!
+	Really this whole thing needs to be overhauled - change to a PluginState object of something
+	*/
 
 #define AP(X) paramList.push_back(X)
 	ParamStruct()

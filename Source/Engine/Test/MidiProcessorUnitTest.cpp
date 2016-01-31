@@ -43,6 +43,8 @@ void MidiProcessorUnitTest::runTest() {
 		// Channel = 1 to 16
 		uint8_t chan = 1;
 
+		size_t nOversamp = 1;
+
 		midiMessages.addEvent(MidiMessage::noteOn(chan, 60, uint8_t(100)), 100);
 		midiMessages.addEvent(MidiMessage::noteOn(chan, 67, uint8_t(110)), 130);
 		midiMessages.addEvent(MidiMessage::noteOn(chan, 72, uint8_t(120)), 150);
@@ -57,7 +59,7 @@ void MidiProcessorUnitTest::runTest() {
 		eventBuf_t<uint8_t> velEvents;
 		eventBuf_t<uint16_t> pitchBendEvents;
 
-		midiProc.Process(nSamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
+		midiProc.Process(nSamp, nOversamp, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
 		/*
 		Expect:
