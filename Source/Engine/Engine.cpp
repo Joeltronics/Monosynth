@@ -31,68 +31,68 @@
 #include "Utils/Resampling.h"
 #include "Utils/Logger.h"
 
-namespace Engine {
-	const double k_filtCvCutoff_Hz = 1000.0;
-	float k_vcoRandPitchAmt = 0.01f; // In semitones
-	float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
-}
+using namespace Engine;
+
+const double k_filtCvCutoff_Hz = 1000.0;
+float k_vcoRandPitchAmt = 0.01f; // In semitones
+float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
 
 namespace Detail {
-	static Engine::waveform_t MainOscToWave(size_t n) {
+	static waveform_t MainOscToWave(size_t n) {
 		switch (n) { // tri/rect/saw
-		case 0: return Engine::waveShape_tri; break;
-		case 1: return Engine::waveShape_pwm; break;
-		case 2: return Engine::waveShape_saw; break;
+		case 0: return waveShape_tri; break;
+		case 1: return waveShape_pwm; break;
+		case 2: return waveShape_saw; break;
 		default:
 			DEBUG_ASSERT(false);
-			return Engine::waveShape_saw;
+			return waveShape_saw;
 		}
 	}
 
-	static Engine::waveform_t SubOscToWave(size_t n) {
+	static waveform_t SubOscToWave(size_t n) {
 		switch (n) { // tri/squ/pulse
-		case 0: return Engine::waveShape_tri;
-		case 1: return Engine::waveShape_squ50;
-		case 2: return Engine::waveShape_pulse25;
+		case 0: return waveShape_tri;
+		case 1: return waveShape_squ50;
+		case 2: return waveShape_pulse25;
 		default:
 			DEBUG_ASSERT(false);
-			return Engine::waveShape_tri;
+			return waveShape_tri;
 		}
 	}
 
-	static Engine::waveform_t Mod1ToWave(size_t n) {
+	static waveform_t Mod1ToWave(size_t n) {
 		switch (n) {
-		case 0: return Engine::waveShape_tri;
-		case 1: return Engine::waveShape_sin;
-		case 2: return Engine::waveShape_squ50;
-		case 3: return Engine::waveShape_saw;
-		case 4: return Engine::waveShape_sawDown;
+		case 0: return waveShape_tri;
+		case 1: return waveShape_sin;
+		case 2: return waveShape_squ50;
+		case 3: return waveShape_saw;
+		case 4: return waveShape_sawDown;
 		default:
 			DEBUG_ASSERT(false);
-			return Engine::waveShape_sin;
+			return waveShape_sin;
 		}
 	}
 
-	static Engine::waveform_t Mod2ToWave(size_t n) {
+	static waveform_t Mod2ToWave(size_t n) {
 		switch (n) {
-		case 0: return Engine::waveShape_envelope;
-		case 1: return Engine::waveShape_sampleHold;
-		case 2: return Engine::waveShape_tri;
+		case 0: return waveShape_envelope;
+		case 1: return waveShape_sampleHold;
+		case 2: return waveShape_tri;
 		default:
 			DEBUG_ASSERT(false);
-			return Engine::waveShape_tri;
+			return waveShape_tri;
 		}
 	}
 
-	static Engine::filterModel_t ConvertFiltModel(size_t n)
+	static filterModel_t ConvertFiltModel(size_t n)
 	{
 		switch (n) {
-		case 1: return Engine::filterModel_transLadder;
-		case 2: return Engine::filterModel_diodeLadder;
+		case 1: return filterModel_transLadder;
+		case 2: return filterModel_diodeLadder;
 		
 		case 0:
 		default:
-			return Engine::filterModel_none;
+			return filterModel_none;
 		}
 	}
 
@@ -198,7 +198,7 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	
 	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 
-	m_filtFreqCvFilt.SetFreq(Engine::k_filtCvCutoff_Hz / m_sampleRateOver);
+	m_filtFreqCvFilt.SetFreq(k_filtCvCutoff_Hz / m_sampleRateOver);
 }
 
 void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
@@ -280,8 +280,8 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// - Normal (Gaussian) distribution
 	// - Consistent rate independent of buffer size
 	// - Lowpass
-	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*Engine::k_vcoRandPitchAmt);
-	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*Engine::k_vcoRandPitchAmt);
+	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*k_vcoRandPitchAmt);
+	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*k_vcoRandPitchAmt);
 
 	Buffer freqPhaseBuf2(freqPhaseBuf1);
 	freqPhaseBuf2 += osc2Tuning;
@@ -347,8 +347,8 @@ void SynthEngine::ProcessMod_(
 	Buffer& mod2Buf /*out*/)
 {
 	// TODO: LFO1 high freq range & KB tracking
-	Engine::waveform_t lfo1wave = Detail::Mod1ToWave(m_params.mod1shape->GetInt());
-	Engine::waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
+	waveform_t lfo1wave = Detail::Mod1ToWave(m_params.mod1shape->GetInt());
+	waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
 
 	bool blfo1KbTrack = (m_params.mod1range->GetInt() == 2);
 	bool blfo1HighFreq = (m_params.mod1range->GetInt() != 0);
@@ -385,15 +385,15 @@ void SynthEngine::ProcessMod_(
 	switch (mod2typeWave) {
 
 	// TODO: invert if waveShape_envelopeDown
-	case Engine::waveShape_envelope:
-	case Engine::waveShape_envelopeDown: {
+	case waveShape_envelope:
+	case waveShape_envelopeDown: {
 		double attTime = Detail::EnvValToTime(mod2paramA);
 		double decTime = Detail::EnvValToTime(mod2paramB);
 		m_mod2env.SetVals(attTime, decTime);
 		m_mod2env.Process(gateEvents, mod2Buf);
 		} break;
 
-	case Engine::waveShape_sampleHold: {
+	case waveShape_sampleHold: {
 		m_lfo2.ProcessSampHold(gateEvents, lfo2freq, mod2paramB, mod2Buf);
 		} break;
 
@@ -432,9 +432,9 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	bProcOsc1Sig = bProcOsc1Phase = bProcOsc2Sig = bProcOsc2Phase = true;
 
 	// Wave shapes
-	Engine::waveform_t osc1wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
-	Engine::waveform_t osc2wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
-	Engine::waveform_t subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
+	waveform_t osc1wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
+	waveform_t osc2wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
+	waveform_t subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
 	// Allocate memory
 
@@ -492,11 +492,11 @@ void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const
 {
 	float filtRes = m_params.filtRes->getValue();
 
-	Engine::filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
+	filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
 
 	// Convert semitones to actual 0-1 range
 	// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
-	float filtCutoffRandAmt_01 = Engine::k_filtCutoffRandAmt_semi / (9.966f * 12.0f);
+	float filtCutoffRandAmt_01 = k_filtCutoffRandAmt_semi / (9.966f * 12.0f);
 	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
 
 	sample_t filtCutoff_01 = m_params.filtFreq->getValue() + cutoffRand;
