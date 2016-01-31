@@ -53,8 +53,9 @@ public:
 	void Process(juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages);
 	
 private:
+	void ProcessMod_(eventBuf_t<gateEvent_t> const& gateEvents /*in*/, Buffer& mod1Buf /*out*/, Buffer& mod2Buf /*out*/);
 	void ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& osc1freq /*inout*/, Buffer& osc2freq /*inout*/);
-	void SynthEngine::ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/, Buffer const& filtLfoBuf /*in*/);
+	void ProcessFilter_(Buffer& buf /*inout*/, Buffer const& envBuf /*in*/, Buffer const& filtLfoBuf /*in*/);
 
 	double m_sampleRateNative;
 	size_t m_nOversample;
@@ -71,6 +72,8 @@ private:
 
 	Engine::Lfo m_lfo1;
 	Engine::Lfo m_lfo2;
+	Engine::AttackEnvelope m_mod2LfoAttack;
+	Engine::AdEnvelope m_mod2env;
 
 	Engine::Oscillator m_osc1;
 	Engine::Oscillator m_osc2;

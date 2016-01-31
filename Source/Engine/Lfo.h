@@ -18,30 +18,67 @@ namespace Engine {
 class Lfo {
 public:
 	Lfo();
-	~Lfo() {}
+	~Lfo();
+
+	void PrepareToPlay(double sampleRate, int samplesPerBlock);
+
+	void Reset();
 
 	// Output LFOs have range (-1,1)
 
-	// Used for LFO1
-	// Note: buf should already contain scaled pitch data!
-	void ProcessWithKbTracking(
+	/* ProcessHighFreq
+	 * Processes anti-aliased LFO
+	 *
+	 * freq: normalized to sample rate (0-1)
+	 */
+	void ProcessHighFreq(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		sample_t freq /*in*/,
 		waveform_t wave /*in*/,
+		sample_t freq /*in*/,
+		Buffer& buf /*out*/);
+
+	/* ProcessHighFreqWithKbTracking
+	 * Processes anti-aliased LFO, with keyboard tracking
+	 *
+	 * freq: normalized to sample rate (0-1)
+	 * buf:
+	 *   input: scaled pitch data
+	 *   output: LFO signal
+	 */
+	void ProcessHighFreqWithKbTracking(
+		eventBuf_t<gateEvent_t> gateEvents /*in*/,
+		waveform_t wave /*in*/,
+		sample_t freq /*in*/,
 		Buffer& buf /*inOut*/);
 
-	// Used for LFO2
-	void Process(
+	/* ProcessLowFreq
+	 * Processes LFO; will alias at high frequencies
+	 *
+	 * freq: normalized to sample rate (0-1)
+	 */
+	void ProcessLowFreq(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		sample_t freq /*in*/,
 		waveform_t wave /*in*/,
-		float shape /*in*/,
+		sample_t freq /*in*/,
 		Buffer& outBuf /*out*/);
-	
-	void PrepareToPlay(double sampleRate, int samplesPerBlock);
+
+	/* ProcessSampHold
+	 * Processes sample & hold
+	 */
+	void ProcessSampHold(
+		eventBuf_t<gateEvent_t> gateEvents /*in*/,
+		sample_t rate /*in*/,
+		sample_t smoothing /*in*/,
+		Buffer& outBuf /*out*/);
 
 private:
 	
+	void ProcessLfo_(
+		eventBuf_t<gateEvent_t> gateEvents /*in*/,
+		waveform_t wave /*in*/,
+		sample_t freq /*in*/,
+		Buffer& outBuf /*out*/);
+
 	double m_sampleRate;
 	sample_t m_phase;
 

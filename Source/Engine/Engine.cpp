@@ -32,7 +32,7 @@
 #include "Utils/Logger.h"
 
 namespace Engine {
-	const double k_filtCvCutoff_Hz = 10.0;
+	const double k_filtCvCutoff_Hz = 1000.0;
 	float k_vcoRandPitchAmt = 0.01f; // In semitones
 	float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
 }
@@ -60,7 +60,7 @@ namespace Detail {
 		}
 	}
 
-	static Engine::waveform_t Lfo1ToWave(size_t n) {
+	static Engine::waveform_t Mod1ToWave(size_t n) {
 		switch (n) {
 		case 0: return Engine::waveShape_tri;
 		case 1: return Engine::waveShape_sin;
@@ -73,16 +73,14 @@ namespace Detail {
 		}
 	}
 
-	static Engine::waveform_t Lfo2ToWave(size_t n) {
+	static Engine::waveform_t Mod2ToWave(size_t n) {
 		switch (n) {
-		case 0: return Engine::waveShape_triSinSqu;
-		case 1: return Engine::waveShape_sawTriSaw;
-		case 2: return Engine::waveShape_sampleHold;
-		case 3: return Engine::waveShape_envelope;
-		case 4: return Engine::waveShape_envelopeDown;
+		case 0: return Engine::waveShape_envelope;
+		case 1: return Engine::waveShape_sampleHold;
+		case 2: return Engine::waveShape_tri;
 		default:
 			DEBUG_ASSERT(false);
-			return Engine::waveShape_triSinSqu;
+			return Engine::waveShape_tri;
 		}
 	}
 
@@ -153,6 +151,15 @@ namespace Detail {
 			return 1;
 		}
 	}
+
+	// val: 0-1
+	// returns time in seconds (range 1ms to 4s)
+	static double EnvValToTime(double val) {
+		// Times in seconds (range 1ms to 4s)
+		double time = 4.0 * (val*val);
+		time = std::max(time, 0.001);
+		return time;
+	}
 }
 
 SynthEngine::SynthEngine() :
@@ -177,12 +184,18 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 
 	m_pitchProc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_filtEnv.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	
 	m_lfo1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_lfo2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_mod2LfoAttack.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_mod2env.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	
 	m_osc1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_osc2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_subOsc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	
 	m_filter.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	
 	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 
 	m_filtFreqCvFilt.SetFreq(Engine::k_filtCvCutoff_Hz / m_sampleRateOver);
@@ -207,7 +220,6 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	{
 		double attVal, decVal, susVal, relVal;
-		double attTime, decTime, relTime;
 
 		attVal = m_params.envAtt->getValue();
 		decVal = m_params.envDec->getValue();
@@ -218,20 +230,12 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 		DEBUG_ASSERT(decVal >= 0.0 && decVal <= 1.0);
 		DEBUG_ASSERT(relVal >= 0.0 && relVal <= 1.0);
 
-		// Times in seconds (range 1ms to 4s)
-		attTime = std::max(4.0 * (attVal*attVal), 0.001);
-		decTime = std::max(4.0 * (decVal*decVal), 0.001);
-		relTime = std::max(4.0 * (relVal*relVal), 0.001);
-
-		m_filtEnv.SetVals(attTime, decTime, susVal, relTime);
+		m_filtEnv.SetVals(
+			Detail::EnvValToTime(attVal),
+			Detail::EnvValToTime(decVal),
+			susVal,
+			Detail::EnvValToTime(relVal));
 	}
-
-	// TODO: LFO1 high freq range & KB tracking
-	sample_t lfo1freq = Utils::LogInterp<double>(0.1, 10., m_params.lfo1freq->getValue()) / m_sampleRateOver;
-	sample_t lfo2freq = Utils::LogInterp<double>(0.1, 10., m_params.lfo2freq->getValue()) / m_sampleRateOver;
-	Engine::waveform_t lfo1wave = Detail::Lfo1ToWave(m_params.lfo1shape->GetInt());
-	Engine::waveform_t lfo2wave = Detail::Lfo2ToWave(m_params.lfo2shape->GetInt());
-	sample_t lfo2shape = m_params.lfo2shapeTweak->getValue();
 
 	// Process:
 	// 1. MIDI
@@ -256,13 +260,10 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	Buffer filtEnvBuf(nSampOver);
 	m_filtEnv.Process(gateEvents, filtEnvBuf);
 
-	Buffer lfo1Buf(nSampOver);
-	Buffer lfo2Buf(nSampOver);
+	Buffer mod1Buf(nSampOver);
+	Buffer mod2Buf(nSampOver);
 
-	// TODO: put keyboard tracking data into lfo1Buf
-
-	m_lfo1.ProcessWithKbTracking(gateEvents, lfo1freq, lfo1wave, lfo1Buf);
-	m_lfo2.Process(gateEvents, lfo2freq, lfo2wave, lfo2shape, lfo2Buf);
+	ProcessMod_(gateEvents, mod1Buf, mod2Buf);
 
 	// 3. Pitch
 
@@ -293,7 +294,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(overBuf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	Buffer const& filtLfoBuf = (m_params.filtLfoSel->GetInt() ? lfo2Buf : lfo1Buf );
+	Buffer const& filtLfoBuf = (m_params.filtLfoSel->GetInt() ? mod2Buf : mod1Buf );
 	ProcessFilter_(overBuf, filtEnvBuf, filtLfoBuf);
 
 	// 6. Overdrive
@@ -338,6 +339,71 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 		juce::FloatVectorOperations::multiply(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), outputVol, nSampNative);
 	}
 	
+}
+
+void SynthEngine::ProcessMod_(
+	eventBuf_t<gateEvent_t> const& gateEvents /*in*/,
+	Buffer& mod1Buf /*out*/,
+	Buffer& mod2Buf /*out*/)
+{
+	// TODO: LFO1 high freq range & KB tracking
+	Engine::waveform_t lfo1wave = Detail::Mod1ToWave(m_params.mod1shape->GetInt());
+	Engine::waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
+
+	bool blfo1KbTrack = (m_params.mod1range->GetInt() == 2);
+	bool blfo1HighFreq = (m_params.mod1range->GetInt() != 0);
+
+	sample_t mod2paramA = m_params.mod2paramA->getValue();
+	sample_t mod2paramB = m_params.mod2paramB->getValue();
+
+	sample_t lfo1freq = sample_t(
+		blfo1HighFreq ?
+		Utils::LogInterp<double>(20., 1000., m_params.mod1freq->getValue()) / m_sampleRateOver :
+		Utils::LogInterp<double>(0.1, 20., m_params.mod1freq->getValue()) / m_sampleRateOver );
+
+	// Not used if mod2wave is envelope
+	sample_t lfo2freq = sample_t(
+		Utils::LogInterp<double>(0.1, 20., mod2paramA) / m_sampleRateOver);
+
+	if (blfo1KbTrack) {
+		mod1Buf.Clear();
+		// TODO: put keyboard tracking data into mod1Buf
+		m_lfo1.ProcessHighFreqWithKbTracking(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+	}
+	else if (blfo1HighFreq) {
+		m_lfo1.ProcessHighFreq(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+	}
+	else {
+		m_lfo1.ProcessLowFreq(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+	}
+
+	// TODO: if lfo2wave changes, need to reset envelope(s) and LFO
+	
+	
+	// TODO: only pass in gateEvents if LFO reset enabled (otherwise pass in empty vector)
+
+	switch (mod2typeWave) {
+
+	// TODO: invert if waveShape_envelopeDown
+	case Engine::waveShape_envelope:
+	case Engine::waveShape_envelopeDown: {
+		double attTime = Detail::EnvValToTime(mod2paramA);
+		double decTime = Detail::EnvValToTime(mod2paramB);
+		m_mod2env.SetVals(attTime, decTime);
+		m_mod2env.Process(gateEvents, mod2Buf);
+		} break;
+
+	case Engine::waveShape_sampleHold: {
+		m_lfo2.ProcessSampHold(gateEvents, lfo2freq, mod2paramB, mod2Buf);
+		} break;
+
+	default: {
+		double attTime = Detail::EnvValToTime(mod2paramB);
+		m_lfo2.ProcessLowFreq(gateEvents, mod2typeWave, lfo2freq, mod2Buf);
+		m_mod2LfoAttack.SetAttack(attTime);
+		m_mod2LfoAttack.ProcessAndApply(gateEvents, mod2Buf);
+		} break;
+	}
 }
 
 void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhaseBuf1 /*inout*/, Buffer& freqPhaseBuf2 /*inout*/)

@@ -57,6 +57,8 @@ public:
 		bMeta(bIsMeta)
 	{}
 
+	virtual ~Param() {}
+
 	// from juce::AudioProcessorParameter
 	float getDefaultValue() const override { return defaultValue; }
 	juce::String getName(int /*maximumStringLength*/) const override { return name; } // TODO: use maximumStringLength
@@ -433,12 +435,12 @@ public:
 	FloatParam* envVel;
 	EnumParam* vcaSource;
 	FloatParam* vcaVel;
-	FloatParam* lfo1freq;
-	EnumParam* lfo1shape;
-	FloatParam* lfo2freq;
-	EnumParam* lfo2shape;
-	FloatParam* lfo2shapeTweak;
-	FloatParam* lfo2att;
+	FloatParam* mod1freq;
+	EnumParam* mod1shape;
+	EnumParam* mod1range;
+	EnumParam* mod2type;
+	FloatParam* mod2paramA;
+	FloatParam* mod2paramB;
 
 	// Note: these params must have the same name as the corresponding knob in the GUI!
 	// Also, name must be less than 30 characters
@@ -447,6 +449,8 @@ public:
 	// Something else has to manually delete these!
 	// i.e. these will be added to PluginProcessor, which calls addParameter, which adds them
 	// to juce::OwnedArray, which deletes them on destruction
+	
+	// Really this whole thing needs to be overhauled.
 
 #define AP(X) paramList.push_back(X)
 	ParamStruct()
@@ -482,12 +486,12 @@ public:
 		AP(envVel = new FloatParam("Env Velocity"));
 		AP(vcaSource = new EnumParam("VCA Source", {"Gate", "Envelope"}, 0));
 		AP(vcaVel = new FloatParam("VCA Velocity"));
-		AP(lfo1freq = new FloatParam("LFO 1 Freq", 0.5f));
-		AP(lfo1shape = new EnumParam("LFO 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
-		AP(lfo2freq = new FloatParam("LFO 2 Freq", 0.5f));
-		AP(lfo2shape = new EnumParam("LFO 2 Shape", { "Tri/Squ", "Saw", "S&H", "Env" }));
-		AP(lfo2shapeTweak = new FloatParam("LFO 2 Shape Tweak"));
-		AP(lfo2att = new FloatParam("LFO 2 Attack"));
+		AP(mod1freq = new FloatParam("Mod 1 Rate", 0.5f));
+		AP(mod1shape = new EnumParam("Mod 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
+		AP(mod1range = new EnumParam("Mod 1 Range", {"Low", "High", "KB Track"}));
+		AP(mod2type = new EnumParam("Mod 2 Type", { "Envelope", "Random", "LFO" }, 2));
+		AP(mod2paramA = new FloatParam("Mod 2 Param A", 0.5f));
+		AP(mod2paramB = new FloatParam("Mod 2 Param B", 0.5f));
 	}
 #undef AP
 

@@ -91,10 +91,6 @@ private:
     ScopedPointer<Label> label97;
     ScopedPointer<Label> label98;
     ScopedPointer<Slider> swi_noise_color;
-    ScopedPointer<Label> label111;
-    ScopedPointer<Label> label112;
-    ScopedPointer<Slider> swi_tune_type;
-    ScopedPointer<Label> label113;
     ScopedPointer<Label> label114;
     ScopedPointer<Label> label115;
     ScopedPointer<Label> label116;
@@ -120,10 +116,6 @@ private:
     ScopedPointer<Slider> swi_glide_type3;
     ScopedPointer<Label> label12;
     ScopedPointer<Label> label14;
-    ScopedPointer<Label> label34;
-    ScopedPointer<Label> label35;
-    ScopedPointer<Slider> swi_lfo2_att;
-    ScopedPointer<Label> label3;
     ScopedPointer<ComboBox> comboBox;
     ScopedPointer<Slider> sli_bend_range;
     ScopedPointer<Label> label26;
@@ -137,12 +129,6 @@ private:
     ScopedPointer<Label> label15;
     ScopedPointer<Slider> sli_shape_instab3;
     ScopedPointer<Label> label16;
-    ScopedPointer<Label> label17;
-    ScopedPointer<Label> label18;
-    ScopedPointer<Slider> swi_tune_type2;
-    ScopedPointer<Label> label19;
-    ScopedPointer<Label> label20;
-    ScopedPointer<Slider> swi_filt_lfosrc4;
 
 
     //==============================================================================

@@ -24,7 +24,7 @@
 #include "Utils/Debug.h"
 #include "Utils/DspUtils.h"
 
-namespace Engine {
+using namespace Engine;
 
 static const double k_gateLowpassFreq = 2000.0;
 
@@ -32,9 +32,15 @@ static const double k_gateLowpassFreq = 2000.0;
 static const double k_expOvershoot = 1.0 / (1.0 - exp(-1.0));
 static const float k_expOvershootf = float(1.0 / (1.0 - exp(-1.0)));
 
+// ********** GateEnvelope ***********
+
 GateEnvelope::GateEnvelope() :
 	m_lastGate(gateEvent_off)
 {}
+
+void GateEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+	m_filt.SetFreq(k_gateLowpassFreq / sampleRate);
+}
 
 void GateEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
 
@@ -52,9 +58,49 @@ void GateEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& bu
 	m_filt.ProcessLowpass(buf);
 }
 
-void GateEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
-	m_filt.SetFreq(k_gateLowpassFreq / sampleRate);
+// ********** AttackEnvelope ***********
+
+AttackEnvelope::AttackEnvelope() :
+	m_sampleRate(0.0)
+{}
+
+void AttackEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+	m_sampleRate = sampleRate;
 }
+
+void AttackEnvelope::SetAttack(double attTime) {
+	// TODO
+}
+
+void AttackEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
+	// TODO
+	buf.Set(1.0f);
+}
+
+void AttackEnvelope::ProcessAndApply(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& /*inOut*/) {
+	// TODO
+}
+
+// ********** AdEnvelope ***********
+
+AdEnvelope::AdEnvelope() :
+	m_sampleRate(0.0)
+{}
+
+void AdEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+	m_sampleRate = sampleRate;
+}
+
+void AdEnvelope::SetVals(double attTime, double decTime) {
+	// TODO
+}
+
+void AdEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
+	// TODO
+	buf.Set(1.0f);
+}
+
+// ********** AdsrEnvelope ***********
 
 AdsrEnvelope::AdsrEnvelope() :
 	m_state(state_off),
@@ -252,7 +298,3 @@ sample_t AdsrEnvelope::StateRel_() {
 	}
 	return envVal;
 }
-
-}
-
-

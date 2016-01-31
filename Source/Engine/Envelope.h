@@ -31,7 +31,7 @@ namespace Engine {
 class Envelope {
 public:
 	Envelope() {}
-	~Envelope() {}
+	virtual ~Envelope() {}
 
 	virtual void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) = 0;
 	virtual void PrepareToPlay(double sampleRate, int samplesPerBlock) = 0;
@@ -40,6 +40,7 @@ private:
 
 };
 
+// Basic on/off envelope
 class GateEnvelope : public Envelope {
 public:
 	GateEnvelope();
@@ -53,6 +54,42 @@ private:
 	gateEvent_t m_lastGate;
 };
 
+// Envelope with just attack (which will hold at 1 until next attack)
+class AttackEnvelope : public Envelope {
+public:
+	AttackEnvelope();
+	~AttackEnvelope() {}
+	
+	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
+	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
+
+	// Scales buffer by envelope instead of outputting
+	void ProcessAndApply(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*inOut*/);
+
+	void SetAttack(double attTime);
+
+private:
+	// TODO
+	double m_sampleRate;
+};
+
+// Envelope with just attack & decay
+class AdEnvelope : public Envelope {
+public:
+	AdEnvelope();
+	~AdEnvelope() {}
+
+	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
+	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
+
+	void SetVals(double attTime, double decTime);
+
+private:
+	// TODO
+	double m_sampleRate;
+};
+
+// Full ADSR envelope
 class AdsrEnvelope : public Envelope {
 public:
 	AdsrEnvelope();

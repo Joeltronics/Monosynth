@@ -154,7 +154,7 @@ private:
     ScopedPointer<GroupComponent> groupComponent9;
     ScopedPointer<Slider> sli_glide_amt;
     ScopedPointer<Label> label28;
-    ScopedPointer<Slider> sli_lfo2_freq;
+    ScopedPointer<Slider> sli_mod2_a;
     ScopedPointer<Label> label29;
     ScopedPointer<Slider> sli_env_dec;
     ScopedPointer<Slider> sli_env_sus;
@@ -162,8 +162,8 @@ private:
     ScopedPointer<Label> label32;
     ScopedPointer<Slider> sli_env_vel;
     ScopedPointer<Slider> sli_aenv_vel;
-    ScopedPointer<Slider> swi_lfo1_sh;
-    ScopedPointer<Slider> sli_lfo1_freq;
+    ScopedPointer<Slider> swi_mod1_sh;
+    ScopedPointer<Slider> sli_mod1_rate;
     ScopedPointer<Label> label51;
     ScopedPointer<Label> label53;
     ScopedPointer<Label> label54;
@@ -183,7 +183,6 @@ private:
     ScopedPointer<Label> label64;
     ScopedPointer<Label> label65;
     ScopedPointer<Slider> swi_glide;
-    ScopedPointer<Label> label69;
     ScopedPointer<Label> label23;
     ScopedPointer<Label> label72;
     ScopedPointer<Label> label73;
@@ -201,7 +200,7 @@ private:
     ScopedPointer<Label> label85;
     ScopedPointer<Label> label86;
     ScopedPointer<Slider> swi_o2_sh;
-    ScopedPointer<Slider> swi_lfo1_range;
+    ScopedPointer<Slider> swi_mod1_range;
     ScopedPointer<Label> label91;
     ScopedPointer<Label> label92;
     ScopedPointer<Label> label93;
@@ -247,12 +246,12 @@ private:
     ScopedPointer<Label> label48;
     ScopedPointer<Slider> swi_glide_vel;
     ScopedPointer<Label> label49;
-    ScopedPointer<Slider> sli_lfo2_delay;
+    ScopedPointer<Slider> sli_mod2_b;
     ScopedPointer<Label> label31;
     ScopedPointer<Label> label40;
     ScopedPointer<Label> label41;
     ScopedPointer<Label> label44;
-    ScopedPointer<Slider> swi_o2_sh2;
+    ScopedPointer<Slider> swi_mod2_type;
     ScopedPointer<Label> label50;
     ScopedPointer<Label> label52;
     ScopedPointer<Label> label68;
