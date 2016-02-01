@@ -50,6 +50,9 @@ public:
 	// cutoff as normalized frequency (eg 0.5 = Nyquist)
 	// resonance from 0 to 1, self-oscillates at settings over 0.9
 	// jgeddert mod: converted to use float* inputs
+	// jgeddert mod: added nPoles
+	// npoles is templated to help ensure compiler optimizes to be branch-free
+	template <size_t nPoles>
 	void transistorLadder(
 		float* cutoff, double resonance,
 		float const* in, float * out, size_t nsamples)
@@ -59,11 +62,15 @@ public:
 
 		juce::FloatVectorOperations::clip(cutoff, cutoff, 0.0001f, 0.4999f, nsamples);
 		
-		// TODO: oversample, and use small-angle approximation
-		//juce::FloatVectorOperations::multiply(cutoff, float(M_PI), nsamples);
+#if 0
+		// Full accuracy
 		for (size_t n = 0; n < nsamples; ++n) {
 			cutoff[n] = tan(float(M_PI) * cutoff[n]);
 		}
+#else
+		// Small-angle approximation (okay because we're oversampling)
+		juce::FloatVectorOperations::multiply(cutoff, float(M_PI), nsamples);
+#endif
 		
 
 		for(size_t n = 0; n < nsamples; ++n)
@@ -103,7 +110,25 @@ public:
 			s[2] += 2*f * (y1 - y2);
 			s[3] += 2*f * (y2 - t4*y3);
 
-			out[n] = float(y3);
+			static_assert(nPoles <= 4, "LadderFilter has max 4 poles!");
+
+			switch (nPoles) {
+			case 4:
+				out[n] = float(y3);
+				break;
+			case 3:
+				out[n] = float(y2);
+				break;
+			case 2:
+				out[n] = float(y1);
+				break;
+			case 1:
+				out[n] = float(y0);
+				break;
+			case 0:
+				out[n] = float(xx);
+				break;
+			}
 		}
 	}
 

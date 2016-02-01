@@ -50,7 +50,7 @@ void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t mode
 		break;
 
 	case filterModel_transLadder:
-		transFilt.transistorLadder(freqCv.Get(), res, inBuf, outBuf, nSamp);
+		transFilt.transistorLadder<4>(freqCv.Get(), res, inBuf, outBuf, nSamp);
 		break;
 
 	case filterModel_diodeLadder:
