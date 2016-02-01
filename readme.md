@@ -31,9 +31,9 @@ Besides sound quality, the main goal is for this to be super accessible and easy
 
 ## Status
 
-The core features are all implemented, and most quality features are in place (though the oversampling could still be improved a bit). But several parts aren't implemented yet (like many modulation options), and their GUI controls won't do anything. It could also use a lot more optimization and it seems to have a very minor memory leak (due to a Juce quirk I haven't figured out yet).
+The core features are all implemented, and most quality features are in place (though the oversampling could still be improved a bit). But several parts aren't implemented yet (like many modulation options), and their GUI controls won't do anything. It could also use a lot of optimization, both in terms of CPU and in reducing a lot of unnecessary memory allocation.
 
-The GUI is not final, but it's getting closer. It could still use some cleanup (the left half is kind of cramped, while the right half has lots of space; I haven't figured out a good way to move things around to fix this yet). The controls are to a point where I'm relatively happy with what's there, though there are a few more I'd like to be able to squeeze in there (mostly to do with velocity & mod wheel affecting Mod 1 & 2). I also want to add some visual aids you wouldn't see on a real hardware synth, like an "arc" on the filter cutoff knob to show how it's being modulated by the envelope and LFO.
+The GUI is not final. All the controls are there, but it could still use a bit of clean-up. I also want to add some visual aids you wouldn't see on a real hardware synth, like an "arc" on the various knobs to show how they're being modulated.
 
 Here is what the GUI looks like at the moment: *(click to enlarge)*  
 [<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)
