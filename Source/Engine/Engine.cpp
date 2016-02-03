@@ -566,42 +566,26 @@ void SynthEngine::ProcessFilter_(
 		postFiltGain = 1.f / preFiltGain + 0.25f;
 	}
 
-#if 0
-	// FIXME: something doesn't work about this (I wonder if Buffer::Set(sample_t) might be broken?)
-	// TODO: could (slightly) optimize further by first filling with filtCutoff, then using addWithMultiply
-	Buffer filtCv(nSamp);
+	Buffer filtCv(filtCutoff_01, nSamp);
 	if (bEnv) {
-		juce::FloatVectorOperations::copyWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
-		filtCv += filtCutoff_01;
+		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
 	}
-	else {
-		filtCv.Set(filtCutoff_01);
-	}
-#else
-	Buffer filtCv(nSamp);
-	juce::FloatVectorOperations::copyWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
-	filtCv += filtCutoff_01;
-#endif
-	if (bMod2)
-	{
+
+	if (bMod2) {
 		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod2Buf.GetConst(), filtMod2Amt, nSamp);
 	}
 
-	if (bMod1)
-	{
-		// If high freq, we want to process lowpass filter *before* adding mod1
+	if (bMod1 && bMod1HighFreq) {
+		// If high freq, add mod1 *after* CV lowpass filter
 		// TODO: if high freq, then we probably want this to be linear FM, not log?
-		if (bMod1HighFreq) {
-			m_filtFreqCvFilt.ProcessLowpass(filtCv);
-			juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
-		}
-		else {
-			juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
-			m_filtFreqCvFilt.ProcessLowpass(filtCv);
-		}
+		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
 	}
-	else
-	{
+	else if (bMod1) {
+		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
+		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+	}
+	else {
 		m_filtFreqCvFilt.ProcessLowpass(filtCv);
 	}
 
