@@ -29,7 +29,7 @@ namespace Engine {
 
 const double k_diodeResHpfCutoff_Hz = 40.0;
 
-void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t model) {
+void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t model, uint8_t nPoles) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	DEBUG_ASSERT(buf.GetLength() == freqCv.GetLength());
 
@@ -50,7 +50,18 @@ void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t mode
 		break;
 
 	case filterModel_transLadder:
-		transFilt.transistorLadder<4>(freqCv.Get(), res, inBuf, outBuf, nSamp);
+		switch (nPoles) {
+		case 4:
+			transFilt.transistorLadder<4>(freqCv.Get(), res, inBuf, outBuf, nSamp);
+			break;
+		case 2:
+			transFilt.transistorLadder<2>(freqCv.Get(), res, inBuf, outBuf, nSamp);
+			break;
+		default:
+			// TODO: log error
+			transFilt.transistorLadder<4>(freqCv.Get(), res, inBuf, outBuf, nSamp);
+			break;
+		}
 		break;
 
 	case filterModel_diodeLadder:

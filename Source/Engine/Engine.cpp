@@ -613,8 +613,7 @@ void SynthEngine::ProcessFilter_(
 	// Do the processing!
 
 	buf *= preFiltGain;
-	// TODO: nPoles
-	m_filter.Process(buf, filtCv, filtRes, filtModel);
+	m_filter.Process(buf, filtCv, filtRes, filtModel, nPoles);
 	buf *= postFiltGain;
 }
 

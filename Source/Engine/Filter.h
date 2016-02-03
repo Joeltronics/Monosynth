@@ -61,7 +61,12 @@ public:
 	
 	// freqCv = normalized freq (0-0.5)
 	// res = in range [0, 1]
-	void Process(Buffer& buf /*inOut*/, Buffer& freqCv /*in*/, double res /*in*/, filterModel_t model /*in*/);
+	void Process(
+		Buffer& buf /*inOut*/,
+		Buffer& freqCv /*in*/,
+		double res /*in*/,
+		filterModel_t model /*in*/,
+		uint8_t nPoles /*in*/);
 
 private:
 	
