@@ -1469,7 +1469,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label114->setColour (TextEditor::textColourId, Colours::black);
     label114->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_mod1 = new Slider ("Filter Mod 1"));
+    addAndMakeVisible (sli_filt_mod1 = new Slider ("Filter Mod 1 Amount"));
     sli_filt_mod1->setRange (0, 1, 0);
     sli_filt_mod1->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_mod1->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1484,7 +1484,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label60->setColour (TextEditor::textColourId, Colours::black);
     label60->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_filt_mod2 = new Slider ("Filter Mod 2"));
+    addAndMakeVisible (sli_filt_mod2 = new Slider ("Filter Mod 2 Amount"));
     sli_filt_mod2->setRange (0, 1, 0);
     sli_filt_mod2->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_filt_mod2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -3256,7 +3256,7 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Amount" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
-  <SLIDER name="Filter Mod 1" id="ebe4841d9f9a325b" memberName="sli_filt_mod1"
+  <SLIDER name="Filter Mod 1 Amount" id="ebe4841d9f9a325b" memberName="sli_filt_mod1"
           virtualName="" explicitFocusOrder="0" pos="656 194 32 32" min="0"
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3265,7 +3265,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Mod 1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Filter Mod 2" id="76786c96966c36a1" memberName="sli_filt_mod2"
+  <SLIDER name="Filter Mod 2 Amount" id="76786c96966c36a1" memberName="sli_filt_mod2"
           virtualName="" explicitFocusOrder="0" pos="655 236 32 32" min="0"
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>

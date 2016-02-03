@@ -33,7 +33,7 @@
 
 using namespace Engine;
 
-const double k_filtCvCutoff_Hz = 1000.0;
+const double k_filtCvCutoff_Hz = 100.0;
 float k_vcoRandPitchAmt = 0.01f; // In semitones
 float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
 
@@ -294,8 +294,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	ProcessOscsAndMixer_(overBuf, freqPhaseBuf1, freqPhaseBuf2);
 
 	// 5. Filter
-	Buffer const& filtLfoBuf = (m_params.filtLfoSel->GetInt() ? mod2Buf : mod1Buf );
-	ProcessFilter_(overBuf, filtEnvBuf, filtLfoBuf);
+	ProcessFilter_(overBuf, filtEnvBuf, mod1Buf, mod2Buf);
 
 	// 6. Overdrive
 	// TODO
@@ -351,7 +350,7 @@ void SynthEngine::ProcessMod_(
 	waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
 
 	bool blfo1KbTrack = (m_params.mod1range->GetInt() == 2);
-	bool blfo1HighFreq = (m_params.mod1range->GetInt() != 0);
+	bool blfo1HighFreq = IsMod1HighFreq_();
 
 	sample_t mod2paramA = m_params.mod2paramA->getValue();
 	sample_t mod2paramB = m_params.mod2paramB->getValue();
@@ -488,78 +487,137 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	*/
 }
 
-void SynthEngine::ProcessFilter_(Buffer& buf, Buffer const& envBuf, Buffer const& filtLfoBuf)
+void SynthEngine::ProcessFilter_(
+	Buffer& buf /*inOut*/,
+	Buffer const& envBuf,
+	Buffer const& filtMod1Buf,
+	Buffer const& filtMod2Buf)
 {
-	float filtRes = m_params.filtRes->getValue();
+	size_t const nSamp = buf.GetLength();
 
-	filterModel_t filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
+	// TODO: velocity, kb tracking
 
-	// Convert semitones to actual 0-1 range
-	// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
-	float filtCutoffRandAmt_01 = k_filtCutoffRandAmt_semi / (9.966f * 12.0f);
-	float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
-
-	sample_t filtCutoff_01 = m_params.filtFreq->getValue() + cutoffRand;
-	//sample_t filtCutoff = Utils::LogInterp<double>(20.0, 20000.0, filtCutoff_01) / m_sampleRateOver;
-
-	float filtEnvAmt = m_params.filtEnv->GetActualValue();
-	
-	// Apply curve (x^2 with sign) to env amt
-	//filtEnvAmt = copysign(filtEnvAmt*filtEnvAmt, filtEnvAmt);
-	// Or don't
-
-	float filtLfoAmt = m_params.filtLfoAmt->GetActualValue();
-	// Apply curve (x^2) to LFO amt
-	filtLfoAmt *= filtLfoAmt;
-
-	Buffer filtCv(envBuf);
-	filtCv *= filtEnvAmt;
-	filtCv += filtCutoff_01;
-	
-	if (!Utils::ApproxEqual(filtLfoAmt, 0.f))
+	// Basic params
+	float filtRes;
+	filterModel_t filtModel;
+	uint8_t nPoles;
+	sample_t filtCutoff_01;
 	{
-		Buffer tempLfoBuf(filtLfoBuf);
-		tempLfoBuf *= filtLfoAmt;
-		filtCv += tempLfoBuf;
+		filtRes = m_params.filtRes->getValue();
+
+		filtModel = Detail::ConvertFiltModel(m_params.filtModel->GetInt());
+
+		nPoles = (m_params.filtPoles->GetInt() ? 4 : 2);
+
+		// Convert semitones to actual 0-1 range
+		// range = 20-20000 = 1000x = 9.966 octaves (then x12 semitones)
+		float filtCutoffRandAmt_01 = k_filtCutoffRandAmt_semi / (9.966f * 12.0f);
+		float cutoffRand = ((m_random.nextFloat() - 0.5f) * 2.0f * filtCutoffRandAmt_01);
+
+		filtCutoff_01 = m_params.filtFreq->getValue() + cutoffRand;
 	}
 
-	// TODO: LFO, velocity, kb tracking
+	// Mod & env amts
+	bool bEnv, bMod1, bMod2;
+	bool bMod1HighFreq;
+	float filtEnvAmt, filtMod1Amt, filtMod2Amt;
+	{
+		filtEnvAmt = m_params.filtEnv->GetActualValue();
+
+		bEnv = !Utils::ApproxEqual(filtEnvAmt, 0.0f, 0.005f);
+
+		filtMod1Amt = m_params.filtMod1Amt->GetActualValue();
+		filtMod2Amt = m_params.filtMod2Amt->GetActualValue();
+
+		bMod1 = !Utils::ApproxEqual(filtMod1Amt, 0.0f, 0.005f);
+		bMod2 = !Utils::ApproxEqual(filtMod2Amt, 0.0f, 0.005f);
+
+		// Apply curve (x^2) to LFO amt
+		filtMod1Amt *= filtMod1Amt;
+		filtMod2Amt *= filtMod2Amt;
+
+		bMod1HighFreq = bMod1 && IsMod1HighFreq_();
+	}
+
+	// Pre- & post-filter gain values
+	sample_t preFiltGain, postFiltGain;
+	{
+		/*
+		Simple gain knob would cause overall volume change (obviously).
+		So we add post-filter gain in order to make gain knob roughly volume-neutral.
+
+		If we just made post-gain 1/pre, then we would actually lose volume at the
+		top of the knob, as clipping starts to reduce the volume. That's even worse
+		because it's the opposite of what the user might expect. So we have to be
+		smarter with what we make the post-gain.
+
+		It's impossible to calculate exactly how to set the post-gain for perfect
+		volume-neutral behavior, since not only does it depend on freq and resonance,
+		but also on the waveform going into the filter.
+
+		Empirically, adding 0.25 overall seems to make it roughly linear, and since
+		it's added uniformly across the whole range it won't cause any weird
+		discontinuous behavior.
+		*/
+		preFiltGain = m_params.filtGain->GetActualValue();
+		preFiltGain = preFiltGain*preFiltGain*preFiltGain;
+		preFiltGain = Utils::Interp(0.1f, 8.0f, preFiltGain);
+
+		postFiltGain = 1.f / preFiltGain + 0.25f;
+	}
+
+#if 0
+	// FIXME: something doesn't work about this (I wonder if Buffer::Set(sample_t) might be broken?)
+	// TODO: could (slightly) optimize further by first filling with filtCutoff, then using addWithMultiply
+	Buffer filtCv(nSamp);
+	if (bEnv) {
+		juce::FloatVectorOperations::copyWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
+		filtCv += filtCutoff_01;
+	}
+	else {
+		filtCv.Set(filtCutoff_01);
+	}
+#else
+	Buffer filtCv(nSamp);
+	juce::FloatVectorOperations::copyWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
+	filtCv += filtCutoff_01;
+#endif
+	if (bMod2)
+	{
+		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod2Buf.GetConst(), filtMod2Amt, nSamp);
+	}
+
+	if (bMod1)
+	{
+		// If high freq, we want to process lowpass filter *before* adding mod1
+		// TODO: if high freq, then we probably want this to be linear FM, not log?
+		if (bMod1HighFreq) {
+			m_filtFreqCvFilt.ProcessLowpass(filtCv);
+			juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
+		}
+		else {
+			juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
+			m_filtFreqCvFilt.ProcessLowpass(filtCv);
+		}
+	}
+	else
+	{
+		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+	}
 
 	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance
 	// NOTE: at this point, filtCv can exceed range [0,1]. This is acceptable.
 	Utils::FastLogInterp(20.0f, 20000.0f, filtCv);
 	filtCv /= m_sampleRateOver;
 
-	m_filtFreqCvFilt.ProcessLowpass(filtCv);
-
-	/*
-	Pre- & post-filter gain values:
-
-	Simple gain knob would cause overall volume change (obviously).
-	So we add post-filter gain in order to make gain knob roughly volume-neutral.
-
-	If we just made post-gain 1/pre, then we would actually lose volume at the
-	top of the knob, as clipping starts to reduce the volume. That's even worse
-	because it's the opposite of what the user might expect. So we have to be
-	smarter with what we make the post-gain.
-	
-	It's impossible to calculate exactly how to set the post-gain for perfect
-	volume-neutral behavior, since not only does it depend on freq and resonance,
-	but also on the waveform going into the filter.
-
-	Empirically, adding 0.25 overall seems to make it roughly linear, and since
-	it's added uniformly across the whole range it won't cause any weird
-	discontinuous behavior.
-	*/
-	sample_t preFiltGain = m_params.filtGain->GetActualValue();
-	preFiltGain = preFiltGain*preFiltGain*preFiltGain;
-	preFiltGain = Utils::Interp(0.1f, 8.0f, preFiltGain);
-
-	sample_t postFiltGain = 1.f / preFiltGain + 0.25f;
-
 	// Do the processing!
 
 	buf *= preFiltGain;
+	// TODO: nPoles
 	m_filter.Process(buf, filtCv, filtRes, filtModel);
 	buf *= postFiltGain;
+}
+
+bool SynthEngine::IsMod1HighFreq_() const {
+	return (m_params.mod1range->GetInt() != 0);
 }

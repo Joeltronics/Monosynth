@@ -434,8 +434,8 @@ public:
 	EnumParam* filtPoles;
 	FloatParam* filtEnv;
 	FloatParam* filtVelAmt;
-	FloatParam* filtLfoAmt;
-	EnumParam* filtLfoSel;
+	FloatParam* filtMod1Amt;
+	FloatParam* filtMod2Amt;
 	FloatParam* envAtt;
 	FloatParam* envDec;
 	FloatParam* envSus;
@@ -485,11 +485,11 @@ public:
 		AP(filtGain = new FloatParam("Filter Gain", 0.5f));
 		AP(filtModel = new EnumParam("Filter Model", { "Off", "Transistor", "Diode" }, 1));
 		AP(filtKb = new EnumParam("Filter KB Track", { "0", "0.5", "1" }, 2));
-		AP(filtPoles = new EnumParam("Filter Poles", { "2", "4" }, 0));
+		AP(filtPoles = new EnumParam("Filter Poles", { "2", "4" }, 1));
 		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f, 1.0f }));
 		AP(filtVelAmt = new FloatParam("Filter Vel Amount"));
-		AP(filtLfoAmt = new FloatParam("Filter LFO Amount"));
-		AP(filtLfoSel = new EnumParam("Filter LFO Select", { "LFO 1", "LFO 2" }, 0));
+		AP(filtMod1Amt = new FloatParam("Filter Mod 1 Amount"));
+		AP(filtMod2Amt = new FloatParam("Filter Mod 2 Amount"));
 		AP(envAtt = new FloatParam("Env Attack"));
 		AP(envDec = new FloatParam("Env Decay"));
 		AP(envSus = new FloatParam("Env Sustain", 1.0f));
