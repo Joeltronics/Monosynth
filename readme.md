@@ -31,7 +31,7 @@ Besides sound quality, the main goal is for this to be super accessible and easy
 
 ## Status
 
-The core features are all implemented, and most quality features are in place (though the oversampling could still be improved a bit). But several parts aren't implemented yet (like many modulation options), and their GUI controls won't do anything. It could also use a lot of optimization, both in terms of CPU and in reducing a lot of unnecessary memory allocation.
+The core features are all implemented, and most quality features are in place although there's still room for some improvements. But several parts aren't implemented yet and their GUI controls won't do anything. It could also use a lot of optimization, both in terms of CPU and in reducing a lot of unnecessary memory allocation. The filter algorithm needs a little bit of work too (to fix the volume drop with resonance).
 
 The GUI is not final. All the controls are there, but it could still use a bit of clean-up. I also want to add some visual aids you wouldn't see on a real hardware synth, like an "arc" on the various knobs to show how they're being modulated.
 
@@ -42,13 +42,14 @@ Here is what the GUI looks like at the moment: *(click to enlarge)*
 
 * Fully automatable parameters
 * "Underneath the panel" controls - I don't want to rely heavily on these, as accessibility is one of my main goals. But I also don't want the front panel to be too cluttered, so there are a few things I have in mind for "page 2". They could almost be treated like mods to a hardware synth, or in some cases even just the types of calibration tweaks you'd get with an analog synth. I don't want these to be completely "under the hood" though - I'm hoping to have some sort of visual indication on the front panel that things have been modified.
-* Patch storage/management - I don't expect to have an incredibly complicated patch manager, but I do want to have something. At the very least, it will support DAW-based patch management, but I may have a simple built-in patch manager as well.
+* Patch storage/management - I don't expect to have an incredibly complicated patch manager, but I do want to have something. At the very least, it will support DAW-based patch management, but I may have a onboard patch storage as well.
 
 ## Possible future features
 
 These are all features I don't plan on implementing for 1.0, but might be interested in adding in the future:
 
-* Polyphony & unison
 * Sequencer & arpeggiator
-* More monophony priority modes (besides last-note)
-* Filter/VCA feedback distortion (until then, there are 2 other kinds of distortion)
+* Monophony priority modes besides last-note
+* Filter/VCA feedback distortion
+
+I don't plan on adding polyphony/unison - I would rather make a synth designed for it in the first place (again, that might be coming later...).
