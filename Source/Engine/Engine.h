@@ -33,7 +33,7 @@
 #include "PitchProcessor.h"
 #include "Envelope.h"
 #include "Lfo.h"
-#include "Oscillator.h"
+#include "Oscillators.h"
 #include "Vca.h"
 #include "Filter.h"
 

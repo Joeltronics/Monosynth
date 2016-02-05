@@ -50,8 +50,8 @@
         </GROUP>
         <FILE id="NkT6bs" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
         <FILE id="Vg7ac4" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
-        <FILE id="PtYCfk" name="Oscillator.h" compile="0" resource="0" file="Source/Engine/Oscillator.h"/>
-        <FILE id="pQQoZ1" name="Oscillator.cpp" compile="1" resource="0" file="Source/Engine/Oscillator.cpp"/>
+        <FILE id="PtYCfk" name="Oscillators.h" compile="0" resource="0" file="Source/Engine/Oscillators.h"/>
+        <FILE id="pQQoZ1" name="Oscillators.cpp" compile="1" resource="0" file="Source/Engine/Oscillators.cpp"/>
         <FILE id="xBeVnl" name="Filter.cpp" compile="1" resource="0" file="Source/Engine/Filter.cpp"/>
         <FILE id="jEoXKN" name="Filter.h" compile="0" resource="0" file="Source/Engine/Filter.h"/>
         <FILE id="fVUBBS" name="Lfo.h" compile="0" resource="0" file="Source/Engine/Lfo.h"/>
