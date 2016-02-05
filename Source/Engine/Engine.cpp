@@ -44,6 +44,7 @@ namespace Detail {
 		case 1: return waveShape_pwm; break;
 		case 2: return waveShape_saw; break;
 		default:
+			LOG(juce::String::formatted("MainOscToWave, unknown wave %u", n));
 			DEBUG_ASSERT(false);
 			return waveShape_saw;
 		}
@@ -55,6 +56,7 @@ namespace Detail {
 		case 1: return waveShape_squ50;
 		case 2: return waveShape_pulse25;
 		default:
+			LOG(juce::String::formatted("SubOscToWave, unknown wave %u", n));
 			DEBUG_ASSERT(false);
 			return waveShape_tri;
 		}
@@ -68,6 +70,7 @@ namespace Detail {
 		case 3: return waveShape_saw;
 		case 4: return waveShape_sawDown;
 		default:
+			LOG(juce::String::formatted("Mod1ToWave, unknown wave %u", n));
 			DEBUG_ASSERT(false);
 			return waveShape_sin;
 		}
@@ -79,6 +82,7 @@ namespace Detail {
 		case 1: return waveShape_sampleHold;
 		case 2: return waveShape_tri;
 		default:
+			LOG(juce::String::formatted("Mod2ToWave, unknown wave %u", n));
 			DEBUG_ASSERT(false);
 			return waveShape_tri;
 		}
@@ -87,11 +91,12 @@ namespace Detail {
 	static filterModel_t ConvertFiltModel(size_t n)
 	{
 		switch (n) {
+		case 0: return filterModel_none;
 		case 1: return filterModel_transLadder;
 		case 2: return filterModel_diodeLadder;
-		
-		case 0:
 		default:
+			LOG(juce::String::formatted("ConvertFiltModel, unknown model %u", n));
+			DEBUG_ASSERT(false);
 			return filterModel_none;
 		}
 	}
@@ -273,7 +278,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	
 	m_pitchProc.ProcessPitchBend(freqPhaseBuf1, pitchBendEvents, pitchBendAmt);
 
-	// TODO: mod
+	// TODO: pitch mod
 
 	// VCO tuning instability
 	// TODO:
@@ -304,31 +309,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 
 	// Downsample to native sample rate
 	// Technically we could do this before VCA, but the envelope is at oversampled rate
-	
-	if (m_nOversample <= 1)
-	{
-		DEBUG_ASSERT(overBuf.GetLength() == nSampNative);
-
-		// Copy buffer to output buffer (for all channels)
-		for (size_t chan = 0; chan < nChan; ++chan) {
-			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), overBuf.Get(), nSampNative);
-		}
-	}
-	else
-	{
-		// Can downsample staight into Juce buffer
-		Buffer buf(juceBuf.getWritePointer(0), nSampNative);
-
-		DEBUG_ASSERT(Utils::ApproxEqual(m_sampleRateNative*m_nOversample, m_sampleRateOver));
-		DEBUG_ASSERT(m_pResampler);
-
-		m_pResampler->Process(buf, overBuf);
-
-		// Copy buffer to output buffer (for channels > 0)
-		for (size_t chan = 1; chan < nChan; ++chan) {
-			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), buf.Get(), nSampNative);
-		}
-	}
+	DownsampleAndCopyToStereo_(overBuf, juceBuf);
 	
 	// 8. Effects
 	// TODO
@@ -418,25 +399,27 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	float noiseGain = m_params.mixNoise->GetActualValue();
 
 	float osc1shape = m_params.osc1shape->GetActualValue();
-	float osc2shape = m_params.osc2shape->GetActualValue();
 	int subOscOct = m_params.subOscOct->GetInt();
-
-	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
-	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);
-
-	bool bProcOsc2Sig = (osc2Gain > 0.0f || ringGain > 0.0f);
-	bool bProcOsc2Phase = bProcOsc2Sig;
-
-	// DEBUG (you know what they say about premature optimization...)
-	bProcOsc1Sig = bProcOsc1Phase = bProcOsc2Sig = bProcOsc2Phase = true;
 
 	// Wave shapes
 	waveform_t osc1wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
 	waveform_t osc2wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
 	waveform_t subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
-	// Allocate memory
+#if 0
+	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
+	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);
 
+	bool bProcOsc2Sig = (osc2Gain > 0.0f || ringGain > 0.0f);
+	bool bProcOsc2Phase = bProcOsc2Sig;
+#else
+	// DEBUG (you know what they say about premature optimization...)
+	bool bProcOsc1Sig, bProcOsc1Phase, bProcOsc2Sig, bProcOsc2Phase;
+	bProcOsc1Sig = bProcOsc1Phase = bProcOsc2Sig = bProcOsc2Phase = true;
+#endif
+
+	// Allocate memory
+	// TODO: allocate only on PrepareToPlay
 	Buffer osc1Buf(nSamp);
 	Buffer osc2Buf(nSamp);
 
@@ -456,7 +439,7 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	if (bProcOsc2Sig) {
 		DEBUG_ASSERT(bProcOsc2Phase);
 
-		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2, osc2wave, osc2shape);
+		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2, osc2wave, 0.f);
 
 		if (osc2Gain > 0.0f) {
 			Buffer tempOscBuf(osc2Buf, osc2Gain);
@@ -599,6 +582,39 @@ void SynthEngine::ProcessFilter_(
 	buf *= preFiltGain;
 	m_filter.Process(buf, filtCv, filtRes, filtModel, nPoles);
 	buf *= postFiltGain;
+}
+
+void SynthEngine::DownsampleAndCopyToStereo_(
+	Buffer const& overBuf /*in*/,
+	juce::AudioSampleBuffer& juceBuf /*out*/) const
+{
+	size_t nChan = juceBuf.getNumChannels();
+	size_t nSampNative = juceBuf.getNumSamples();
+
+	if (m_nOversample <= 1)
+	{
+		DEBUG_ASSERT(overBuf.GetLength() == nSampNative);
+
+		// Copy buffer to output buffer (for all channels)
+		for (size_t chan = 0; chan < nChan; ++chan) {
+			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), overBuf.GetConst(), nSampNative);
+		}
+	}
+	else
+	{
+		// Can downsample staight into Juce buffer
+		Buffer buf(juceBuf.getWritePointer(0), nSampNative);
+
+		DEBUG_ASSERT(Utils::ApproxEqual(m_sampleRateNative*m_nOversample, m_sampleRateOver));
+		DEBUG_ASSERT(m_pResampler);
+
+		m_pResampler->Process(buf, overBuf);
+
+		// Copy buffer to output buffer (for channels > 0)
+		for (size_t chan = 1; chan < nChan; ++chan) {
+			juce::FloatVectorOperations::copy(juceBuf.getWritePointer(chan), buf.Get(), nSampNative);
+		}
+	}
 }
 
 bool SynthEngine::IsMod1HighFreq_() const {

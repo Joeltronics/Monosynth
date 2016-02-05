@@ -1433,8 +1433,8 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label104->setColour (TextEditor::textColourId, Colours::black);
     label104->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_o2_sh3 = new Slider ("Osc 2 Wave"));
-    swi_o2_sh3->setRange (0, 2, 1);
+    addAndMakeVisible (swi_o2_sh3 = new Slider ("Pitch Mod Source"));
+    swi_o2_sh3->setRange (0, 2, 0.5);
     swi_o2_sh3->setSliderStyle (Slider::LinearVertical);
     swi_o2_sh3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_o2_sh3->addListener (this);
@@ -1448,8 +1448,8 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label107->setColour (TextEditor::textColourId, Colours::black);
     label107->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_o2_sh4 = new Slider ("Osc 2 Wave"));
-    swi_o2_sh4->setRange (0, 2, 1);
+    addAndMakeVisible (swi_o2_sh4 = new Slider ("Pitch Mod Dest"));
+    swi_o2_sh4->setRange (1, 2, 0.5);
     swi_o2_sh4->setSliderStyle (Slider::LinearVertical);
     swi_o2_sh4->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     swi_o2_sh4->addListener (this);
@@ -3234,18 +3234,18 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="Osc 2 Wave" id="ae0094f9db23c310" memberName="swi_o2_sh3"
+  <SLIDER name="Pitch Mod Source" id="ae0094f9db23c310" memberName="swi_o2_sh3"
           virtualName="" explicitFocusOrder="0" pos="34 31 20 56" min="0"
-          max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
+          max="2" int="0.5" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="71f15678859b5dcb" memberName="label107"
          virtualName="" explicitFocusOrder="0" pos="40 13 42 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Mod" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="Osc 2 Wave" id="4bea1227bdd0435d" memberName="swi_o2_sh4"
-          virtualName="" explicitFocusOrder="0" pos="155 31 20 56" min="0"
-          max="2" int="1" style="LinearVertical" textBoxPos="NoTextBox"
+  <SLIDER name="Pitch Mod Dest" id="4bea1227bdd0435d" memberName="swi_o2_sh4"
+          virtualName="" explicitFocusOrder="0" pos="155 31 20 56" min="1"
+          max="2" int="0.5" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="Mod 2 Param A" id="4311def691d02af5" memberName="sli_mod2_a2"
           virtualName="" explicitFocusOrder="0" pos="92 37 48 48" min="0"

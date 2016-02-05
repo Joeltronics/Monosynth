@@ -415,7 +415,6 @@ public:
 	EnumParam* osc1wave;
 	FloatParam* osc1shape;
 	EnumParam* osc2wave;
-	FloatParam* osc2shape;
 	IntParam* osc2oct;
 	FloatParam* osc2coarse;
 	FloatParam* osc2fine;
@@ -469,10 +468,10 @@ public:
 		AP(osc1wave = new EnumParam("Osc 1 Wave", { "Tri","Rect","Saw" }, 2));
 		AP(osc1shape = new FloatParam("Osc 1 Shape"));
 		AP(osc2wave = new EnumParam("Osc 2 Wave", { "Tri","Rect","Saw" }, 2));
-		AP(osc2shape = new FloatParam("Osc 2 Shape"));
 		AP(osc2oct = new IntParam("Osc 2 Octave", 0, { 0, 1 }));
 		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.0f, 7.0f }));
-		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.0f, { -1.0f, 1.0f }));
+		// Initialize osc 2 fine tune to slightly off center
+		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.02f, { -1.0f, 1.0f }));
 		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2, -1 }));
 		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri", "Square", "Pulse" }, 0));
 		AP(mixOsc1 = new FloatParam("Osc 1 Mix", 1.0f));

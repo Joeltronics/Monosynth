@@ -70,6 +70,10 @@ private:
 		Buffer const& mod1Buf /*in*/,
 		Buffer const& mod2Buf /*in*/);
 
+	void DownsampleAndCopyToStereo_(
+		Buffer const& overBuf /*in*/,
+		juce::AudioSampleBuffer& juceBuf /*out*/) const;
+
 	bool IsMod1HighFreq_() const;
 
 	double m_sampleRateNative;
