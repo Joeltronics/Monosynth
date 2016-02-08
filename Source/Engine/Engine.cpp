@@ -195,12 +195,8 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_mod2LfoAttack.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_mod2env.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	
-	m_osc1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	m_osc2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	m_subOsc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	
+	m_oscs.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_filter.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	
 	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 
 	m_filtFreqCvFilt.SetFreq(k_filtCvCutoff_Hz / m_sampleRateOver);
@@ -388,86 +384,35 @@ void SynthEngine::ProcessMod_(
 
 void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhaseBuf1 /*inout*/, Buffer& freqPhaseBuf2 /*inout*/)
 {
-	size_t const nSamp = mainBuf.GetLength();
 	mainBuf.Clear();
 
+	Oscillators::Params oscParams;
+
 	// Get params
-	float osc1Gain = m_params.mixOsc1->GetActualValue();
-	float osc2Gain = m_params.mixOsc2->GetActualValue();
-	float subGain = m_params.mixSub->GetActualValue();
-	float ringGain = m_params.mixRing->GetActualValue();
+	oscParams.osc1Gain = m_params.mixOsc1->GetActualValue();
+	oscParams.osc2Gain = m_params.mixOsc2->GetActualValue();
+	oscParams.subGain = m_params.mixSub->GetActualValue();
+	oscParams.ringGain = m_params.mixRing->GetActualValue();
 	float noiseGain = m_params.mixNoise->GetActualValue();
 
-	float osc1shape = m_params.osc1shape->GetActualValue();
-	int subOscOct = m_params.subOscOct->GetInt();
+	oscParams.osc1Shape = m_params.osc1shape->GetActualValue();
+	oscParams.subOscOct = m_params.subOscOct->GetInt();
 
 	// Wave shapes
-	waveform_t osc1wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
-	waveform_t osc2wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
-	waveform_t subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
+	oscParams.osc1Wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
+	oscParams.osc2Wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
+	oscParams.subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
+	m_oscs.Process(mainBuf, freqPhaseBuf1, freqPhaseBuf2, oscParams);
+	
+	// TODO: noise
 #if 0
-	bool bProcOsc1Sig = (osc1Gain > 0.0f || ringGain > 0.0f);
-	bool bProcOsc1Phase = (bProcOsc1Sig || subGain > 0.0f);
-
-	bool bProcOsc2Sig = (osc2Gain > 0.0f || ringGain > 0.0f);
-	bool bProcOsc2Phase = bProcOsc2Sig;
-#else
-	// DEBUG (you know what they say about premature optimization...)
-	bool bProcOsc1Sig, bProcOsc1Phase, bProcOsc2Sig, bProcOsc2Phase;
-	bProcOsc1Sig = bProcOsc1Phase = bProcOsc2Sig = bProcOsc2Phase = true;
-#endif
-
-	// Allocate memory
-	// TODO: allocate only on PrepareToPlay
-	Buffer osc1Buf(nSamp);
-	Buffer osc2Buf(nSamp);
-
-	// Process oscs
-
-	if (bProcOsc1Sig) {
-		DEBUG_ASSERT(bProcOsc1Phase);
-
-		m_osc1.ProcessFromFreq(osc1Buf, freqPhaseBuf1, osc1wave, osc1shape);
-
-		if (osc1Gain > 0.0f) {
-			Buffer tempOscBuf(osc1Buf, osc1Gain);
-			mainBuf += tempOscBuf;
-		}
-	}
-
-	if (bProcOsc2Sig) {
-		DEBUG_ASSERT(bProcOsc2Phase);
-
-		m_osc2.ProcessFromFreq(osc2Buf, freqPhaseBuf2, osc2wave, 0.f);
-
-		if (osc2Gain > 0.0f) {
-			Buffer tempOscBuf(osc2Buf, osc2Gain);
-			mainBuf += tempOscBuf;
-		}
-	}
-
-	// This is the last we need to use osc2Buf, so can use it for ring mod
-	if (ringGain > 0.0f) {
-		osc2Buf *= osc1Buf;
-		osc2Buf *= (ringGain * 4.f); // oscs have amplitude 0.5 so multiply ring by 4
-		mainBuf += osc2Buf;
-	}
-
-	// At this point we're done with the contents of osc1Buf and osc2Buf - can use freely
-	if (subGain > 0.0f) {
-		m_subOsc.ProcessSub(osc1Buf, freqPhaseBuf1, subOscWave, subOscOct);
-		osc1Buf *= subGain;
-		mainBuf += osc1Buf;
-	}
-
-	/*
 	if (noiseGain > 0.0f) {
 		// TODO: process (noise -> osc2Buf)
 		osc2Buf *= noiseGain;
 		mainBuf += osc2Buf;
 	}
-	*/
+#endif
 }
 
 void SynthEngine::ProcessFilter_(
@@ -551,21 +496,21 @@ void SynthEngine::ProcessFilter_(
 
 	Buffer filtCv(filtCutoff_01, nSamp);
 	if (bEnv) {
-		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), envBuf.GetConst(), filtEnvAmt, nSamp);
+		filtCv.AddWithMultiply(envBuf, filtEnvAmt);
 	}
 
 	if (bMod2) {
-		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod2Buf.GetConst(), filtMod2Amt, nSamp);
+		filtCv.AddWithMultiply(filtMod2Buf, filtMod2Amt);
 	}
 
 	if (bMod1 && bMod1HighFreq) {
 		// If high freq, add mod1 *after* CV lowpass filter
 		// TODO: if high freq, then we probably want this to be linear FM, not log?
 		m_filtFreqCvFilt.ProcessLowpass(filtCv);
-		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
+		filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
 	}
 	else if (bMod1) {
-		juce::FloatVectorOperations::addWithMultiply(filtCv.Get(), filtMod1Buf.GetConst(), filtMod1Amt, nSamp);
+		filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
 		m_filtFreqCvFilt.ProcessLowpass(filtCv);
 	}
 	else {

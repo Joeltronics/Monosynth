@@ -28,24 +28,81 @@
 
 namespace Engine {
 
-class Oscillator {
+class Oscillators {
 public:
-	Oscillator();
-	Oscillator(sample_t initPhase);
-	~Oscillator();
+
+	struct Params {
+		float osc1Gain, osc2Gain, subGain, ringGain;
+		waveform_t osc1Wave, osc2Wave, subOscWave;
+		float osc1Shape; // 0 to 1
+		int subOscOct; // -1 or -2
+		bool bSync;
+		float crossMod; // 0 to 1
+	};
+
+	Oscillators();
+	~Oscillators();
 
 	void PrepareToPlay(double sampleRate, int samplesPerBlock);
 
-	void ProcessFromFreq(Buffer& audioBuf /*out*/, Buffer& freqPhaseBuf /*inout*/, waveform_t wave /*in*/, float shape /*in*/);
-	
-	void ProcessSynced(Buffer& audioBuf /*out*/, Buffer& freqBuf /*inout*/, Buffer const& syncPhaseBuf /*in*/, waveform_t wave /*in*/, float shape /*in*/);
-	
-	void ProcessSub(Buffer& audioBuf /*out*/, Buffer const& phaseBuf /*in*/, waveform_t wave /*in*/, int octave);
+	void Process(
+		Buffer& outBuf /*out*/,
+		Buffer& freqBuf1 /*in*/,
+		Buffer& freqBuf2 /*in*/,
+		Oscillators::Params const& params /*in*/);
 
 private:
-	float m_phase;
+
+	void AllocateBufs_(size_t nSamp, bool bErrorIfDifferent);
+
+	// ***** Processing *****
+
+	// Will populate m_osc1Buf and populate m_tempBuf with osc 1 phase
+	// If params has crossMod > 0, m_osc2Buf must be populated before this is called
+	void ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, Params const& params);
+
+	// Will populate m_osc2Buf
+	// If params has sync enabled, m_tempBuf must be populated with osc 1 phase before this is called
+	void ProcessOsc2_(Buffer& outBuf, Buffer const& freqBuf, Params const& params);
+
+	// Less vectorized
+	// Necessary if both sync and cross mod enabled
+	// Not yet implemented
+#if 0
+	void ProcessBothOscsTogether_(Buffer& outBuf, Buffer& freqPhaseBuf1, Buffer& freqPhaseBuf2, Params const& params);
+#endif
+	
+	void ProcessSub_(Buffer& outBuf, Buffer const& oscFreqBuf, Params const& params);
+
+	// m_osc1Buf and m_osc2Buf must be populated before this is called
+	// This function is allowed to change the values of these
+	void ProcessRingMod_(Buffer& outBuf, float ampl);
+
+	// ***** Members *****
+
+	enum class TempBufUsage {
+		none,
+		osc1Phase,
+		subAudio
+	};
+
+	// Preallocated buffers
+	Buffer m_osc1Buf;
+	Buffer m_osc2Buf;
+	Buffer m_tempBuf;
+	
+	// These are flags to make sure things get processed in the right order
+	bool m_bOsc1BufPopulated;
+	bool m_bOsc2BufPopulated;
+	TempBufUsage m_tempBufUsage;
+
 	double m_sampleRate;
-	unsigned int m_phaseNum;
+
+	float m_osc1Phase;
+	float m_osc2Phase;
+	float m_subPhase;
+	size_t m_subPhaseNum;
+	
 	float m_polyblepSize; // number of samples before and after transition to PolyBlep (default 1)
 };
 

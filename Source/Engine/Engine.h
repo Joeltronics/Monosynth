@@ -94,9 +94,7 @@ private:
 	Engine::AttackEnvelope m_mod2LfoAttack;
 	Engine::AdEnvelope m_mod2env;
 
-	Engine::Oscillator m_osc1;
-	Engine::Oscillator m_osc2;
-	Engine::Oscillator m_subOsc;
+	Engine::Oscillators m_oscs;
 
 	Engine::Filter m_filter;
 

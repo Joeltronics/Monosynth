@@ -59,6 +59,8 @@ public:
 
 	// ***** Operators *****
 
+	void AddWithMultiply(Buffer const& other, sample_t multiplier);
+
 	// move & copy
 	Buffer& operator=(Buffer && other); // same as MoveFrom()
 	Buffer& operator=(Buffer const& other); // same as CopyFrom()
@@ -168,6 +170,11 @@ inline sample_t* Buffer::operator*() {
 }
 
 // ***** Operators: In-place math *****
+
+inline void Buffer::AddWithMultiply(Buffer const& other, sample_t multiplier) {
+	DEBUG_ASSERT(m_len == other.m_len);
+	juce::FloatVectorOperations::addWithMultiply(m_p, other.GetConst(), multiplier, m_len);
+}
 
 inline Buffer& Buffer::operator+=(Buffer const& other) {
 	DEBUG_ASSERT(m_len == other.m_len);
