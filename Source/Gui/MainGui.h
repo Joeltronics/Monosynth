@@ -172,7 +172,7 @@ private:
     ScopedPointer<Label> label73;
     ScopedPointer<Slider> swi_filt_kb;
     ScopedPointer<Label> label78;
-    ScopedPointer<Slider> slider41;
+    ScopedPointer<Slider> swi_o2_sync;
     ScopedPointer<Label> label79;
     ScopedPointer<Label> label84;
     ScopedPointer<Label> label85;

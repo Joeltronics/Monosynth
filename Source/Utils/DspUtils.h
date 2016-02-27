@@ -166,21 +166,32 @@ namespace Utils
         size_t const nSamp = buf.getNumSamples();
         size_t const nChan = buf.getNumChannels();
         
-        juce::AudioSampleBuffer tempBuf = buf;
-        
         for(uint8_t chan = 0; chan < nChan; ++chan) {
-            float* pWriteBuf = buf.getWritePointer(chan);
-            float const* pReadBuf = tempBuf.getReadPointer(chan);
-            juce::FloatVectorOperations::clip(pWriteBuf, pReadBuf, -thresh, thresh, nSamp);
+            float* pBuf = buf.getWritePointer(chan);
+            juce::FloatVectorOperations::clip(pBuf, pBuf, -thresh, thresh, nSamp);
         }
     }
     static void Clip(juce::AudioSampleBuffer& buf, float minThresh, float maxThresh)
     {
-        for(uint8_t chan = 0; chan < buf.getNumChannels(); ++chan) {
+		size_t const nSamp = buf.getNumSamples();
+		size_t const nChan = buf.getNumChannels();
+
+        for(uint8_t chan = 0; chan < nChan; ++chan) {
             float* pBuf = buf.getWritePointer(chan);
-            juce::FloatVectorOperations::clip(pBuf, pBuf, minThresh, maxThresh, buf.getNumSamples());
+            juce::FloatVectorOperations::clip(pBuf, pBuf, minThresh, maxThresh, nSamp);
         }
     }
+
+	static void Clip(Buffer& buf, float thresh)
+	{
+		float* pBuf = buf.Get();
+		juce::FloatVectorOperations::clip(pBuf, pBuf, -thresh, thresh, buf.GetLength());
+	}
+	static void Clip(Buffer& buf, float minThresh, float maxThresh)
+	{
+		float* pBuf = buf.Get();
+		juce::FloatVectorOperations::clip(pBuf, pBuf, minThresh, maxThresh, buf.GetLength());
+	}
     
     
     /*

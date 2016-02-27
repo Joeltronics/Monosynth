@@ -418,6 +418,7 @@ public:
 	IntParam* osc2oct;
 	FloatParam* osc2coarse;
 	FloatParam* osc2fine;
+	BoolParam* osc2sync;
 	IntParam* subOscOct;
 	EnumParam* subOscWave;
 	FloatParam* mixOsc1;
@@ -472,6 +473,7 @@ public:
 		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.0f, 7.0f }));
 		// Initialize osc 2 fine tune to slightly off center
 		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.02f, { -1.0f, 1.0f }));
+		AP(osc2sync = new BoolParam("Osc 2 Sync", {"Off", "On"}, false));
 		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2, -1 }));
 		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri", "Square", "Pulse" }, 0));
 		AP(mixOsc1 = new FloatParam("Osc 1 Mix", 1.0f));

@@ -398,6 +398,8 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	oscParams.osc1Shape = m_params.osc1shape->GetActualValue();
 	oscParams.subOscOct = m_params.subOscOct->GetInt();
 
+	oscParams.bSync = m_params.osc2sync->GetBool();
+
 	// Wave shapes
 	oscParams.osc1Wave = Detail::MainOscToWave(m_params.osc1wave->GetInt());
 	oscParams.osc2Wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());

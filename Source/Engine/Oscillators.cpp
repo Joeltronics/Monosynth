@@ -39,6 +39,9 @@ increased (normally it's 1) - increasing it reduces the top end a bit, but
 with oversampling, the HF loss is all above the audible range.
 */
 
+// peak-peak amplitude (squ & saw are 1.0)
+const float k_triWaveAmpl = 1.5f;
+
 namespace Detail {
 
 // Both of these assume upward step - simply negate for downward step
@@ -60,12 +63,12 @@ static float WaveshapeSaw(sample_t phase, sample_t freq) {
 	
 	if (phase < freq) {
 		// First sample after transition
-		sample_t pb = Detail::DiffPolyBlepAfterStep(phase / freq);
+		sample_t pb = DiffPolyBlepAfterStep(phase / freq);
 		return phase - 0.5f - pb;
 	}
 	else if (phase > (1.0f - freq)) {
 		// Last sample before transition
-		sample_t pb = Detail::DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
+		sample_t pb = DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
 		return phase - 0.5f - pb;
 	}
 	else {
@@ -82,19 +85,19 @@ static float WaveshapeRect(sample_t phase, sample_t freq, sample_t duty) {
 
 	if (phase > (1.0f - freq)) {
 		// Last sample before downward transition
-		return 0.5f - Detail::DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
+		return 0.5f - DiffPolyBlepBeforeStep((phase - 1.0f) / freq);
 	}
 	else if (phase < freq) {
 		// First sample after downward transition
-		return -0.5f - Detail::DiffPolyBlepAfterStep(phase / freq);
+		return -0.5f - DiffPolyBlepAfterStep(phase / freq);
 	}
 	else if (phase < duty && phase > (duty - freq)) {
 		// Last sample before upward transition
-		return -0.5f + Detail::DiffPolyBlepBeforeStep((phase - duty) / freq);
+		return -0.5f + DiffPolyBlepBeforeStep((phase - duty) / freq);
 	}
 	else if (phase >= duty && phase < (duty + freq)) {
 		// First sample after upward transition
-		return 0.5f + Detail::DiffPolyBlepAfterStep((phase - duty) / freq);
+		return 0.5f + DiffPolyBlepAfterStep((phase - duty) / freq);
 	}
 	else {
 		// Middle
@@ -102,12 +105,16 @@ static float WaveshapeRect(sample_t phase, sample_t freq, sample_t duty) {
 	}
 }
 
+// TODO: might want to apply k_triWaveAmpl in mixer instead, so ring mod isn't affected
+const float k_doubleTriWaveAmpl = 2.f*k_triWaveAmpl;
+const float k_halfTriWaveAmpl = 0.5f*k_triWaveAmpl;
+
 /**
 * @param[in] phase: in range [0,1)
 * @param[in] freq: normalized, i.e. phase increment per sample
 */
 static float WaveshapeTri(sample_t phase) {
-	return abs(phase - 0.5f) * 2.0f - 0.5f;
+	return abs(phase - 0.5f) * k_doubleTriWaveAmpl - k_halfTriWaveAmpl;
 }
 
 static void ProcessOsc_(
@@ -303,12 +310,11 @@ static void ProcessSub_(
 			pBuf[n] = WaveshapeTri(pBuf[n]);
 		}
 	}
-	else if (wave == waveShape_pulse25 || wave == waveShape_squ50)
-	{
+	else if (wave == waveShape_pulse25 || wave == waveShape_squ50) {
 		float const pw = (wave == waveShape_squ50 ? 0.50f : 0.25f);
 		float const* pFreq = masterOscFreqBuf.GetConst();
 		
-		// Freq is of master osc, so it corresponds to 2x or 4x freq, so need to divide
+		// Freq is of master osc, so it corresponds to 2x or 4x freq. Divide by that amount.
 		float freqPolyblepMultiplier = polyblepSize / float(div);
 
 		for (size_t n = 0; n < nSamp; ++n) {
@@ -378,48 +384,14 @@ void Oscillators::Process(
 	
 	AllocateBufs_(nSamp, true);
 
-	// TODO: in some cases (osc level zero, ring off, FM/Sync off), don't need osc to be computed at all
+	// TODO: in some cases (osc level zero, ring off, sync off), don't need osc to be computed at all
 	// If sync, we don't need to compute entire buf, can just compute phase buf
 
-	/*
-	Processing order:
-	
-	If sync, process osc 1 first
-	If FM, process osc 2 first
-	
-	If both, have to process at same time, with 1-sample delay (not implemented yet)
-	*/
-
 	bool const bSync = params.bSync;
-	bool const bFm = !Utils::ApproxEqual(params.crossMod, 0.0f);
 
-	// Process oscs
-
-	if (bFm && bSync) {
-		// TODO: allow FM and sync at the same time
-#if 0
-		ProcessBothOscsTogether_(outBuf, freqPhaseBuf1, freqPhaseBuf2, params);
-#else
-		// Until then, behave as if synced only
-		ProcessOsc1_(outBuf, freqBuf1, params);
-		ProcessOsc2_(outBuf, freqBuf2, params);
-#endif
-	}
-	else if (bFm) {
-		// Osc 2 first
-		ProcessOsc2_(outBuf, freqBuf2, params);
-		ProcessOsc1_(outBuf, freqBuf1, params);
-	}
-	else if (bSync) {
-		// Osc 1 first
-		ProcessOsc1_(outBuf, freqBuf1, params);
-		ProcessOsc2_(outBuf, freqBuf2, params);
-	}
-	else {
-		// Order doesn't matter
-		ProcessOsc1_(outBuf, freqBuf1, params);
-		ProcessOsc2_(outBuf, freqBuf2, params);
-	}
+	// Process osc 1 first
+	ProcessOsc1_(outBuf, freqBuf1, params);
+	ProcessOsc2_(outBuf, freqBuf2, params);
 
 	ProcessSub_(outBuf, freqBuf1, params);
 
@@ -443,16 +415,8 @@ void Oscillators::ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, Params con
 
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	DEBUG_ASSERT(!m_bOsc1BufPopulated);
-
-	// TODO: Cross Mod (from m_osc2Buf)
-#if 0
-	bool bFm = !Utils::ApproxEqual(params.crossMod, 0.0f);
-
-	if (bFm) {
-		DEBUG_ASSERT(m_bOsc2BufPopulated);
-	}
-#endif
-
+	DEBUG_ASSERT(m_tempBufUsage == TempBufUsage::none);
+	
 	Detail::ProcessOscPhaseOut_(
 		m_osc1Buf,
 		m_tempBuf,

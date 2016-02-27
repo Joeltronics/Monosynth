@@ -584,11 +584,11 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label78->setColour (TextEditor::textColourId, Colours::black);
     label78->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (slider41 = new Slider ("new slider"));
-    slider41->setRange (0, 1, 1);
-    slider41->setSliderStyle (Slider::LinearVertical);
-    slider41->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider41->addListener (this);
+    addAndMakeVisible (swi_o2_sync = new Slider ("Osc 2 Sync"));
+    swi_o2_sync->setRange (0, 1, 1);
+    swi_o2_sync->setSliderStyle (Slider::LinearVertical);
+    swi_o2_sync->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    swi_o2_sync->addListener (this);
 
     addAndMakeVisible (label79 = new Label ("new label",
                                             TRANS("Sync")));
@@ -1079,7 +1079,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label88->setColour (TextEditor::textColourId, Colours::black);
     label88->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_fm_amt = new Slider ("new slider"));
+    addAndMakeVisible (sli_fm_amt = new Slider ("Cross Mod"));
     sli_fm_amt->setRange (0, 10, 0);
     sli_fm_amt->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_fm_amt->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1655,7 +1655,7 @@ MainGui::~MainGui()
     label73 = nullptr;
     swi_filt_kb = nullptr;
     label78 = nullptr;
-    slider41 = nullptr;
+    swi_o2_sync = nullptr;
     label79 = nullptr;
     label84 = nullptr;
     label85 = nullptr;
@@ -1876,7 +1876,7 @@ void MainGui::resized()
     label73->setBounds (554, 256, 56, 16);
     swi_filt_kb->setBounds (652, 281, 40, 16);
     label78->setBounds (643, 271, 56, 10);
-    slider41->setBounds (306, 158, 20, 56);
+    swi_o2_sync->setBounds (306, 158, 20, 56);
     label79->setBounds (308, 143, 44, 16);
     label84->setBounds (259, 166, 32, 12);
     label85->setBounds (259, 181, 32, 12);
@@ -2147,10 +2147,10 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_swi_filt_kb] -- add your slider handling code here..
         //[/UserSliderCode_swi_filt_kb]
     }
-    else if (sliderThatWasMoved == slider41)
+    else if (sliderThatWasMoved == swi_o2_sync)
     {
-        //[UserSliderCode_slider41] -- add your slider handling code here..
-        //[/UserSliderCode_slider41]
+        //[UserSliderCode_swi_o2_sync] -- add your slider handling code here..
+        //[/UserSliderCode_swi_o2_sync]
     }
     else if (sliderThatWasMoved == swi_o2_sh)
     {
@@ -2748,7 +2748,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="KB Track" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="36"/>
-  <SLIDER name="new slider" id="1dfe389adfa42abd" memberName="slider41"
+  <SLIDER name="Osc 2 Sync" id="1dfe389adfa42abd" memberName="swi_o2_sync"
           virtualName="" explicitFocusOrder="0" pos="306 158 20 56" min="0"
           max="1" int="1" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3031,7 +3031,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="KB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="new slider" id="675fb29d65a2f8a9" memberName="sli_fm_amt"
+  <SLIDER name="Cross Mod" id="675fb29d65a2f8a9" memberName="sli_fm_amt"
           virtualName="" explicitFocusOrder="0" pos="350 37 48 48" min="0"
           max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
