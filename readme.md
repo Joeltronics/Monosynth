@@ -31,9 +31,9 @@ Besides sound quality, the main goal is for this to be super accessible and easy
 
 ## Status
 
-The core features are all implemented, and most quality features are in place although there's still room for some improvements. But several parts aren't implemented yet and their GUI controls won't do anything. It could also use a lot of optimization, both in terms of CPU and in reducing a lot of unnecessary memory allocation. The filter algorithm needs a little bit of work too (to fix the volume drop with resonance).
+The core features are all implemented, and most quality features are in place although there's still room for some improvements. But several parts aren't implemented yet (their GUI controls won't do anything). It could also use a lot of optimization, both in terms of general CPU usage and possible audio dropouts (currently the audio callback has some memory allocation and other non-realtime-safe behavior). The filter algorithm needs a little bit of work too, to fix the volume drop with resonance (an issue that affects many synths).
 
-The GUI is not final. All the controls are there, but it could still use a bit of clean-up. I also want to add some visual aids you wouldn't see on a real hardware synth, like an "arc" on the various knobs to show how they're being modulated.
+The GUI is not final. Hopefully the layout should be final by now. It could still use some visual cleanup, though. I also want to add some visual aids you wouldn't see on a real hardware synth, like an arc on the various knobs to show how they're being modulated.
 
 Here is what the GUI looks like at the moment: *(click to enlarge)*  
 [<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)

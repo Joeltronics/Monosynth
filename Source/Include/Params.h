@@ -433,7 +433,6 @@ public:
 	EnumParam* filtKb;
 	EnumParam* filtPoles;
 	FloatParam* filtEnv;
-	FloatParam* filtVelAmt;
 	FloatParam* filtMod1Amt;
 	FloatParam* filtMod2Amt;
 	FloatParam* envAtt;
@@ -444,11 +443,11 @@ public:
 	EnumParam* vcaSource;
 	FloatParam* vcaVel;
 	FloatParam* mod1freq;
-	EnumParam* mod1shape;
+	FloatParam* mod1shape;
 	EnumParam* mod1range;
 	EnumParam* mod2type;
-	FloatParam* mod2paramA;
-	FloatParam* mod2paramB;
+	FloatParam* mod2attack;
+	FloatParam* mod2decay;
 
 	// Note: these params must have the same name as the corresponding knob in the GUI!
 	// Also, name must be less than 30 characters
@@ -472,7 +471,7 @@ public:
 		AP(osc2oct = new IntParam("Osc 2 Octave", 0, { 0, 1 }));
 		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.0f, 7.0f }));
 		// Initialize osc 2 fine tune to slightly off center
-		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.02f, { -1.0f, 1.0f }));
+		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.021f, { -1.0f, 1.0f }));
 		AP(osc2sync = new BoolParam("Osc 2 Sync", {"Off", "On"}, false));
 		AP(subOscOct = new IntParam("Sub Osc Octave", -1, { -2, -1 }));
 		AP(subOscWave = new EnumParam("Sub Osc Wave", { "Tri", "Square", "Pulse" }, 0));
@@ -487,8 +486,7 @@ public:
 		AP(filtModel = new EnumParam("Filter Model", { "Off", "Transistor", "Diode" }, 1));
 		AP(filtKb = new EnumParam("Filter KB Track", { "0", "0.5", "1" }, 2));
 		AP(filtPoles = new EnumParam("Filter Poles", { "2", "4" }, 1));
-		AP(filtEnv = new FloatParam("Filter Env Amount", 0.0f, { -1.0f, 1.0f }));
-		AP(filtVelAmt = new FloatParam("Filter Vel Amount"));
+		AP(filtEnv = new FloatParam("Filter Env Amount"));
 		AP(filtMod1Amt = new FloatParam("Filter Mod 1 Amount"));
 		AP(filtMod2Amt = new FloatParam("Filter Mod 2 Amount"));
 		AP(envAtt = new FloatParam("Env Attack"));
@@ -496,14 +494,14 @@ public:
 		AP(envSus = new FloatParam("Env Sustain", 1.0f));
 		AP(envRel = new FloatParam("Env Release"));
 		AP(envVel = new FloatParam("Env Velocity"));
-		AP(vcaSource = new EnumParam("VCA Source", {"Gate", "Envelope"}, 0));
+		AP(vcaSource = new EnumParam("VCA Source", {"Gate + Click", "Gate", "Envelope"}, 1));
 		AP(vcaVel = new FloatParam("VCA Velocity"));
 		AP(mod1freq = new FloatParam("Mod 1 Rate", 0.5f));
-		AP(mod1shape = new EnumParam("Mod 1 Shape", { "Tri", "Sin", "Squ", "Saw+","Saw-" }));
+		AP(mod1shape = new FloatParam("Mod 1 Shape", 0.0f, { -1.0f, 1.0f }));
 		AP(mod1range = new EnumParam("Mod 1 Range", {"Low", "High", "KB Track"}));
-		AP(mod2type = new EnumParam("Mod 2 Type", { "Envelope", "Random", "LFO" }, 2));
-		AP(mod2paramA = new FloatParam("Mod 2 Param A", 0.5f));
-		AP(mod2paramB = new FloatParam("Mod 2 Param B", 0.5f));
+		AP(mod2type = new EnumParam("Mod 2 Type", { "Env-", "Env+", "LFO" }, 1));
+		AP(mod2attack = new FloatParam("Mod 2 Attack", 0.5f));
+		AP(mod2decay = new FloatParam("Mod 2 Decay", 0.5f));
 	}
 #undef AP
 

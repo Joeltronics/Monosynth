@@ -323,14 +323,14 @@ void SynthEngine::ProcessMod_(
 	Buffer& mod2Buf /*out*/)
 {
 	// TODO: LFO1 high freq range & KB tracking
-	waveform_t lfo1wave = Detail::Mod1ToWave(m_params.mod1shape->GetInt());
+	waveform_t lfo1wave = waveShape_triSinSqu;
 	waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
 
 	bool blfo1KbTrack = (m_params.mod1range->GetInt() == 2);
 	bool blfo1HighFreq = IsMod1HighFreq_();
 
-	sample_t mod2paramA = m_params.mod2paramA->getValue();
-	sample_t mod2paramB = m_params.mod2paramB->getValue();
+	sample_t mod2attack = m_params.mod2attack->getValue();
+	sample_t mod2decay = m_params.mod2decay->getValue();
 
 	sample_t lfo1freq = sample_t(
 		blfo1HighFreq ?
@@ -339,7 +339,7 @@ void SynthEngine::ProcessMod_(
 
 	// Not used if mod2wave is envelope
 	sample_t lfo2freq = sample_t(
-		Utils::LogInterp<double>(0.1, 20., mod2paramA) / m_sampleRateOver);
+		Utils::LogInterp<double>(0.1, 20., mod2attack) / m_sampleRateOver);
 
 	if (blfo1KbTrack) {
 		mod1Buf.Clear();
@@ -363,18 +363,18 @@ void SynthEngine::ProcessMod_(
 	// TODO: invert if waveShape_envelopeDown
 	case waveShape_envelope:
 	case waveShape_envelopeDown: {
-		double attTime = Detail::EnvValToTime(mod2paramA);
-		double decTime = Detail::EnvValToTime(mod2paramB);
+		double attTime = Detail::EnvValToTime(mod2attack);
+		double decTime = Detail::EnvValToTime(mod2decay);
 		m_mod2env.SetVals(attTime, decTime);
 		m_mod2env.Process(gateEvents, mod2Buf);
 		} break;
 
 	case waveShape_sampleHold: {
-		m_lfo2.ProcessSampHold(gateEvents, lfo2freq, mod2paramB, mod2Buf);
+		m_lfo2.ProcessSampHold(gateEvents, lfo2freq, mod2decay, mod2Buf);
 		} break;
 
 	default: {
-		double attTime = Detail::EnvValToTime(mod2paramB);
+		double attTime = Detail::EnvValToTime(mod2decay);
 		m_lfo2.ProcessLowFreq(gateEvents, mod2typeWave, lfo2freq, mod2Buf);
 		m_mod2LfoAttack.SetAttack(attTime);
 		m_mod2LfoAttack.ProcessAndApply(gateEvents, mod2Buf);

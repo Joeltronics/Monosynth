@@ -480,6 +480,31 @@ namespace Gui {
 		return Font::getDefaultTypefaceForFont(f);
 	}
 
+	static void DrawGroupVerticalLine_(
+		Graphics& g,
+		int width, int height,
+		const Justification& position,
+		GroupComponent& group)
+	{
+		
+		const float lineWidth = 1.0f;
+
+		float x = float(width) / 2.0f;
+		
+		float yTop = 4.0f;
+		float yBottom = float(height) - 4.0f;
+
+		const float alpha = group.isEnabled() ? 1.0f : 0.5f;
+
+		g.setColour(group.findColour(GroupComponent::outlineColourId)
+			.withMultipliedAlpha(alpha));
+
+		g.drawLine(
+			x, yTop,
+			x, yBottom,
+			lineWidth);
+	}
+
 	// Copied and modified from juce::LookAndFeel_V2
 	void DefaultLookAndFeel::drawGroupComponentOutline(
 		Graphics& g,
@@ -488,6 +513,11 @@ namespace Gui {
 		const Justification& position,
 		GroupComponent& group)
 	{
+		if (width < 32 && width * 4 < height && text.isEmpty()) {
+			DrawGroupVerticalLine_(g, width, height, position, group);
+			return;
+		}
+
 		const float lineWidth = 4.0f;
 		const float textH = 15.0f;
 		const float indent = 3.0f;
