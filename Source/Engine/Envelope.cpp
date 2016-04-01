@@ -91,8 +91,9 @@ void AdEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
 	m_sampleRate = sampleRate;
 }
 
-void AdEnvelope::SetVals(double attTime, double decTime) {
+void AdEnvelope::SetVals(double attTime, double decTime, bool bLooped) {
 	// TODO
+	m_bLooped = bLooped;
 }
 
 void AdEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {

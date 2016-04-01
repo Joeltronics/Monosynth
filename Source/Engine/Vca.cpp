@@ -29,7 +29,7 @@ void Vca::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
 }
 
-void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv) {
+void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv, bool bClick) {
 
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 
@@ -37,8 +37,11 @@ void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer
 		buf *= env;
 	}
 	else {
+		// TODO: don't alloc!
 		Buffer ampEnvBuf(buf.GetLength());
 		m_ampEnv.Process(gateEvents, ampEnvBuf);
+
+		// TODO: click (if bClick)
 
 		buf *= ampEnvBuf;
 	}

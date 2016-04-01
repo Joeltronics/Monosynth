@@ -356,6 +356,9 @@ void Oscillators::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 void Oscillators::AllocateBufs_(size_t nSamp, bool bErrorIfDifferent) {
 	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_osc2Buf.GetLength());
 	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_tempBuf.GetLength());
+	
+	// TODO: only need to give error and realloc if nSamp > buf length
+	// However, this requires some plumbing to not process entire buffer
 	if (nSamp != m_osc1Buf.GetLength())
 	{
 		if (bErrorIfDifferent) {

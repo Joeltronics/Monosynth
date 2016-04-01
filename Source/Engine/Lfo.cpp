@@ -37,9 +37,13 @@ namespace Detail {
 		return abs(phase - 0.5f) * 4.0f - 1.f;
 	}
 
-	static sample_t WaveshapeSin(sample_t phase) {
-		// TODO: analog-style tanh (approximated) sine shaping
-		return WaveshapeTri(phase);
+	static sample_t WaveshapeTriSinSqu(sample_t phase, sample_t shape) {
+		phase = abs(phase - 0.5f) * 4.0f - 1.f;
+		
+		// TODO: scale by shape
+		// TODO: tanh
+		
+		return phase;
 	}
 
 	static sample_t WaveshapeSawTriSaw(sample_t phase, sample_t shape) {
@@ -72,24 +76,24 @@ void Lfo::Reset() {
 
 void Lfo::ProcessHighFreq(
 	eventBuf_t<gateEvent_t> gateEvents /*in*/,
-	waveform_t wave /*in*/,
+	sample_t shape /*in*/,
 	sample_t freq /*in*/,
 	Buffer& buf /*inOut*/)
 {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	// TODO: antialiasing
-	ProcessLfo_(gateEvents, wave, freq, buf);
+	ProcessLfo_(gateEvents, shape, freq, buf);
 }
 
 void Lfo::ProcessHighFreqWithKbTracking(
 	eventBuf_t<gateEvent_t> gateEvents /*in*/,
-	waveform_t wave /*in*/,
+	sample_t shape /*in*/,
 	sample_t freq /*in*/,
 	Buffer& buf /*inOut*/)
 {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	// TODO: actually implement this
-	ProcessHighFreq(gateEvents, wave, freq, buf);
+	ProcessHighFreq(gateEvents, shape, freq, buf);
 }
 
 /* paramA:
@@ -103,17 +107,17 @@ void Lfo::ProcessHighFreqWithKbTracking(
  */
 void Lfo::ProcessLowFreq(
 	eventBuf_t<gateEvent_t> gateEvents /*in*/,
-	waveform_t wave /*in*/,
+	sample_t shape /*in*/,
 	sample_t freq /*in*/,
 	Buffer& outBuf /*out*/)
 {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
-	ProcessLfo_(gateEvents, wave, freq, outBuf);
+	ProcessLfo_(gateEvents, shape, freq, outBuf);
 }
 
 void Lfo::ProcessLfo_(
 	eventBuf_t<gateEvent_t> gateEvents /*in*/,
-	waveform_t wave /*in*/,
+	sample_t shape /*in*/,
 	sample_t freq /*in*/,
 	Buffer& outBuf /*out*/)
 {
@@ -127,37 +131,6 @@ void Lfo::ProcessLfo_(
 		wp[n] = m_phase;
 	}
 
-	// Waveshape
-	switch (wave) {
-	case waveShape_squ50:
-		for (size_t n = 0; n < nSamp; ++n) wp[n] = Detail::WaveshapeSqu(wp[n]);
-		break;
-	case waveShape_saw:
-		for (size_t n = 0; n < nSamp; ++n) wp[n] = Detail::WaveshapeSawUp(wp[n]);
-		break;
-	case waveShape_sawDown:
-		for (size_t n = 0; n < nSamp; ++n) wp[n] = Detail::WaveshapeSawDown(wp[n]);
-		break;
-	case waveShape_tri:
-		for (size_t n = 0; n < nSamp; ++n) wp[n] = Detail::WaveshapeTri(wp[n]);
-		break;
-	case waveShape_sin:
-		for (size_t n = 0; n < nSamp; ++n) wp[n] = Detail::WaveshapeSin(wp[n]);
-		break;
-	default:
-		// TODO: log error
-		outBuf.Clear();
-		break;
-	}
+	for (size_t n = 0; n < nSamp; ++n)
+		wp[n] = Detail::WaveshapeTriSinSqu(wp[n], shape);
 }
-
-void Lfo::ProcessSampHold(
-	eventBuf_t<gateEvent_t> gateEvents /*in*/,
-	sample_t rate /*in*/,
-	sample_t smoothing /*in*/,
-	Buffer& outBuf /*out*/)
-{
-	// TODO
-	outBuf.Clear();
-}
-

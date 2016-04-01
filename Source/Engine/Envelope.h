@@ -82,11 +82,12 @@ public:
 	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
 	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-	void SetVals(double attTime, double decTime);
+	void SetVals(double attTime, double decTime, bool bLooped);
 
 private:
-	// TODO
+	// TODO: implementation
 	double m_sampleRate;
+	bool m_bLooped;
 };
 
 // Full ADSR envelope

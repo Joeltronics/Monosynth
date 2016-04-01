@@ -102,7 +102,8 @@ namespace Engine {
 		waveShape_triSinSqu,
 		waveShape_sampleHold,
 		waveShape_envelope,
-		waveShape_envelopeDown
+		waveShape_envelopeDown,
+		waveShape_envelopeLooped
 	};
 }
 

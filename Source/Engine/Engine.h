@@ -89,10 +89,8 @@ private:
 
 	Engine::AdsrEnvelope m_filtEnv;
 
-	Engine::Lfo m_lfo1;
-	Engine::Lfo m_lfo2;
-	Engine::AttackEnvelope m_mod2LfoAttack;
-	Engine::AdEnvelope m_mod2env;
+	Engine::Lfo m_mod1;
+	Engine::AdEnvelope m_mod2;
 
 	Engine::Oscillators m_oscs;
 

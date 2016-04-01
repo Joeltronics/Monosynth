@@ -64,13 +64,6 @@ private:
 	// Will populate m_osc2Buf
 	// If params has sync enabled, m_tempBuf must be populated with osc 1 phase before this is called
 	void ProcessOsc2_(Buffer& outBuf, Buffer const& freqBuf, Params const& params);
-
-	// Less vectorized
-	// Necessary if both sync and cross mod enabled
-	// Not yet implemented
-#if 0
-	void ProcessBothOscsTogether_(Buffer& outBuf, Buffer& freqPhaseBuf1, Buffer& freqPhaseBuf2, Params const& params);
-#endif
 	
 	void ProcessSub_(Buffer& outBuf, Buffer const& oscFreqBuf, Params const& params);
 

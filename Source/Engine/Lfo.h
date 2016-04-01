@@ -33,7 +33,7 @@ public:
 	 */
 	void ProcessHighFreq(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		waveform_t wave /*in*/,
+		sample_t shape /*in*/,
 		sample_t freq /*in*/,
 		Buffer& buf /*out*/);
 
@@ -47,7 +47,7 @@ public:
 	 */
 	void ProcessHighFreqWithKbTracking(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		waveform_t wave /*in*/,
+		sample_t shape /*in*/,
 		sample_t freq /*in*/,
 		Buffer& buf /*inOut*/);
 
@@ -58,24 +58,15 @@ public:
 	 */
 	void ProcessLowFreq(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		waveform_t wave /*in*/,
+		sample_t shape /*in*/,
 		sample_t freq /*in*/,
-		Buffer& outBuf /*out*/);
-
-	/* ProcessSampHold
-	 * Processes sample & hold
-	 */
-	void ProcessSampHold(
-		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		sample_t rate /*in*/,
-		sample_t smoothing /*in*/,
 		Buffer& outBuf /*out*/);
 
 private:
 	
 	void ProcessLfo_(
 		eventBuf_t<gateEvent_t> gateEvents /*in*/,
-		waveform_t wave /*in*/,
+		sample_t shape /*in*/,
 		sample_t freq /*in*/,
 		Buffer& outBuf /*out*/);
 

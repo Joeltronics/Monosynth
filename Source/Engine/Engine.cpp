@@ -78,13 +78,13 @@ namespace Detail {
 
 	static waveform_t Mod2ToWave(size_t n) {
 		switch (n) {
-		case 0: return waveShape_envelope;
-		case 1: return waveShape_sampleHold;
-		case 2: return waveShape_tri;
+		case 0: return waveShape_envelopeDown;
+		case 1: return waveShape_envelope;
+		case 2: return waveShape_envelopeLooped;
 		default:
 			LOG(juce::String::formatted("Mod2ToWave, unknown wave %u", n));
 			DEBUG_ASSERT(false);
-			return waveShape_tri;
+			return waveShape_envelope;
 		}
 	}
 
@@ -190,10 +190,8 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_pitchProc.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_filtEnv.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	
-	m_lfo1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	m_lfo2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	m_mod2LfoAttack.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
-	m_mod2env.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_mod1.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
+	m_mod2.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	
 	m_oscs.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_filter.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
@@ -211,13 +209,15 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	size_t nChan = juceBuf.getNumChannels();
 
 	// Oversampled buf
+	// TODO: don't allocate this (or other buffers later) in this callback!
 	Buffer overBuf(nSampOver);
 
 	// Get params
 	float osc2Tuning = m_params.osc2coarse->GetActualValue() + m_params.osc2fine->GetActualValue() + 12.0f*float(m_params.osc2oct->GetInt());
 	float outputVol = 1.0f;
 	uint32_t pitchBendAmt = 12;
-	bool bVcaEnv = m_params.vcaSource->GetInt();
+	bool bVcaEnv = (m_params.vcaSource->GetInt() == 2);
+	bool bVcaClick = (m_params.vcaSource->GetInt() == 0);
 
 	{
 		double attVal, decVal, susVal, relVal;
@@ -249,6 +249,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// 8. Effects
 	// 9. Output Volume
 
+	// TODO: need to do something about these - they alloc during callback
 	eventBuf_t<gateEvent_t> gateEvents;
 	eventBuf_t<uint8_t> noteEvents;
 	eventBuf_t<uint8_t> velEvents;
@@ -301,7 +302,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// TODO
 
 	// 7. VCA
-	m_vca.Process(overBuf, gateEvents, filtEnvBuf, bVcaEnv);
+	m_vca.Process(overBuf, gateEvents, filtEnvBuf, bVcaEnv, bVcaClick);
 
 	// Downsample to native sample rate
 	// Technically we could do this before VCA, but the envelope is at oversampled rate
@@ -323,8 +324,8 @@ void SynthEngine::ProcessMod_(
 	Buffer& mod2Buf /*out*/)
 {
 	// TODO: LFO1 high freq range & KB tracking
-	waveform_t lfo1wave = waveShape_triSinSqu;
-	waveform_t mod2typeWave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
+	float mod1shape = m_params.mod1shape->GetActualValue();
+	waveform_t mod2wave = Detail::Mod2ToWave(m_params.mod2type->GetInt());
 
 	bool blfo1KbTrack = (m_params.mod1range->GetInt() == 2);
 	bool blfo1HighFreq = IsMod1HighFreq_();
@@ -344,41 +345,37 @@ void SynthEngine::ProcessMod_(
 	if (blfo1KbTrack) {
 		mod1Buf.Clear();
 		// TODO: put keyboard tracking data into mod1Buf
-		m_lfo1.ProcessHighFreqWithKbTracking(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+		m_mod1.ProcessHighFreqWithKbTracking(gateEvents, mod1shape, lfo1freq, mod1Buf);
 	}
 	else if (blfo1HighFreq) {
-		m_lfo1.ProcessHighFreq(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+		m_mod1.ProcessHighFreq(gateEvents, mod1shape, lfo1freq, mod1Buf);
 	}
 	else {
-		m_lfo1.ProcessLowFreq(gateEvents, lfo1wave, lfo1freq, mod1Buf);
+		m_mod1.ProcessLowFreq(gateEvents, mod1shape, lfo1freq, mod1Buf);
 	}
 
-	// TODO: if lfo2wave changes, need to reset envelope(s) and LFO
-	
-	
 	// TODO: only pass in gateEvents if LFO reset enabled (otherwise pass in empty vector)
 
-	switch (mod2typeWave) {
+	bool bLooped = (mod2wave == waveShape_envelopeLooped);
 
-	// TODO: invert if waveShape_envelopeDown
+	double mod2AttTime = Detail::EnvValToTime(mod2attack);
+	double mod2DecTime = Detail::EnvValToTime(mod2decay);
+	m_mod2.SetVals(mod2AttTime, mod2DecTime, bLooped);
+	m_mod2.Process(gateEvents, mod2Buf);
+
+	switch (mod2wave) {
+	case waveShape_envelopeDown:
+		mod2Buf *= -1.0f;
+		break;
+	case waveShape_envelopeLooped:
+		mod2Buf -= 0.5f;
+		mod2Buf *= 2.0f;
+		break;
 	case waveShape_envelope:
-	case waveShape_envelopeDown: {
-		double attTime = Detail::EnvValToTime(mod2attack);
-		double decTime = Detail::EnvValToTime(mod2decay);
-		m_mod2env.SetVals(attTime, decTime);
-		m_mod2env.Process(gateEvents, mod2Buf);
-		} break;
-
-	case waveShape_sampleHold: {
-		m_lfo2.ProcessSampHold(gateEvents, lfo2freq, mod2decay, mod2Buf);
-		} break;
-
-	default: {
-		double attTime = Detail::EnvValToTime(mod2decay);
-		m_lfo2.ProcessLowFreq(gateEvents, mod2typeWave, lfo2freq, mod2Buf);
-		m_mod2LfoAttack.SetAttack(attTime);
-		m_mod2LfoAttack.ProcessAndApply(gateEvents, mod2Buf);
-		} break;
+		break;
+	default:
+		// TODO: error
+		break;
 	}
 }
 
