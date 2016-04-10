@@ -345,7 +345,7 @@ Oscillators::~Oscillators() {}
 void Oscillators::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
 
-	AllocateBufs_(samplesPerBlock, false);
+	ReallocBufs_(samplesPerBlock);
 
 	if (sampleRate > 100e3f)
 		m_polyblepSize = 2.f;
@@ -353,23 +353,46 @@ void Oscillators::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 		m_polyblepSize = 1.f;
 }
 
-void Oscillators::AllocateBufs_(size_t nSamp, bool bErrorIfDifferent) {
+void Oscillators::ReallocBufs_(size_t nSamp) {
+
 	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_osc2Buf.GetLength());
 	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_tempBuf.GetLength());
+	size_t currLen = m_osc1Buf.GetLength();
+
+	DEBUG_ASSERT(m_osc1Buf.GetAllocLength() == m_osc2Buf.GetAllocLength());
+	DEBUG_ASSERT(m_osc1Buf.GetAllocLength() == m_tempBuf.GetAllocLength());
+	size_t allocLen = m_osc1Buf.GetAllocLength();
+
+	if (nSamp != currLen || nSamp != allocLen) {
+		// Always resize
+		m_osc1Buf.Resize(nSamp, true);
+		m_osc2Buf.Resize(nSamp, true);
+		m_tempBuf.Resize(nSamp, true);
+	}
+}
+
+void Oscillators::ResizeBufsNoRealloc_(size_t nSamp) {
 	
-	// TODO: only need to give error and realloc if nSamp > buf length
-	// However, this requires some plumbing to not process entire buffer
-	if (nSamp != m_osc1Buf.GetLength())
-	{
-		if (bErrorIfDifferent) {
+	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_osc2Buf.GetLength());
+	DEBUG_ASSERT(m_osc1Buf.GetLength() == m_tempBuf.GetLength());
+	size_t currLen = m_osc1Buf.GetLength();
+
+	DEBUG_ASSERT(m_osc1Buf.GetAllocLength() == m_osc2Buf.GetAllocLength());
+	DEBUG_ASSERT(m_osc1Buf.GetAllocLength() == m_tempBuf.GetAllocLength());
+	size_t allocLen = m_osc1Buf.GetAllocLength();
+	
+	// If already the right size, no need to do anything
+	if (nSamp != currLen) {
+
+		if (nSamp > allocLen) {
 			LOG(juce::String::formatted(
-				"WARNING: Unexpected buffer size change, was %u, now %u",
-				m_osc1Buf.GetLength(), nSamp));
+				"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
+				currLen, nSamp));
 		}
 
-		m_osc1Buf = Buffer(nSamp);
-		m_osc2Buf = Buffer(nSamp);
-		m_tempBuf = Buffer(nSamp);
+		m_osc1Buf.Resize(nSamp, false);
+		m_osc2Buf.Resize(nSamp, false);
+		m_tempBuf.Resize(nSamp, false);
 	}
 
 	m_bOsc1BufPopulated = false;
@@ -385,7 +408,7 @@ void Oscillators::Process(
 {
 	size_t const nSamp = outBuf.GetLength();
 	
-	AllocateBufs_(nSamp, true);
+	ResizeBufsNoRealloc_(nSamp);
 
 	// TODO: in some cases (osc level zero, ring off, sync off), don't need osc to be computed at all
 	// If sync, we don't need to compute entire buf, can just compute phase buf

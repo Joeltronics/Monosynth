@@ -53,7 +53,8 @@ public:
 
 private:
 
-	void AllocateBufs_(size_t nSamp, bool bErrorIfDifferent);
+	void ReallocBufs_(size_t nSamp);
+	void ResizeBufsNoRealloc_(size_t nSamp);
 
 	// ***** Processing *****
 
