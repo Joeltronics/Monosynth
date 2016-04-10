@@ -58,29 +58,6 @@ void GateEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& bu
 	m_filt.ProcessLowpass(buf);
 }
 
-// ********** AttackEnvelope ***********
-
-AttackEnvelope::AttackEnvelope() :
-	m_sampleRate(0.0)
-{}
-
-void AttackEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
-	m_sampleRate = sampleRate;
-}
-
-void AttackEnvelope::SetAttack(double attTime) {
-	// TODO
-}
-
-void AttackEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
-	// TODO
-	buf.Set(1.0f);
-}
-
-void AttackEnvelope::ProcessAndApply(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& /*inOut*/) {
-	// TODO
-}
-
 // ********** AdEnvelope ***********
 
 AdEnvelope::AdEnvelope() :
@@ -113,8 +90,6 @@ AdsrEnvelope::AdsrEnvelope() :
 void AdsrEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	
-	//UpdateRates_();
-
 	eventBuf_t<gateEvent_t>::const_iterator it = gateEvents.begin();
 
 	size_t nextEvent = (it != gateEvents.end()) ? it->time : size_t(-1);
@@ -182,40 +157,6 @@ void AdsrEnvelope::SetVals(double attTime, double decTime, double susVal, double
 
 	DEBUG_ASSERT(m_susTarget < (susVal + 0.01));
 	DEBUG_ASSERT(m_susTarget > (1.0 - k_expOvershoot - 0.01));
-}
-
-
-void AdsrEnvelope::UpdateRates_() {
-#if 0
-	float attVal = m_rkAtt.getValue();
-	float decVal = m_rkDec.getValue();
-	float relVal = m_rkRel.getValue();
-
-	// Times in seconds (log-interp 1ms to 4s)
-	double attTime = Utils::LogInterp<double>(0.001, 4.0, attVal);
-	double decTime = Utils::LogInterp<double>(0.001, 4.0, decVal);
-	double relTime = Utils::LogInterp<double>(0.001, 4.0, relVal);
-
-	m_attFreq = m_sampleRate / attTime;
-	m_decFreq = m_sampleRate / decTime;
-	m_relFreq = m_sampleRate / relTime;
-
-	sample_t susVal = m_rkSus.getValue();
-
-	m_susTarget = float(1.0 - (k_expOvershoot * (1.0 - susVal)));
-	
-	// sanity checks
-	DEBUG_ASSERT(m_attFreq > 0.0);
-	DEBUG_ASSERT(m_decFreq > 0.0);
-	DEBUG_ASSERT(m_relFreq > 0.0);
-	
-	DEBUG_ASSERT(m_attFreq < 0.25);
-	DEBUG_ASSERT(m_decFreq < 0.25);
-	DEBUG_ASSERT(m_relFreq < 0.25);
-	
-	DEBUG_ASSERT(m_susTarget < (susVal + 0.01));
-	DEBUG_ASSERT(m_susTarget > (1.0 - k_expOvershoot - 0.01));
-#endif
 }
 
 sample_t AdsrEnvelope::ProcessState_() {

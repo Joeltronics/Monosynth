@@ -54,25 +54,6 @@ private:
 	gateEvent_t m_lastGate;
 };
 
-// Envelope with just attack (which will hold at 1 until next attack)
-class AttackEnvelope : public Envelope {
-public:
-	AttackEnvelope();
-	~AttackEnvelope() {}
-	
-	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
-	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
-
-	// Scales buffer by envelope instead of outputting
-	void ProcessAndApply(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*inOut*/);
-
-	void SetAttack(double attTime);
-
-private:
-	// TODO
-	double m_sampleRate;
-};
-
 // Envelope with just attack & decay
 class AdEnvelope : public Envelope {
 public:
@@ -118,8 +99,6 @@ private:
 	sample_t StateDec_();
 	sample_t StateSus_();
 	sample_t StateRel_();
-	
-	void UpdateRates_();
 
 	Utils::OnePole m_filt;
 
