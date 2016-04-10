@@ -54,6 +54,9 @@ public:
 	
 private:
 	
+	void ReallocBufs_(size_t nSamp);
+	void ResizeBufsNoRealloc_(size_t nSamp);
+
 	void ProcessMod_(
 		eventBuf_t<gateEvent_t> const& gateEvents /*in*/,
 		Buffer& mod1Buf /*out*/,
@@ -103,6 +106,16 @@ private:
 	juce::ScopedPointer<Utils::IResampler> m_pResampler;
 
 	ParamStruct m_params;
+
+	// Buffers
+	Buffer m_mainBuf;
+	Buffer m_adsrBuf;
+	Buffer m_mod1Buf;
+	Buffer m_mod2Buf;
+	Buffer m_freqPhaseBuf1;
+	Buffer m_freqPhaseBuf2;
+	Buffer m_filtCv;
+	std::vector<std::reference_wrapper<Buffer>> m_rBufs;
 };
 
 

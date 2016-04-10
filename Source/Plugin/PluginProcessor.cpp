@@ -180,6 +180,8 @@ void MonosynthAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffe
     }
 #endif
 
+	// TODO: if we get a buffer larger than PrepareToPlay() size, make multiple calls to Process()
+
 	engine.Process(buffer, midiMessages);
 }
 

@@ -169,7 +169,15 @@ namespace Detail {
 
 SynthEngine::SynthEngine() :
 	m_lastNote(60)
-{}
+{
+	m_rBufs.push_back(m_mainBuf);
+	m_rBufs.push_back(m_adsrBuf);
+	m_rBufs.push_back(m_mod1Buf);
+	m_rBufs.push_back(m_mod2Buf);
+	m_rBufs.push_back(m_freqPhaseBuf1);
+	m_rBufs.push_back(m_freqPhaseBuf2);
+	m_rBufs.push_back(m_filtCv);
+}
 
 SynthEngine::~SynthEngine() {}
 
@@ -198,6 +206,50 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 
 	m_filtFreqCvFilt.SetFreq(k_filtCvCutoff_Hz / m_sampleRateOver);
+
+	ReallocBufs_(samplesPerBlock);
+}
+
+void SynthEngine::ReallocBufs_(size_t nSamp) {
+	
+	size_t const currLen = m_mainBuf.GetLength();
+	size_t const currAllocLen = m_mainBuf.GetAllocLength();
+
+	for (auto it = m_rBufs.begin(); it != m_rBufs.end(); ++it) {
+		DEBUG_ASSERT(it->get().GetLength() == currLen);
+		DEBUG_ASSERT(it->get().GetAllocLength() == currAllocLen);
+	}
+
+	if (nSamp != currLen || nSamp != currAllocLen) {
+		for (auto it = m_rBufs.begin(); it != m_rBufs.end(); ++it) {
+			it->get().Resize(nSamp, true);
+		}
+	}
+}
+
+void SynthEngine::ResizeBufsNoRealloc_(size_t nSamp) {
+
+	size_t const currLen = m_mainBuf.GetLength();
+	size_t const currAllocLen = m_mainBuf.GetAllocLength();
+
+	for (auto it = m_rBufs.begin(); it != m_rBufs.end(); ++it) {
+		DEBUG_ASSERT(it->get().GetLength() == currLen);
+		DEBUG_ASSERT(it->get().GetAllocLength() == currAllocLen);
+	}
+
+	// If already the right size, no need to do anything
+	if (nSamp != currLen) {
+
+		if (nSamp > currAllocLen) {
+			LOG(juce::String::formatted(
+				"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
+				currLen, nSamp));
+		}
+
+		for (auto it = m_rBufs.begin(); it != m_rBufs.end(); ++it) {
+			it->get().Resize(nSamp, false);
+		}
+	}
 }
 
 void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& midiMessages) {
@@ -208,9 +260,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	size_t nSampOver = nSampNative * m_nOversample;
 	size_t nChan = juceBuf.getNumChannels();
 
-	// Oversampled buf
-	// TODO: don't allocate this (or other buffers later) in this callback!
-	Buffer overBuf(nSampOver);
+	ResizeBufsNoRealloc_(nSampOver);
 
 	// Get params
 	float osc2Tuning = m_params.osc2coarse->GetActualValue() + m_params.osc2fine->GetActualValue() + 12.0f*float(m_params.osc2oct->GetInt());
@@ -259,21 +309,15 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	m_midiProc.Process(nSampOver, m_nOversample, midiMessages, gateEvents, noteEvents, velEvents, pitchBendEvents);
 
 	// 2. Envelope & LFO
-	Buffer filtEnvBuf(nSampOver);
-	m_filtEnv.Process(gateEvents, filtEnvBuf);
+	m_filtEnv.Process(gateEvents, m_adsrBuf);
 
-	Buffer mod1Buf(nSampOver);
-	Buffer mod2Buf(nSampOver);
-
-	ProcessMod_(gateEvents, mod1Buf, mod2Buf);
+	ProcessMod_(gateEvents, m_mod1Buf, m_mod2Buf);
 
 	// 3. Pitch
 
-	Buffer freqPhaseBuf1(nSampOver);
+	m_lastNote = Utils::EventBufToBuf<uint8_t, float>(m_lastNote, noteEvents, nSampOver, m_freqPhaseBuf1.Get());
 	
-	m_lastNote = Utils::EventBufToBuf<uint8_t, float>(m_lastNote, noteEvents, nSampOver, freqPhaseBuf1.Get());
-	
-	m_pitchProc.ProcessPitchBend(freqPhaseBuf1, pitchBendEvents, pitchBendAmt);
+	m_pitchProc.ProcessPitchBend(m_freqPhaseBuf1, pitchBendEvents, pitchBendAmt);
 
 	// TODO: pitch mod
 
@@ -282,31 +326,31 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	// - Normal (Gaussian) distribution
 	// - Consistent rate independent of buffer size
 	// - Lowpass
-	freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*k_vcoRandPitchAmt);
+	m_freqPhaseBuf1 += ((m_random.nextFloat() - 0.5f) * 2.0f*k_vcoRandPitchAmt);
 	osc2Tuning += ((m_random.nextFloat() - 0.5f) * 2.0f*k_vcoRandPitchAmt);
 
-	Buffer freqPhaseBuf2(freqPhaseBuf1);
-	freqPhaseBuf2 += osc2Tuning;
+	m_freqPhaseBuf2 = m_freqPhaseBuf1;
+	m_freqPhaseBuf2 += osc2Tuning;
 
 	// Pitch to freq
-	m_pitchProc.PitchToFreq(freqPhaseBuf1);
-	m_pitchProc.PitchToFreq(freqPhaseBuf2);
+	m_pitchProc.PitchToFreq(m_freqPhaseBuf1);
+	m_pitchProc.PitchToFreq(m_freqPhaseBuf2);
 
 	// 4. Oscillators & Mixer
-	ProcessOscsAndMixer_(overBuf, freqPhaseBuf1, freqPhaseBuf2);
+	ProcessOscsAndMixer_(m_mainBuf, m_freqPhaseBuf1, m_freqPhaseBuf2);
 
 	// 5. Filter
-	ProcessFilter_(overBuf, filtEnvBuf, mod1Buf, mod2Buf);
+	ProcessFilter_(m_mainBuf, m_adsrBuf, m_mod1Buf, m_mod2Buf);
 
 	// 6. Overdrive
 	// TODO
 
 	// 7. VCA
-	m_vca.Process(overBuf, gateEvents, filtEnvBuf, bVcaEnv, bVcaClick);
+	m_vca.Process(m_mainBuf, gateEvents, m_adsrBuf, bVcaEnv, bVcaClick);
 
 	// Downsample to native sample rate
 	// Technically we could do this before VCA, but the envelope is at oversampled rate
-	DownsampleAndCopyToStereo_(overBuf, juceBuf);
+	DownsampleAndCopyToStereo_(m_mainBuf, juceBuf);
 	
 	// 8. Effects
 	// TODO
@@ -315,7 +359,6 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 	for (size_t chan = 0; chan < nChan; ++chan) {
 		juce::FloatVectorOperations::multiply(juceBuf.getWritePointer(chan), juceBuf.getReadPointer(0), outputVol, nSampNative);
 	}
-	
 }
 
 void SynthEngine::ProcessMod_(
@@ -493,38 +536,38 @@ void SynthEngine::ProcessFilter_(
 		postFiltGain = 1.f / preFiltGain + 0.25f;
 	}
 
-	Buffer filtCv(filtCutoff_01, nSamp);
+	m_filtCv.Set(filtCutoff_01);
 	if (bEnv) {
-		filtCv.AddWithMultiply(envBuf, filtEnvAmt);
+		m_filtCv.AddWithMultiply(envBuf, filtEnvAmt);
 	}
 
 	if (bMod2) {
-		filtCv.AddWithMultiply(filtMod2Buf, filtMod2Amt);
+		m_filtCv.AddWithMultiply(filtMod2Buf, filtMod2Amt);
 	}
 
 	if (bMod1 && bMod1HighFreq) {
 		// If high freq, add mod1 *after* CV lowpass filter
 		// TODO: if high freq, then we probably want this to be linear FM, not log?
-		m_filtFreqCvFilt.ProcessLowpass(filtCv);
-		filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
+		m_filtFreqCvFilt.ProcessLowpass(m_filtCv);
+		m_filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
 	}
 	else if (bMod1) {
-		filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
-		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+		m_filtCv.AddWithMultiply(filtMod1Buf, filtMod1Amt);
+		m_filtFreqCvFilt.ProcessLowpass(m_filtCv);
 	}
 	else {
-		m_filtFreqCvFilt.ProcessLowpass(filtCv);
+		m_filtFreqCvFilt.ProcessLowpass(m_filtCv);
 	}
 
 	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance
 	// NOTE: at this point, filtCv can exceed range [0,1]. This is acceptable.
-	Utils::FastLogInterp(20.0f, 20000.0f, filtCv);
-	filtCv /= m_sampleRateOver;
+	Utils::FastLogInterp(20.0f, 20000.0f, m_filtCv);
+	m_filtCv /= m_sampleRateOver;
 
 	// Do the processing!
 
 	buf *= preFiltGain;
-	m_filter.Process(buf, filtCv, filtRes, filtModel, nPoles);
+	m_filter.Process(buf, m_filtCv, filtRes, filtModel, nPoles);
 	buf *= postFiltGain;
 }
 
