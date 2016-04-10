@@ -195,7 +195,7 @@ void ResamplingUnitTest::runTest()
         
         beginTest("Testing NaiveDownsampler");
         {
-            Buffer outBuf(2, 4);
+            Buffer outBuf(4);
         
             float expVals0[4] = {inValsDown0[0], inValsDown0[4], inValsDown0[8], inValsDown0[12]};
             float expVals1[4] = {inValsDown1[0], inValsDown1[4], inValsDown1[8], inValsDown1[12]};

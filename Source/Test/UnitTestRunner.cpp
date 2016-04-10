@@ -26,6 +26,7 @@
 #include "JuceHeader.h"
 
 #include "Utils/Test/DspUtilsUnitTest.h"
+#include "Utils/Test/BufferUnitTest.h"
 #include "Utils/Test/SlewFilterUnitTest.h"
 #include "Utils/Test/ResamplingUnitTest.h"
 #include "Utils/Test/OnePoleTest.h"
@@ -35,12 +36,13 @@
 #include "Engine/Test/PitchProcessorUnitTest.h"
 
 #include "Engine/Test/EngineTest.h"
-#include "Engine/Test/OscillatorTest.h"
+//#include "Engine/Test/OscillatorTest.h"
 
 namespace Test {
     
     // Utils unit tests
     static DspUtilsUnitTest s_dspUtilsTest;
+	static BufferUnitTest s_bufferTest;
     static SlewFilterUnitTest s_slewFilterTest;
     static ResamplingUnitTest s_resampTest;
     
@@ -51,7 +53,7 @@ namespace Test {
 
     // Performance tests
 	static EngineTest s_engineTest;
-	static OscillatorTest s_oscTest;
+	//static OscillatorTest s_oscTest;
     static OnePoleTest s_onePoleTest;
     
     void RunAllUnitTests() {

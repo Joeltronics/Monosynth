@@ -11,10 +11,6 @@
       </GROUP>
       <GROUP id="{6264D7E2-3BA0-53D2-2125-7F7904BBA979}" name="Engine">
         <GROUP id="{898E51B8-EE78-A81D-8F41-68FC60F81C54}" name="Test">
-          <FILE id="Fljj3Z" name="OscillatorTest.cpp" compile="1" resource="0"
-                file="Source/Engine/Test/OscillatorTest.cpp"/>
-          <FILE id="tsyyKy" name="OscillatorTest.h" compile="0" resource="0"
-                file="Source/Engine/Test/OscillatorTest.h"/>
           <FILE id="cVAFP8" name="EngineTest.cpp" compile="1" resource="0" file="Source/Engine/Test/EngineTest.cpp"/>
           <FILE id="BulYFU" name="EngineTest.h" compile="0" resource="0" file="Source/Engine/Test/EngineTest.h"/>
           <FILE id="hPdJgW" name="EnvelopeUnitTest.cpp" compile="1" resource="0"
@@ -32,6 +28,8 @@
         </GROUP>
         <FILE id="A32Zw1" name="Engine.cpp" compile="1" resource="0" file="Source/Engine/Engine.cpp"/>
         <FILE id="tC6NZh" name="Engine.h" compile="0" resource="0" file="Source/Engine/Engine.h"/>
+        <FILE id="bw7K2h" name="Oscillators.cpp" compile="1" resource="0" file="Source/Engine/Oscillators.cpp"/>
+        <FILE id="BCv7ut" name="Oscillators.h" compile="0" resource="0" file="Source/Engine/Oscillators.h"/>
         <FILE id="Ti52aW" name="Filter.cpp" compile="1" resource="0" file="Source/Engine/Filter.cpp"/>
         <FILE id="B3K61j" name="Filter.h" compile="0" resource="0" file="Source/Engine/Filter.h"/>
         <FILE id="QMVRz2" name="Lfo.cpp" compile="1" resource="0" file="Source/Engine/Lfo.cpp"/>
@@ -45,8 +43,6 @@
               file="Source/Engine/PitchProcessor.cpp"/>
         <FILE id="B7YblA" name="PitchProcessor.h" compile="0" resource="0"
               file="Source/Engine/PitchProcessor.h"/>
-        <FILE id="cfBPJR" name="Oscillator.cpp" compile="1" resource="0" file="Source/Engine/Oscillator.cpp"/>
-        <FILE id="l276om" name="Oscillator.h" compile="0" resource="0" file="Source/Engine/Oscillator.h"/>
         <FILE id="VcW4K0" name="Vca.cpp" compile="1" resource="0" file="Source/Engine/Vca.cpp"/>
         <FILE id="g0qeEJ" name="Vca.h" compile="0" resource="0" file="Source/Engine/Vca.h"/>
       </GROUP>
@@ -61,6 +57,10 @@
         <FILE id="RjCGyu" name="TimestampedEvent.h" compile="0" resource="0"
               file="Source/Utils/TimestampedEvent.h"/>
         <GROUP id="{F0BE6725-E4FC-E47F-00B9-C64A8F613844}" name="Test">
+          <FILE id="L0QKDo" name="BufferUnitTest.cpp" compile="1" resource="0"
+                file="Source/Utils/Test/BufferUnitTest.cpp"/>
+          <FILE id="fHhRjv" name="BufferUnitTest.h" compile="0" resource="0"
+                file="Source/Utils/Test/BufferUnitTest.h"/>
           <FILE id="rnnQ3S" name="OnePoleTest.cpp" compile="1" resource="0" file="Source/Utils/Test/OnePoleTest.cpp"/>
           <FILE id="vgzf0p" name="OnePoleTest.h" compile="0" resource="0" file="Source/Utils/Test/OnePoleTest.h"/>
           <FILE id="aH92dp" name="ResamplingUnitTest.cpp" compile="1" resource="0"

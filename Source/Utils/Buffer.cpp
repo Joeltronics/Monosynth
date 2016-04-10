@@ -24,7 +24,7 @@
 
 #include "Utils/ApproxEqual.h"
 
-namespace Utils {
+using namespace Utils;
 
 // Most member functions are inlined in Buffer.h
 
@@ -32,6 +32,7 @@ namespace Utils {
 
 // Unallocated constructor
 Buffer::Buffer() :
+	m_allocLen(0),
 	m_len(0),
 	m_p(0),
 	m_bOwnsBuf(false)
@@ -39,13 +40,25 @@ Buffer::Buffer() :
 
 // Uninitialized constructor
 Buffer::Buffer(size_t len) :
+	m_allocLen(len),
 	m_len(len),
 	m_p(new sample_t[len]),
 	m_bOwnsBuf(true)
 {}
 
+// Uninitialized constructor
+Buffer::Buffer(size_t len, size_t allocLen) :
+	m_allocLen(allocLen),
+	m_len(len),
+	m_p(new sample_t[allocLen]),
+	m_bOwnsBuf(true)
+{
+	DEBUG_ASSERT(len <= allocLen);
+}
+
 // Initialized constructor
 Buffer::Buffer(sample_t val, size_t len) :
+	m_allocLen(len),
 	m_len(len),
 	m_p(new sample_t[len]),
 	m_bOwnsBuf(true)
@@ -56,21 +69,40 @@ Buffer::Buffer(sample_t val, size_t len) :
 		Set(val);
 }
 
+// Initialized constructor
+Buffer::Buffer(sample_t val, size_t len, size_t allocLen) :
+	m_allocLen(allocLen),
+	m_len(len),
+	m_p(new sample_t[allocLen]),
+	m_bOwnsBuf(true)
+{
+	DEBUG_ASSERT(len <= allocLen);
+	if (val == 0.0f)
+		Clear();
+	else
+		Set(val);
+}
+
 // Move constructor
 Buffer::Buffer(Buffer && other) :
+	m_allocLen(other.m_allocLen),
 	m_len(other.m_len),
 	m_p(other.m_p),
 	m_bOwnsBuf(true)
 {
+	other.m_allocLen = 0;
 	other.m_len = 0;
 	other.m_p = 0;
 	other.m_bOwnsBuf = false;
 }
 
+#if ALLOW_ALLOC
+
 // Copy constructor
 Buffer::Buffer(Buffer const& other) :
 	m_len(other.GetLength()),
-	m_p(new sample_t[m_len]),
+	m_allocLen(other.GetAllocLength()),
+	m_p(new sample_t[m_allocLen]),
 	m_bOwnsBuf(true)
 {
 	juce::FloatVectorOperations::copy(m_p, other.GetConst(), m_len);
@@ -79,15 +111,19 @@ Buffer::Buffer(Buffer const& other) :
 // Copy with gain
 Buffer::Buffer(Buffer const& other, sample_t gain) :
 	m_len(other.GetLength()),
-	m_p(new sample_t[m_len]),
+	m_allocLen(other.GetAllocLength()),
+	m_p(new sample_t[m_allocLen]),
 	m_bOwnsBuf(true)
 {
 	juce::FloatVectorOperations::copyWithMultiply(m_p, other.GetConst(), gain, m_len);
 }
 
+#endif
+
 // Using preallocated block
 Buffer::Buffer(sample_t* buf, size_t len) :
 	m_len(len),
+	m_allocLen(len),
 	m_p(buf),
 	m_bOwnsBuf(false)
 {}
@@ -98,21 +134,29 @@ Buffer::~Buffer()
 	if (m_bOwnsBuf) delete[] m_p;
 }
 
+// ***** Resizing & allocating functions *****
 
-// ***** Private alloc functions *****
+void Buffer::Resize(size_t newLen, bool bForceRealloc) {
+
+	if (bForceRealloc || newLen > m_allocLen) {
+		Dealloc_();
+		Alloc_(newLen);
+	}
+
+	m_len = newLen;
+}
 
 void Buffer::Dealloc_() {
 	if (m_bOwnsBuf) delete[] m_p;
 	m_p = 0;
 	m_len = 0;
+	m_allocLen = 0;
 	m_bOwnsBuf = false;
 }
 
-// Always reallocates - usually want to check if (m_len == newLen) first
-void Buffer::Realloc_(size_t newLen) {
-	Dealloc_();
-	m_len = newLen;
-	m_p = new sample_t[m_len];
+void Buffer::Alloc_(size_t newAllocLen) {
+	m_allocLen = newAllocLen;
+	m_p = new sample_t[m_allocLen];
 	m_bOwnsBuf = true;
 }
 
@@ -122,6 +166,7 @@ void Buffer::Set(sample_t* buf, size_t len) {
 	Dealloc_();
 	m_p = buf;
 	m_len = len;
+	m_allocLen = len;
 	m_bOwnsBuf = false;
 }
 
@@ -130,19 +175,23 @@ void Buffer::MoveFrom(Buffer && other) {
 	if (m_p == other.m_p) return;
 
 	Dealloc_();
-	m_len = other.m_len;
+	
 	m_p = other.m_p;
 
 	m_bOwnsBuf = other.m_bOwnsBuf;
 	other.m_bOwnsBuf = false;
+	
+	m_allocLen = other.m_allocLen;
+	other.m_allocLen = 0;
+
+	m_len = other.m_len;
+	other.m_len = 0;
 }
 
 // ***** Operators: (Approximate) equality *****
 
-bool operator==(Buffer const& lhs, Buffer const& rhs)
+bool Utils::operator==(Buffer const& lhs, Buffer const& rhs)
 	{ return Utils::ApproxEqual(lhs, rhs); }
 
-bool operator!=(Buffer const& lhs, Buffer const& rhs)
+bool Utils::operator!=(Buffer const& lhs, Buffer const& rhs)
 	{ return !Utils::ApproxEqual(lhs, rhs); }
-
-} // namespace Utils
