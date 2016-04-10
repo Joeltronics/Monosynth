@@ -24,6 +24,8 @@
 
 #include "Types.h"
 
+#include "Utils/Logger.h"
+
 #include <cmath>
 
 namespace Engine {
@@ -42,13 +44,27 @@ PitchProcessor::PitchProcessor() :
 PitchProcessor::~PitchProcessor()
 {}
 
-void PitchProcessor::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
+void PitchProcessor::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
 	m_pitchBendFilt.SetFreq(k_pbLowpassFreq / sampleRate);
+
+	m_pitchBendBuf.Resize(samplesPerBlock, true);
 }
 
 void PitchProcessor::ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uint16_t> const& pbEvents, uint32_t pbAmt) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
+
+	size_t const nSamp = pitchBuf.GetLength();
+
+	if (nSamp > m_pitchBendBuf.GetAllocLength()) {
+		LOG(juce::String::formatted(
+			"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
+			m_pitchBendBuf.GetAllocLength(), nSamp));
+	}
+
+	if (m_pitchBendBuf.GetLength() != nSamp) {
+		m_pitchBendBuf.Resize(nSamp, false);
+	}
 
 	std::function<float(uint16_t)> mappingFunc =
 		[pbAmt](uint16_t pb) -> float
@@ -73,19 +89,18 @@ void PitchProcessor::ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uin
 		val *= float(pbAmt);
 		return val;
 	};
-
-	Buffer pbBuf(pitchBuf.GetLength());
 	
 	m_lastPitchBend = Utils::EventBufToBuf<uint16_t, float>(
-		m_lastPitchBend, pbEvents, pbBuf.GetLength(), pbBuf.Get(), mappingFunc);
+		m_lastPitchBend, pbEvents, nSamp, m_pitchBendBuf.Get(), mappingFunc);
 
-	m_pitchBendFilt.ProcessLowpass(pbBuf);
+	m_pitchBendFilt.ProcessLowpass(m_pitchBendBuf);
 
-	pitchBuf += pbBuf;
+	pitchBuf += m_pitchBendBuf;
 }
 
 void PitchProcessor::PitchToFreq(Buffer& buf) {
 	float* p = buf.Get();
+	// TODO: vectorize this
 	for (size_t n = 0; n < buf.GetLength(); ++n) {
 		p[n] = PitchToNormFreq(p[n]);
 	}
@@ -96,6 +111,7 @@ void PitchProcessor::PitchToFreq(Buffer const& inBuf, Buffer& outBuf) {
 	float const* pIn = inBuf.GetConst();
 	float* pOut = outBuf.Get();
 
+	// TODO: vectorize this
 	for (size_t n = 0; n < inBuf.GetLength(); ++n) {
 		pOut[n] = PitchToNormFreq(pIn[n]);
 	}

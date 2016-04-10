@@ -21,12 +21,15 @@
 */
 
 #include "Vca.h"
+#include "Utils/Logger.h"
 
 namespace Engine {
 
 void Vca::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
 	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
+
+	m_ampEnvBuf.Resize(samplesPerBlock, true);
 }
 
 void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv, bool bClick) {
@@ -37,13 +40,26 @@ void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer
 		buf *= env;
 	}
 	else {
-		// TODO: don't alloc!
-		Buffer ampEnvBuf(buf.GetLength());
-		m_ampEnv.Process(gateEvents, ampEnvBuf);
+		
+		size_t const nSamp = buf.GetLength();
+		
+		if (nSamp > m_ampEnvBuf.GetAllocLength()) {
+			LOG(juce::String::formatted(
+				"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
+				m_ampEnvBuf.GetAllocLength(), nSamp));
+		}
+
+		if (m_ampEnvBuf.GetLength() != nSamp) {
+			m_ampEnvBuf.Resize(nSamp, false);
+		}
+		
+		// FIXME: this doesn't process when bUseEnv, so if switching bUseEnv while note is held down, note may disappear!
+		// (This will probably get fixed when eventBuf_t gets fixed)
+		m_ampEnv.Process(gateEvents, m_ampEnvBuf);
 
 		// TODO: click (if bClick)
 
-		buf *= ampEnvBuf;
+		buf *= m_ampEnvBuf;
 	}
 }
 

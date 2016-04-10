@@ -41,6 +41,7 @@ public:
 private:
 	double m_sampleRate;
 	GateEnvelope m_ampEnv;
+	Buffer m_ampEnvBuf;
 };
 
 }
