@@ -129,7 +129,117 @@ private:
 
 	sample_t* m_p;
 	bool m_bOwnsBuf; /// whether or not to delete on destruction/reallocation
-};
+
+}; // class Buffer
+
+/*
+ * This class is a container for either a buffer or a sample_t
+ * (In reality, it always contains both, so that it doesn't have to realloc)
+ * Use this in places where a buffer is likely to be full of the same repeated value
+ * 
+ * You must set this with SetConstVal() or SetBuffer() before getting the value,
+ * otherwise it will assert
+ */
+class BufferOrVal {
+public:
+	BufferOrVal(); // Unallocated
+	BufferOrVal(size_t len); // Allocated, uninitialized
+	BufferOrVal(size_t len, size_t allocLen); // Allocated, uninitialized
+	BufferOrVal(sample_t val, size_t len); // Allocate and initialize to value
+	BufferOrVal(sample_t val, size_t len, size_t allocLen); // Allocate and initialize to value
+	
+	~BufferOrVal();
+
+	inline bool IsVal() const { return m_bIsVal; }
+	
+	sample_t GetVal() const;
+	void SetVal(sample_t val);
+	inline void SetBuffer() { m_bIsVal = false; }
+
+	Buffer& GetBuf();
+	Buffer const& GetBuf() const;
+
+	sample_t* GetBufPtr();
+	sample_t const* GetBufConstPtr() const;
+	size_t GetLength() const;
+	size_t GetAllocLength() const;
+
+	// Will cause realloc if newLen > allocLen, or if bForceRealloc
+	inline void Resize(size_t newLen, bool bForceRealloc = false);
+
+private:
+
+	bool m_bIsVal;
+	sample_t m_val;
+	Buffer m_buf;
+
+}; // class BufferOrVal
+
+// ***** Constructors & Destructors *****
+
+// Unallocated
+inline BufferOrVal::BufferOrVal() :
+	m_bIsVal(true), m_val(0.f), m_buf()
+{}
+
+// Allocated, uninitialized
+inline BufferOrVal::BufferOrVal(size_t len) :
+	m_bIsVal(true), m_val(0.f), m_buf(len)
+{}
+
+// Allocated, uninitialized
+inline BufferOrVal::BufferOrVal(size_t len, size_t allocLen) :
+	m_bIsVal(true), m_val(0.f), m_buf(len, allocLen)
+{}
+
+// Allocate and initialize to value
+inline BufferOrVal::BufferOrVal(sample_t val, size_t len) :
+	m_bIsVal(true), m_val(val), m_buf(len)
+{}
+
+// Allocate and initialize to value
+inline BufferOrVal::BufferOrVal(sample_t val, size_t len, size_t allocLen) :
+	m_bIsVal(true), m_val(val), m_buf(len, allocLen)
+{}
+
+inline BufferOrVal::~BufferOrVal() {}
+
+// ***** Other BufferOrVal methods *****
+
+inline sample_t BufferOrVal::GetVal() const {
+	DEBUG_ASSERT(m_bIsVal);
+	return m_val;
+}
+
+inline void BufferOrVal::SetVal(sample_t val) {
+	m_val = val;
+	m_bIsVal = true;
+}
+
+inline Buffer& BufferOrVal::GetBuf() {
+	DEBUG_ASSERT(!m_bIsVal);
+	return m_buf;
+}
+
+inline Buffer const& BufferOrVal::GetBuf() const {
+	DEBUG_ASSERT(!m_bIsVal); 
+	return m_buf;
+}
+
+inline sample_t* BufferOrVal::GetBufPtr() {
+	DEBUG_ASSERT(!m_bIsVal);
+	return m_buf.Get();
+}
+
+inline sample_t const* BufferOrVal::GetBufConstPtr() const {
+	DEBUG_ASSERT(!m_bIsVal);
+	return m_buf.GetConst();
+}
+
+inline size_t BufferOrVal::GetLength() const { return m_buf.GetLength(); }
+inline size_t BufferOrVal::GetAllocLength() const { return m_buf.GetAllocLength(); }
+
+inline void BufferOrVal::Resize(size_t newLen, bool bForceRealloc) { m_buf.Resize(newLen, bForceRealloc); }
 
 // ***** Getters & setters *****
 
