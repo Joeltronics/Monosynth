@@ -80,6 +80,19 @@ static float WaveshapeSaw(sample_t phase, sample_t freq) {
 /**
 * @param[in] phase: in range [0,1)
 * @param[in] freq: normalized, i.e. phase increment per sample
+* @param[in] mod: mod value - typically [0,0.5] but can be any range. 0 or 1 is regular saw, 0.5 is octave up
+*/
+static float WaveshapeSaw(sample_t phase, sample_t freq, sample_t mod) {
+	sample_t secondPhase = phase + mod;
+	secondPhase = fmod(secondPhase, 1.0f);
+	if (secondPhase < 0.0f) secondPhase += 1.0f;
+	return 0.5f * (WaveshapeSaw(phase, freq) + WaveshapeSaw(secondPhase, freq));
+}
+
+/**
+* @param[in] phase: in range [0,1)
+* @param[in] freq: normalized, i.e. phase increment per sample
+* @param[in] duty: duty cycle, 0-1
 */
 static float WaveshapeRect(sample_t phase, sample_t freq, sample_t duty) {
 
@@ -115,6 +128,34 @@ const float k_halfTriWaveAmpl = 0.5f*k_triWaveAmpl;
 */
 static float WaveshapeTri(sample_t phase) {
 	return abs(phase - 0.5f) * k_doubleTriWaveAmpl - k_halfTriWaveAmpl;
+}
+
+/**
+* @param[in] phase: in range [0,1)
+* @param[in] freq: normalized, i.e. phase increment per sample
+* @param[in] mod: mod value - typically [0,0.5] but can be any range. 0 or 1 is regular tri, 0.5 is octave up
+*/
+static float WaveshapeTri(sample_t phase, sample_t mod) {
+	
+	sample_t tri = abs(phase - 0.5f) * 2.0f;
+	
+	// Now tri has range [0,1.0)
+	
+	tri -= mod;
+
+	// Now tri has range:
+	//   Mod 0.0: [0.0,1.0)
+	//   Mod 0.5: [-0.5,0.5)
+	//   Mod 1.0: [-1.0,0.0)
+
+	tri = fabs(tri);
+
+	// Now tri has range:
+	//   Mod 0.0: [0.0,1.0)
+	//   Mod 0.5: [0.0,0.5)
+	//   Mod 1.0: [0.0,1.0)
+
+	return tri * k_triWaveAmpl - k_halfTriWaveAmpl;
 }
 
 static void ProcessOsc_(
@@ -212,11 +253,11 @@ static void ProcessOscPhaseOut_(
 	register sample_t phase = rPhase; // See above for comments about this optimization
 
 	if (wave == waveShape_saw) {
-		// TODO: shape control
+		shape *= 0.5f;
 		for (size_t n = 0; n < nSamp; ++n) {
 
 			sample_t f = pFreq[n];  // This is actually next freq (because we increment phase at end of loop)
-			pAudio[n] = Detail::WaveshapeSaw(phase, f * polyblepSize);
+			pAudio[n] = Detail::WaveshapeSaw(phase, f * polyblepSize, shape);
 			pPhase[n] = phase;
 			phase = fmod(phase + f, 1.0f);
 		}
@@ -234,14 +275,14 @@ static void ProcessOscPhaseOut_(
 	}
 	else if (wave == waveShape_tri) {
 		// TODO: since this doesn't use PolyBlep, could use Utils::FreqToPhase and then vectorize WaveshapeTri
+		shape *= 0.5f;
 		for (size_t n = 0; n < nSamp; ++n) {
 
 			sample_t f = pFreq[n]; // next freq (see above)
-			pAudio[n] = Detail::WaveshapeTri(phase);
+			pAudio[n] = Detail::WaveshapeTri(phase, shape);
 			pPhase[n] = phase;
 			phase = fmod(phase + f, 1.0f);
 		}
-		// TODO: shape control (foldback)
 	}
 	else {
 		DEBUG_ASSERT(false);
