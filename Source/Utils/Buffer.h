@@ -154,6 +154,7 @@ private:
 class BufferOrVal {
 public:
 	BufferOrVal(); // Unallocated
+	BufferOrVal(sample_t val); // Unallocated, but set to val
 	BufferOrVal(size_t len); // Allocated, uninitialized
 	BufferOrVal(size_t len, size_t allocLen); // Allocated, uninitialized
 	BufferOrVal(sample_t val, size_t len); // Allocate and initialize to value
@@ -216,6 +217,11 @@ private:
 // Unallocated
 inline BufferOrVal::BufferOrVal() :
 	m_bIsVal(true), m_val(0.f), m_buf()
+{}
+
+// Unallocated, but set to val
+inline BufferOrVal::BufferOrVal(sample_t val) :
+	m_bIsVal(true), m_val(val), m_buf()
 {}
 
 // Allocated, uninitialized
