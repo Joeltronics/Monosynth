@@ -35,6 +35,8 @@
 
 namespace Utils {
 
+class BufferOrVal;
+
 class Buffer {
 	// Most member functions inlined below
 public:
@@ -78,6 +80,7 @@ public:
 
 	// ***** Operators *****
 
+	void AddWithMultiply(BufferOrVal const& other, sample_t multiplier);
 	void AddWithMultiply(Buffer const& other, sample_t multiplier);
 
 	// move & copy
@@ -93,12 +96,16 @@ public:
 	friend bool operator!=(Buffer const& lhs, Buffer const& rhs);
 
 	// math in place
+	Buffer& operator+=(BufferOrVal const& other);
 	Buffer& operator+=(Buffer const& other);
 	Buffer& operator+=(sample_t val);
+	Buffer& operator-=(BufferOrVal const& other);
 	Buffer& operator-=(Buffer const& other);
 	Buffer& operator-=(sample_t val);
+	Buffer& operator*=(BufferOrVal const& other);
 	Buffer& operator*=(Buffer const& other);
 	Buffer& operator*=(sample_t val);
+	Buffer& operator/=(BufferOrVal const& other);
 	Buffer& operator/=(Buffer const& other); /// warning: slower, because there's no juce::FloatVectorOperations::divide
 	Buffer& operator/=(sample_t val); /// not slower - calculates 1/val and then multiplies
 
@@ -134,11 +141,15 @@ private:
 
 /*
  * This class is a container for either a buffer or a sample_t
- * (In reality, it always contains both, so that it doesn't have to realloc)
  * Use this in places where a buffer is likely to be full of the same repeated value
+ *
+ * In reality, it actually contains both a buffer and a sample_t so that it doesn't
+ * have to realloc - but it should be treated as if only one or the other is valid at
+ * any time. You may get an assert if you violate one of these requirements:
+ *   - On reading, you must check IsVal() before GetVal() or GetBuf()
+ *   - On writing, you must either use SetVal(), or call SetBuffer() and then GetBuf()
  * 
- * You must set this with SetConstVal() or SetBuffer() before getting the value,
- * otherwise it will assert
+ * On reallocating, can call functions on BufferOrVal directly
  */
 class BufferOrVal {
 public:
@@ -151,24 +162,49 @@ public:
 	~BufferOrVal();
 
 	inline bool IsVal() const { return m_bIsVal; }
-	
-	sample_t GetVal() const;
 	void SetVal(sample_t val);
 	inline void SetBuffer() { m_bIsVal = false; }
 
+	// If IsVal(), Takes val and copies it into buffer. Also sets this as buffer.
+	void ConvertValToBuf();
+
+	// ***** Functions that should only be called if IsVal() *****
+	sample_t GetVal() const;
+	
+	// ***** Functions that should only be called if !IsVal() *****
 	Buffer& GetBuf();
 	Buffer const& GetBuf() const;
-
 	sample_t* GetBufPtr();
 	sample_t const* GetBufConstPtr() const;
+
+	// ***** Allocation-related functions (safe to call regardless of Val/Buf) *****
+
 	size_t GetLength() const;
 	size_t GetAllocLength() const;
 
 	// Will cause realloc if newLen > allocLen, or if bForceRealloc
 	inline void Resize(size_t newLen, bool bForceRealloc = false);
 
-private:
+	// ***** Operators *****
 
+	// math in place
+	void AddWithMultiply(BufferOrVal const& other, sample_t multiplier);
+	void AddWithMultiply(Buffer const& other, sample_t multiplier);
+	BufferOrVal& operator+=(BufferOrVal const& other);
+	BufferOrVal& operator+=(Buffer const& other);
+	BufferOrVal& operator+=(sample_t val);
+	BufferOrVal& operator-=(BufferOrVal const& other);
+	BufferOrVal& operator-=(Buffer const& other);
+	BufferOrVal& operator-=(sample_t val);
+	BufferOrVal& operator*=(BufferOrVal const& other);
+	BufferOrVal& operator*=(Buffer const& other);
+	BufferOrVal& operator*=(sample_t val);
+	BufferOrVal& operator/=(BufferOrVal const& other);
+	BufferOrVal& operator/=(Buffer const& other);
+	BufferOrVal& operator/=(sample_t val);
+
+private:
+	
 	bool m_bIsVal;
 	sample_t m_val;
 	Buffer m_buf;
@@ -240,6 +276,13 @@ inline size_t BufferOrVal::GetLength() const { return m_buf.GetLength(); }
 inline size_t BufferOrVal::GetAllocLength() const { return m_buf.GetAllocLength(); }
 
 inline void BufferOrVal::Resize(size_t newLen, bool bForceRealloc) { m_buf.Resize(newLen, bForceRealloc); }
+
+inline void BufferOrVal::ConvertValToBuf() {
+	if (m_bIsVal) {
+		m_buf.Set(m_val);
+		m_bIsVal = false;
+	}
+}
 
 // ***** Getters & setters *****
 
@@ -322,6 +365,13 @@ inline void Buffer::AddWithMultiply(Buffer const& other, sample_t multiplier) {
 	juce::FloatVectorOperations::addWithMultiply(m_p, other.GetConst(), multiplier, m_len);
 }
 
+inline Buffer& Buffer::operator+=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this += other.GetVal();
+	else
+		return *this += other.GetBuf();
+}
+
 inline Buffer& Buffer::operator+=(Buffer const& other) {
 	DEBUG_ASSERT(m_len == other.m_len);
 	juce::FloatVectorOperations::add(m_p, other.GetConst(), m_len);
@@ -331,6 +381,13 @@ inline Buffer& Buffer::operator+=(Buffer const& other) {
 inline Buffer& Buffer::operator+=(sample_t val) {
 	juce::FloatVectorOperations::add(m_p, val, m_len);
 	return *this;
+}
+
+inline Buffer& Buffer::operator-=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this -= other.GetVal();
+	else
+		return *this -= other.GetBuf();
 }
 
 inline Buffer& Buffer::operator-=(Buffer const& other) {
@@ -344,6 +401,13 @@ inline Buffer& Buffer::operator-=(sample_t val) {
 	return *this;
 }
 
+inline Buffer& Buffer::operator*=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this *= other.GetVal();
+	else
+		return *this *= other.GetBuf();
+}
+
 inline Buffer& Buffer::operator*=(Buffer const& other) {
 	DEBUG_ASSERT(m_len == other.m_len);
 	juce::FloatVectorOperations::multiply(m_p, other.GetConst(), m_len);
@@ -355,6 +419,13 @@ inline Buffer& Buffer::operator*=(sample_t val) {
 	return *this;
 }
 
+inline Buffer& Buffer::operator/=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this /= other.GetVal();
+	else
+		return *this /= other.GetBuf();
+}
+
 inline Buffer& Buffer::operator/=(Buffer const& other) {
 	DEBUG_ASSERT(m_len == other.m_len);
 	for (size_t n = 0; n < m_len; ++n)
@@ -364,6 +435,104 @@ inline Buffer& Buffer::operator/=(Buffer const& other) {
 
 inline Buffer& Buffer::operator/=(sample_t val) {
 	juce::FloatVectorOperations::multiply(m_p, sample_t(1.0) / val, m_len);
+	return *this;
+}
+
+// math in place
+inline void BufferOrVal::AddWithMultiply(BufferOrVal const& other, sample_t multiplier) {
+	
+	if (!other.IsVal()) {
+		// Other one is buffer - defer to other function
+		AddWithMultiply(other.GetBuf(), multiplier);
+	}
+	else if (m_bIsVal) {
+		// Val * Val
+		m_val += other.GetVal() * multiplier;
+	}
+	else {
+		// Buf * Val
+		m_buf += other.GetVal() * multiplier;
+	}
+}
+
+inline void BufferOrVal::AddWithMultiply(Buffer const& other, sample_t multiplier) {
+	ConvertValToBuf();
+	m_buf.AddWithMultiply(other, multiplier);
+}
+
+inline BufferOrVal& BufferOrVal::operator+=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this += other.GetVal();
+	else
+		return *this += other.GetBuf();
+}
+inline BufferOrVal& BufferOrVal::operator+=(Buffer const& other) {
+	ConvertValToBuf();
+	m_buf += other;
+	return *this;
+}
+inline BufferOrVal& BufferOrVal::operator+=(sample_t val) {
+	if (m_bIsVal)
+		m_val += val;
+	else
+		m_buf += val;
+	return *this;
+}
+
+inline BufferOrVal& BufferOrVal::operator-=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this -= other.GetVal();
+	else
+		return *this -= other.GetBuf();
+}
+inline BufferOrVal& BufferOrVal::operator-=(Buffer const& other) {
+	ConvertValToBuf();
+	m_buf -= other;
+	return *this;
+}
+inline BufferOrVal& BufferOrVal::operator-=(sample_t val) {
+	if (m_bIsVal)
+		m_val -= val;
+	else
+		m_buf -= val;
+	return *this;
+}
+
+inline BufferOrVal& BufferOrVal::operator*=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this *= other.GetVal();
+	else
+		return *this *= other.GetBuf();
+}
+inline BufferOrVal& BufferOrVal::operator*=(Buffer const& other) {
+	ConvertValToBuf();
+	m_buf *= other;
+	return *this;
+}
+inline BufferOrVal& BufferOrVal::operator*=(sample_t val) {
+	if (m_bIsVal)
+		m_val *= val;
+	else
+		m_buf *= val;
+	return *this;
+}
+
+inline BufferOrVal& BufferOrVal::operator/=(BufferOrVal const& other) {
+	if (other.IsVal())
+		return *this /= other.GetVal();
+	else
+		return *this /= other.GetBuf();
+}
+inline BufferOrVal& BufferOrVal::operator/=(Buffer const& other) {
+	ConvertValToBuf();
+	m_buf /= other;
+	return *this;
+}
+inline BufferOrVal& BufferOrVal::operator/=(sample_t val) {
+	if (m_bIsVal)
+		m_val /= val;
+	else
+		m_buf /= val;
 	return *this;
 }
 
