@@ -123,33 +123,17 @@ void OnePole::ProcessBufLowpass_(sample_t const* inBuf, sample_t* outBuf, size_t
 }
 
 void OnePole::ProcessBufHighpass_(sample_t const* inBuf, sample_t* outBuf, size_t nSamp) {
-	// Process as lowpass, but into temporary buffer
-	// No need to copy; just allocate
-	Buffer lowpassBuf(nSamp);
-	float* pLowpassBuf = lowpassBuf.Get();
-    
-	ProcessBufLowpass_(inBuf, pLowpassBuf, nSamp);
-    
-	// Then subtract to make it highpass
-	juce::FloatVectorOperations::subtract(outBuf, inBuf, pLowpassBuf, nSamp);
+	for (uint32_t n = 0; n < nSamp; n++) {
+		z1 = b0*double(inBuf[n]) + a1*z1;
+		outBuf[n] = float(double(inBuf[n] - z1));
+	}
 }
 
 void OnePole::ProcessBufLowpass_(Buffer const& inBuf, Buffer& outBuf)
 	{ ProcessBufLowpass_(inBuf.GetConst(), outBuf.Get(), inBuf.GetLength()); }
 
 void OnePole::ProcessBufHighpass_(Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/)
-{
-	uint32_t const nSamp = inBuf.GetLength();
-    
-	// Process as lowpass, but into temporary buffer
-	// No need to copy; just allocate
-	Buffer lpBuf(nSamp);
-	ProcessBufLowpass_(inBuf, lpBuf);
-    
-	// Then subtract to make it highpass
-	//outBuf = inBuf - lpBuf;
-	juce::FloatVectorOperations::subtract(outBuf.Get(), inBuf.GetConst(), lpBuf.GetConst(), nSamp);
-}
+	{ ProcessBufHighpass_(inBuf.GetConst(), outBuf.Get(), inBuf.GetLength()); }
     
 // ***** Other public functions *****
 
