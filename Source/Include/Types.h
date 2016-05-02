@@ -34,6 +34,7 @@
 
 using sample_t = Utils::sample_t;
 using Buffer = Utils::Buffer;
+using BufferOrVal = Utils::BufferOrVal;
 template<typename T> using timedEvent_t = Utils::timedEvent_t<T>;
 template<typename T> using eventBuf_t = Utils::eventBuf_t<T>;
 

@@ -34,7 +34,6 @@ public:
 	struct Params {
 		float osc1Gain, osc2Gain, subGain, ringGain;
 		waveform_t osc1Wave, osc2Wave, subOscWave;
-		float osc1Shape; // 0 to 1
 		int subOscOct; // -1 or -2
 		bool bSync;
 		float crossMod; // 0 to 1
@@ -49,6 +48,7 @@ public:
 		Buffer& outBuf /*out*/,
 		Buffer& freqBuf1 /*in*/,
 		Buffer& freqBuf2 /*in*/,
+		BufferOrVal const& shape /*in*/,
 		Oscillators::Params const& params /*in*/);
 
 private:
@@ -60,7 +60,7 @@ private:
 
 	// Will populate m_osc1Buf and populate m_tempBuf with osc 1 phase
 	// If params has crossMod > 0, m_osc2Buf must be populated before this is called
-	void ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, Params const& params);
+	void ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, BufferOrVal const& shape, Params const& params);
 
 	// Will populate m_osc2Buf
 	// If params has sync enabled, m_tempBuf must be populated with osc 1 phase before this is called

@@ -237,7 +237,7 @@ static void ProcessOscPhaseOut_(
 	Buffer const& freqBuf, /*in*/
 	sample_t polyblepSize, /*in*/
 	waveform_t wave, /*in*/
-	sample_t shape /*in*/)
+	BufferOrVal const& shape /*in*/)
 {
 	size_t const nSamp = outBuf.GetLength();
 
@@ -250,38 +250,76 @@ static void ProcessOscPhaseOut_(
 	float* pAudio = outBuf.Get();
 	float* pPhase = phaseBuf.Get();
 
-	register sample_t phase = rPhase; // See above for comments about this optimization
+	bool bShapeMod = !shape.IsVal();
+
+	// See above for comments about these optimizations
+
+	register sample_t phase = rPhase;
 
 	if (wave == waveShape_saw) {
-		shape *= 0.5f;
-		for (size_t n = 0; n < nSamp; ++n) {
-
-			sample_t f = pFreq[n];  // This is actually next freq (because we increment phase at end of loop)
-			pAudio[n] = Detail::WaveshapeSaw(phase, f * polyblepSize, shape);
-			pPhase[n] = phase;
-			phase = fmod(phase + f, 1.0f);
+		if (bShapeMod) {
+			sample_t const* pShape = shape.GetBufConstPtr();
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n];  // This is actually next freq (because we increment phase at end of loop)
+				sample_t sh = pShape[n] * 0.5f;
+				pAudio[n] = Detail::WaveshapeSaw(phase, f * polyblepSize, sh);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
+		}
+		else {
+			sample_t sh = shape.GetVal() * 0.5f;
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n]; // next freq (see above)
+				pAudio[n] = Detail::WaveshapeSaw(phase, f * polyblepSize, sh);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
 		}
 	}
 	else if (wave == waveShape_pwm) {
 		// TODO: if pw changes and it causes wave to flip, polyBlep!
-		float pw = (shape * 0.5f) + 0.5f;
-		for (size_t n = 0; n < nSamp; ++n) {
-
-			sample_t f = pFreq[n]; // next freq (see above)
-			pAudio[n] = Detail::WaveshapeRect(phase, f * polyblepSize, pw);
-			pPhase[n] = phase;
-			phase = fmod(phase + f, 1.0f);
+		if (bShapeMod) {
+			sample_t const* pPw = shape.GetBufConstPtr();
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n]; // next freq (see above)
+				sample_t pw = (pPw[n] * 0.5f) + 0.5f;
+				pAudio[n] = Detail::WaveshapeRect(phase, f * polyblepSize, pw);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
+		}
+		else {
+			sample_t pw = (shape.GetVal() * 0.5f) + 0.5f;
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n]; // next freq (see above)
+				pAudio[n] = Detail::WaveshapeRect(phase, f * polyblepSize, pw);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
 		}
 	}
 	else if (wave == waveShape_tri) {
 		// TODO: since this doesn't use PolyBlep, could use Utils::FreqToPhase and then vectorize WaveshapeTri
-		shape *= 0.5f;
-		for (size_t n = 0; n < nSamp; ++n) {
-
-			sample_t f = pFreq[n]; // next freq (see above)
-			pAudio[n] = Detail::WaveshapeTri(phase, shape);
-			pPhase[n] = phase;
-			phase = fmod(phase + f, 1.0f);
+		if (bShapeMod) {
+			//sample_t sh = shape.GetVal() * 0.5f;
+			sample_t const* pShape = shape.GetBufConstPtr();
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n]; // next freq (see above)
+				sample_t sh = pShape[n] * 0.5f;
+				pAudio[n] = Detail::WaveshapeTri(phase, sh);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
+		}
+		else {
+			sample_t sh = shape.GetVal() * 0.5f;
+			for (size_t n = 0; n < nSamp; ++n) {
+				sample_t f = pFreq[n]; // next freq (see above)
+				pAudio[n] = Detail::WaveshapeTri(phase, sh);
+				pPhase[n] = phase;
+				phase = fmod(phase + f, 1.0f);
+			}
 		}
 	}
 	else {
@@ -445,6 +483,7 @@ void Oscillators::Process(
 	Buffer& outBuf /*out*/,
 	Buffer& freqBuf1 /*in*/,
 	Buffer& freqBuf2 /*in*/,
+	BufferOrVal const& shape /*in*/,
 	Oscillators::Params const& params /*in*/)
 {
 	size_t const nSamp = outBuf.GetLength();
@@ -457,7 +496,7 @@ void Oscillators::Process(
 	bool const bSync = params.bSync;
 
 	// Process osc 1 first
-	ProcessOsc1_(outBuf, freqBuf1, params);
+	ProcessOsc1_(outBuf, freqBuf1, shape, params);
 	ProcessOsc2_(outBuf, freqBuf2, params);
 
 	ProcessSub_(outBuf, freqBuf1, params);
@@ -478,7 +517,7 @@ void Oscillators::ProcessRingMod_(Buffer& buf, float ampl) {
 }
 
 // Will populate m_osc1Buf
-void Oscillators::ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, Params const& params) {
+void Oscillators::ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, BufferOrVal const& shape, Params const& params) {
 
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	DEBUG_ASSERT(!m_bOsc1BufPopulated);
@@ -491,7 +530,7 @@ void Oscillators::ProcessOsc1_(Buffer& outBuf, Buffer const& freqBuf, Params con
 		freqBuf,
 		m_polyblepSize,
 		params.osc1Wave,
-		params.osc1Shape);
+		shape);
 
 	m_bOsc1BufPopulated = true;
 	m_tempBufUsage = TempBufUsage::osc1Phase;

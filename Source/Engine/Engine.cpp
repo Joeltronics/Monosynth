@@ -435,7 +435,6 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	oscParams.ringGain = m_params.mixRing->GetActualValue();
 	float noiseGain = m_params.mixNoise->GetActualValue();
 
-	oscParams.osc1Shape = m_params.osc1shape->GetActualValue();
 	oscParams.subOscOct = m_params.subOscOct->GetInt();
 
 	oscParams.bSync = m_params.osc2sync->GetBool();
@@ -445,7 +444,14 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	oscParams.osc2Wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
 	oscParams.subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
-	m_oscs.Process(mainBuf, freqPhaseBuf1, freqPhaseBuf2, oscParams);
+	// FIXME: add shape mod
+	// (At first glance, this seems unsafe - like allocating an extra buffer in the audio thread.
+	// But actually, BufferOrVal doesn't allocate its Buffer when constructing it this way. However,
+	// when adding shape mod, will need this to have the same allocation behavior as all the other
+	// buffers.)
+	BufferOrVal osc1shape(m_params.osc1shape->GetActualValue());
+
+	m_oscs.Process(mainBuf, freqPhaseBuf1, freqPhaseBuf2, osc1shape, oscParams);
 	
 	// TODO: noise
 #if 0
