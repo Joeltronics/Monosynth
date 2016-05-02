@@ -25,6 +25,7 @@
 #include "Debug.h"
 #include "Utils/Types.h"
 #include "DspUtils.h"
+#include "ApproxEqual.h"
 
 #include <cmath>
 //#include <math.h>
@@ -101,7 +102,47 @@ double OnePole::ProcessHighpass(double samp) {
 	z1 = b0*samp + a1*z1;
 	return samp - z1;
 }
-    
+
+void OnePole::ProcessLowpass(BufferOrVal& buf /*inout*/, sample_t approxEqualThresh) {
+	
+	if (buf.IsVal()) {
+
+		sample_t val = buf.GetVal();
+
+		// If filter output memory (z1) is very close to input value, then don't need to process
+		bool bSkipProcessing = ApproxEqual(val, sample_t(z1), approxEqualThresh);
+
+		if (bSkipProcessing) {
+			z1 = double(val);
+			return;
+		}
+
+		buf.ConvertValToBuf();
+	}
+	
+	ProcessBufLowpass_(buf.GetBuf(), buf.GetBuf());
+}
+
+void OnePole::ProcessHighpass(BufferOrVal& buf /*inout*/, sample_t approxEqualThresh) {
+
+	if (buf.IsVal()) {
+
+		sample_t val = buf.GetVal();
+
+		// If filter output memory (z1) is very close to input value, then don't need to process
+		bool bSkipProcessing = ApproxEqual(val, sample_t(z1), approxEqualThresh);
+
+		if (bSkipProcessing) {
+			z1 = double(val);
+			return;
+		}
+
+		buf.ConvertValToBuf();
+	}
+
+	ProcessBufHighpass_(buf.GetBuf(), buf.GetBuf());
+}
+
 // ***** Private processing functions *****
     
 // TODO: vectorize these!

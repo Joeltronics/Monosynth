@@ -40,13 +40,21 @@ public:
     OnePole(double wc);
 
     // Processing functions:
-    
+	
     // Buffer - in-place and not
     void ProcessLowpass  (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
     void ProcessHighpass (Buffer const& inBuf /*in*/, Buffer& outBuf /*out*/);
     void ProcessLowpass  (Buffer& /*inout*/);
     void ProcessHighpass (Buffer& /*inout*/);
     
+	// BufferOrVal - in-place
+	// When getting a non-buffer, approxEqualThreshold is used to determine if we're "close enough" not to need to process
+	// Value to use will depend on expected signal range
+	// Too big and there could be jumps (essentially, this value is the largest jump we will allow)
+	// Too small and it will do unnecessary processing when given a non-buffer value (so might as well have just used a buffer)
+	void ProcessLowpass  (BufferOrVal& /*inout*/, sample_t approxEqualThreshold=k_defaultApproxEqualThresh);
+	void ProcessHighpass (BufferOrVal& /*inout*/, sample_t approxEqualThreshold=k_defaultApproxEqualThresh);
+
     // Raw buffer - in-place and not
     void ProcessLowpass  (sample_t const* inBuf /*in*/, sample_t* outBuf /*out*/, size_t nSamp /*in*/);
     void ProcessHighpass (sample_t const* inBuf /*in*/, sample_t* outBuf /*out*/, size_t nSamp /*in*/);
@@ -54,8 +62,8 @@ public:
     void ProcessHighpass (sample_t* buf /*inout*/, uint32_t nSamp /*in*/);
     
     // Single sample
-    float ProcessLowpass  (float samp /*in*/);
-    float ProcessHighpass (float samp /*in*/);
+    float  ProcessLowpass  (float samp /*in*/);
+    float  ProcessHighpass (float samp /*in*/);
 	double ProcessLowpass  (double samp /*in*/);
 	double ProcessHighpass (double samp /*in*/);
 
