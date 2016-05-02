@@ -33,7 +33,7 @@
 
 using namespace Engine;
 
-const double k_filtCvCutoff_Hz = 100.0;
+const double k_cvSmoothingCutoff_Hz = 100.0;
 float k_vcoRandPitchAmt = 0.01f; // In semitones
 float k_filtCutoffRandAmt_semi = 0.05f; // In semitones
 
@@ -177,6 +177,9 @@ SynthEngine::SynthEngine() :
 	m_rBufs.push_back(m_freqPhaseBuf1);
 	m_rBufs.push_back(m_freqPhaseBuf2);
 	m_rBufs.push_back(m_filtCv);
+	
+	m_osc1ShapeBuf.SetBuffer();
+	m_rBufs.push_back(m_osc1ShapeBuf.GetBuf());
 }
 
 SynthEngine::~SynthEngine() {}
@@ -205,7 +208,8 @@ void SynthEngine::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_filter.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 	m_vca.PrepareToPlay(m_sampleRateOver, samplesPerBlock);
 
-	m_filtFreqCvFilt.SetFreq(k_filtCvCutoff_Hz / m_sampleRateOver);
+	m_osc1ShapeCvFilt.SetFreq(k_cvSmoothingCutoff_Hz / m_sampleRateOver);
+	m_filtFreqCvFilt.SetFreq(k_cvSmoothingCutoff_Hz / m_sampleRateOver);
 
 	ReallocBufs_(samplesPerBlock);
 }
@@ -444,14 +448,13 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 	oscParams.osc2Wave = Detail::MainOscToWave(m_params.osc2wave->GetInt());
 	oscParams.subOscWave = Detail::SubOscToWave(m_params.subOscWave->GetInt());
 
-	// FIXME: add shape mod
-	// (At first glance, this seems unsafe - like allocating an extra buffer in the audio thread.
-	// But actually, BufferOrVal doesn't allocate its Buffer when constructing it this way. However,
-	// when adding shape mod, will need this to have the same allocation behavior as all the other
-	// buffers.)
-	BufferOrVal osc1shape(m_params.osc1shape->GetActualValue());
+	m_osc1ShapeBuf.SetVal(m_params.osc1shape->GetActualValue());
 
-	m_oscs.Process(mainBuf, freqPhaseBuf1, freqPhaseBuf2, osc1shape, oscParams);
+	// TODO: add Mod1/Mod2 to shape
+
+	m_osc1ShapeCvFilt.ProcessLowpass(m_osc1ShapeBuf, 0.0001f);
+
+	m_oscs.Process(mainBuf, freqPhaseBuf1, freqPhaseBuf2, m_osc1ShapeBuf, oscParams);
 	
 	// TODO: noise
 #if 0

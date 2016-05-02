@@ -101,6 +101,7 @@ private:
 
 	Engine::Vca m_vca;
 
+	Utils::OnePole m_osc1ShapeCvFilt;
 	Utils::OnePole m_filtFreqCvFilt;
 
 	juce::ScopedPointer<Utils::IResampler> m_pResampler;
@@ -115,6 +116,9 @@ private:
 	Buffer m_freqPhaseBuf1;
 	Buffer m_freqPhaseBuf2;
 	Buffer m_filtCv;
+
+	BufferOrVal m_osc1ShapeBuf;
+
 	std::vector<std::reference_wrapper<Buffer>> m_rBufs;
 };
 
