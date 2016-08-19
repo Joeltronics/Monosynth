@@ -252,11 +252,11 @@ private:
     ScopedPointer<GroupComponent> groupComponent18;
     ScopedPointer<Label> label7;
     ScopedPointer<Label> label50;
-    ScopedPointer<Slider> swi_retrig_mode2;
+    ScopedPointer<Slider> swi_lfo1_range;
     ScopedPointer<Label> label52;
     ScopedPointer<Label> label40;
     ScopedPointer<Label> label41;
-    ScopedPointer<Slider> swi_retrig_mode3;
+    ScopedPointer<Slider> swi_mod1_from_mod2;
     ScopedPointer<Label> label44;
     ScopedPointer<Label> label82;
     ScopedPointer<Label> label26;

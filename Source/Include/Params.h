@@ -445,6 +445,8 @@ public:
 	FloatParam* mod1freq;
 	FloatParam* mod1shape;
 	EnumParam* mod1range;
+	FloatParam* mod1mod2amt;
+	EnumParam* mod1mod2type;
 	EnumParam* mod2type;
 	FloatParam* mod2attack;
 	FloatParam* mod2decay;
@@ -499,6 +501,8 @@ public:
 		AP(mod1freq = new FloatParam("Mod 1 Rate", 0.5f));
 		AP(mod1shape = new FloatParam("Mod 1 Shape", 0.0f, { -1.0f, 1.0f }));
 		AP(mod1range = new EnumParam("Mod 1 Range", {"Low", "High", "KB Track"}));
+		AP(mod1mod2amt = new FloatParam("Mod 1 From Mod 2 Amt"));
+		AP(mod1mod2type = new EnumParam("Mod 1 From Mod 2 Type", { "Shape", "Rate", "Amount" }, 2));
 		AP(mod2type = new EnumParam("Mod 2 Type", { "Env-", "Env+", "LFO" }, 1));
 		AP(mod2attack = new FloatParam("Mod 2 Attack", 0.5f));
 		AP(mod2decay = new FloatParam("Mod 2 Decay", 0.5f));

@@ -1232,11 +1232,11 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label50->setColour (TextEditor::textColourId, Colours::black);
     label50->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_retrig_mode2 = new Slider ("Retrigger Mode"));
-    swi_retrig_mode2->setRange (1, 2, 0.5);
-    swi_retrig_mode2->setSliderStyle (Slider::LinearVertical);
-    swi_retrig_mode2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_retrig_mode2->addListener (this);
+    addAndMakeVisible (swi_lfo1_range = new Slider ("Mod 1 Range"));
+    swi_lfo1_range->setRange (1, 2, 0.5);
+    swi_lfo1_range->setSliderStyle (Slider::LinearVertical);
+    swi_lfo1_range->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    swi_lfo1_range->addListener (this);
 
     addAndMakeVisible (label52 = new Label ("new label",
                                             TRANS("Low")));
@@ -1265,11 +1265,11 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label41->setColour (TextEditor::textColourId, Colours::black);
     label41->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (swi_retrig_mode3 = new Slider ("Retrigger Mode"));
-    swi_retrig_mode3->setRange (1, 2, 0.5);
-    swi_retrig_mode3->setSliderStyle (Slider::LinearVertical);
-    swi_retrig_mode3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    swi_retrig_mode3->addListener (this);
+    addAndMakeVisible (swi_mod1_from_mod2 = new Slider ("Mod 1 From Mod 2 Type"));
+    swi_mod1_from_mod2->setRange (1, 2, 0.5);
+    swi_mod1_from_mod2->setSliderStyle (Slider::LinearVertical);
+    swi_mod1_from_mod2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    swi_mod1_from_mod2->addListener (this);
 
     addAndMakeVisible (label44 = new Label ("new label",
                                             TRANS("Shape")));
@@ -1472,7 +1472,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label77->setColour (TextEditor::textColourId, Colours::black);
     label77->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (sli_mod1_from_mod2 = new Slider ("Mod 1 From Mod 2"));
+    addAndMakeVisible (sli_mod1_from_mod2 = new Slider ("Mod 1 From Mod 2 Amt"));
     sli_mod1_from_mod2->setRange (0, 1, 0);
     sli_mod1_from_mod2->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_mod1_from_mod2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1667,11 +1667,11 @@ MainGui::~MainGui()
     groupComponent18 = nullptr;
     label7 = nullptr;
     label50 = nullptr;
-    swi_retrig_mode2 = nullptr;
+    swi_lfo1_range = nullptr;
     label52 = nullptr;
     label40 = nullptr;
     label41 = nullptr;
-    swi_retrig_mode3 = nullptr;
+    swi_mod1_from_mod2 = nullptr;
     label44 = nullptr;
     label82 = nullptr;
     label26 = nullptr;
@@ -1884,11 +1884,11 @@ void MainGui::resized()
     groupComponent18->setBounds (245, 309, 118, 96);
     label7->setBounds (101, 78, 56, 12);
     label50->setBounds (101, 94, 46, 12);
-    swi_retrig_mode2->setBounds (87, 70, 20, 56);
+    swi_lfo1_range->setBounds (87, 70, 20, 56);
     label52->setBounds (101, 110, 46, 12);
     label40->setBounds (186, 76, 40, 12);
     label41->setBounds (186, 92, 40, 12);
-    swi_retrig_mode3->setBounds (168, 70, 20, 56);
+    swi_mod1_from_mod2->setBounds (168, 70, 20, 56);
     label44->setBounds (186, 108, 40, 12);
     label82->setBounds (161, 16, 76, 16);
     label26->setBounds (15, 16, 48, 16);
@@ -2171,15 +2171,15 @@ void MainGui::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_swi_filt_vel4] -- add your slider handling code here..
         //[/UserSliderCode_swi_filt_vel4]
     }
-    else if (sliderThatWasMoved == swi_retrig_mode2)
+    else if (sliderThatWasMoved == swi_lfo1_range)
     {
-        //[UserSliderCode_swi_retrig_mode2] -- add your slider handling code here..
-        //[/UserSliderCode_swi_retrig_mode2]
+        //[UserSliderCode_swi_lfo1_range] -- add your slider handling code here..
+        //[/UserSliderCode_swi_lfo1_range]
     }
-    else if (sliderThatWasMoved == swi_retrig_mode3)
+    else if (sliderThatWasMoved == swi_mod1_from_mod2)
     {
-        //[UserSliderCode_swi_retrig_mode3] -- add your slider handling code here..
-        //[/UserSliderCode_swi_retrig_mode3]
+        //[UserSliderCode_swi_mod1_from_mod2] -- add your slider handling code here..
+        //[/UserSliderCode_swi_mod1_from_mod2]
     }
     else if (sliderThatWasMoved == sli_mod1_shape)
     {
@@ -3051,7 +3051,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="High" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="Retrigger Mode" id="a71a217a5cdfce5a" memberName="swi_retrig_mode2"
+  <SLIDER name="Mod 1 Range" id="a71a217a5cdfce5a" memberName="swi_lfo1_range"
           virtualName="" explicitFocusOrder="0" pos="87 70 20 56" min="1"
           max="2" int="0.5" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3070,7 +3070,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Rate" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="Retrigger Mode" id="df99bc8b2dadda52" memberName="swi_retrig_mode3"
+  <SLIDER name="Mod 1 From Mod 2 Type" id="df99bc8b2dadda52" memberName="swi_mod1_from_mod2"
           virtualName="" explicitFocusOrder="0" pos="168 70 20 56" min="1"
           max="2" int="0.5" style="LinearVertical" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
@@ -3187,7 +3187,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Osc 2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" bold="0" italic="0" justification="33"/>
-  <SLIDER name="Mod 1 From Mod 2" id="4f0e61f1a372a89d" memberName="sli_mod1_from_mod2"
+  <SLIDER name="Mod 1 From Mod 2 Amt" id="4f0e61f1a372a89d" memberName="sli_mod1_from_mod2"
           virtualName="" explicitFocusOrder="0" pos="184 37 32 32" min="0"
           max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
