@@ -471,7 +471,7 @@ public:
 		AP(osc1shape = new FloatParam("Osc 1 Shape"));
 		AP(osc2wave = new EnumParam("Osc 2 Wave", { "Tri","Rect","Saw" }, 2));
 		AP(osc2oct = new IntParam("Osc 2 Octave", 0, { 0, 1 }));
-		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.0f, 7.0f }));
+		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.09f, 7.07f }));
 		// Initialize osc 2 fine tune to slightly off center
 		AP(osc2fine = new FloatParam("Osc 2 Fine Tune", 0.021f, { -1.0f, 1.0f }));
 		AP(osc2sync = new BoolParam("Osc 2 Sync", {"Off", "On"}, false));
