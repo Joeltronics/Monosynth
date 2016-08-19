@@ -171,14 +171,17 @@ SynthEngine::SynthEngine() :
 	m_lastNote(60)
 {
 	m_rBufs.push_back(m_mainBuf);
-	m_rBufs.push_back(m_adsrBuf);
 	m_rBufs.push_back(m_mod1Buf);
-	m_rBufs.push_back(m_mod2Buf);
 	m_rBufs.push_back(m_freqPhaseBuf1);
 	m_rBufs.push_back(m_freqPhaseBuf2);
-	m_rBufs.push_back(m_filtCv);
 	
+	m_adsrBuf.SetBuffer();
+	m_mod2Buf.SetBuffer();
+	m_filtCv.SetBuffer();
 	m_osc1ShapeBuf.SetBuffer();
+	m_rBufs.push_back(m_adsrBuf.GetBuf());
+	m_rBufs.push_back(m_mod2Buf.GetBuf());
+	m_rBufs.push_back(m_filtCv.GetBuf());
 	m_rBufs.push_back(m_osc1ShapeBuf.GetBuf());
 }
 
@@ -369,7 +372,7 @@ void SynthEngine::Process(juce::AudioSampleBuffer& juceBuf, juce::MidiBuffer& mi
 void SynthEngine::ProcessMod_(
 	eventBuf_t<gateEvent_t> const& gateEvents /*in*/,
 	Buffer& mod1Buf /*out*/,
-	Buffer& mod2Buf /*out*/)
+	BufferOrVal& mod2Buf /*out*/)
 {
 	// TODO: LFO1 high freq range & KB tracking
 	float mod1shape = m_params.mod1shape->GetActualValue();
@@ -466,9 +469,9 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 
 void SynthEngine::ProcessFilter_(
 	Buffer& buf /*inOut*/,
-	Buffer const& envBuf,
+	BufferOrVal const& envBuf,
 	Buffer const& filtMod1Buf,
-	Buffer const& filtMod2Buf)
+	BufferOrVal const& filtMod2Buf)
 {
 	size_t const nSamp = buf.GetLength();
 
@@ -543,7 +546,7 @@ void SynthEngine::ProcessFilter_(
 		postFiltGain = 1.f / preFiltGain + 0.25f;
 	}
 
-	m_filtCv.Set(filtCutoff_01);
+	m_filtCv.SetVal(filtCutoff_01);
 	if (bEnv) {
 		m_filtCv.AddWithMultiply(envBuf, filtEnvAmt);
 	}
@@ -566,15 +569,23 @@ void SynthEngine::ProcessFilter_(
 		m_filtFreqCvFilt.ProcessLowpass(m_filtCv);
 	}
 
-	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance
-	// NOTE: at this point, filtCv can exceed range [0,1]. This is acceptable.
-	Utils::FastLogInterp(20.0f, 20000.0f, m_filtCv);
-	m_filtCv /= m_sampleRateOver;
-
 	// Do the processing!
 
 	buf *= preFiltGain;
-	m_filter.Process(buf, m_filtCv, filtRes, filtModel, nPoles);
+
+	// TODO: test accuracy, possibly use exact log interp when KB tracking with high resonance
+	// NOTE: at this point, filtCv can exceed range [0,1]. This is acceptable.
+	if (m_filtCv.IsVal()) {
+		m_filtCv.SetVal(Utils::FastLogInterp(20.0f, 20000.0f, m_filtCv.GetVal()));
+		m_filtCv /= m_sampleRateOver;
+		m_filter.Process(buf, m_filtCv.GetVal(), filtRes, filtModel, nPoles);
+	}
+	else {
+		Utils::FastLogInterp(20.0f, 20000.0f, m_filtCv.GetBuf());
+		m_filtCv /= m_sampleRateOver;
+		m_filter.Process(buf, m_filtCv.GetBuf(), filtRes, filtModel, nPoles);
+	}
+	
 	buf *= postFiltGain;
 }
 

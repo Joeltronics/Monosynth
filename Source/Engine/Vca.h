@@ -36,12 +36,12 @@ public:
 	~Vca() {}
 
 	void PrepareToPlay(double sampleRate, int samplesPerBlock);
-	void Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv, bool bClick);
+	void Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, BufferOrVal const& env, bool bUseEnv, bool bClick);
 
 private:
 	double m_sampleRate;
 	GateEnvelope m_ampEnv;
-	Buffer m_ampEnvBuf;
+	BufferOrVal m_ampEnvBuf;
 };
 
 }

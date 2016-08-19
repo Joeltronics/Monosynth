@@ -29,10 +29,11 @@ void Vca::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
 	m_ampEnv.PrepareToPlay(sampleRate, samplesPerBlock);
 
-	m_ampEnvBuf.Resize(samplesPerBlock, true);
+	m_ampEnvBuf.SetBuffer();
+	m_ampEnvBuf.GetBuf().Resize(samplesPerBlock, true);
 }
 
-void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, Buffer const& env, bool bUseEnv, bool bClick) {
+void Vca::Process(Buffer& buf, eventBuf_t<gateEvent_t> const& gateEvents, BufferOrVal const& env, bool bUseEnv, bool bClick) {
 
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 

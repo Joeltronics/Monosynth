@@ -32,6 +32,8 @@ static const double k_gateLowpassFreq = 2000.0;
 static const double k_expOvershoot = 1.0 / (1.0 - exp(-1.0));
 static const float k_expOvershootf = float(1.0 / (1.0 - exp(-1.0)));
 
+static const sample_t k_adsrApproxEqualThreshold = 0.001f;
+
 // ********** GateEnvelope ***********
 
 GateEnvelope::GateEnvelope() :
@@ -42,18 +44,27 @@ void GateEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
 	m_filt.SetFreq(k_gateLowpassFreq / sampleRate);
 }
 
-void GateEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
+void GateEnvelope::Process(eventBuf_t<gateEvent_t> const& gateEvents /*in*/, BufferOrVal& buf /*out*/) {
 
 	// TODO: more efficient solution than just lowpass filter to prevent "pops"
 
 	std::function<sample_t(gateEvent_t)> mappingFunc =
 		[](gateEvent_t ev) -> sample_t
-		{
-			return (ev == gateEvent_off ? 0.0f : 1.0f);
-		};
+	{
+		return (ev == gateEvent_off ? 0.0f : 1.0f);
+	};
 
-	m_lastGate = Utils::EventBufToBuf<gateEvent_t, sample_t>(
-			m_lastGate, gateEvents, buf.GetLength(), buf.Get(), mappingFunc);
+	if (gateEvents.empty())
+	{
+		buf.SetVal(mappingFunc(m_lastGate));
+	}
+	else
+	{
+		buf.SetBuffer();
+
+		m_lastGate = Utils::EventBufToBuf<gateEvent_t, sample_t>(
+			m_lastGate, gateEvents, buf.GetLength(), buf.GetBuf().Get(), mappingFunc);
+	}
 
 	m_filt.ProcessLowpass(buf);
 }
@@ -91,21 +102,21 @@ void AdEnvelope::SetVals(double attTime, double decTime, bool bLooped) {
 	DEBUG_ASSERT(m_fallRate > 0.0f && m_fallRate < 1.0f);
 }
 
-void AdEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
+void AdEnvelope::Process(eventBuf_t<gateEvent_t> const& gateEvents /*in*/, BufferOrVal& buf /*out*/) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
-
-	// TODO: input should be BufferOrVal
 
 	if (m_state == state_off && gateEvents.empty())
 	{
-		buf.Set(0.0f);
+		buf.SetVal(0.0f);
 		return;
 	}
+
+	buf.SetBuffer();
 
 	eventBuf_t<gateEvent_t>::const_iterator it = gateEvents.begin();
 
 	size_t nextEvent = (it != gateEvents.end()) ? it->time : size_t(-1);
-	float* bp = buf.Get();
+	float* bp = buf.GetBuf().Get();
 	for (size_t n = 0; n < buf.GetLength(); ++n) {
 
 		// while loop is in case multiple events at same timestamp
@@ -189,14 +200,28 @@ AdsrEnvelope::AdsrEnvelope() :
 	DEBUG_ASSERT(abs(k_expOvershoot - 1.582) < 0.01);
 }
 
-void AdsrEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
+void AdsrEnvelope::Process(eventBuf_t<gateEvent_t> const& gateEvents /*in*/, BufferOrVal& buf /*out*/) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 	
+	if (gateEvents.empty() && m_state == state_off) {
+		buf.SetVal(0.0f);
+		return;
+	}
+
+	if (gateEvents.empty() && m_state == state_sus) {
+		// Can just set buffer to val and run through filter
+		// (Filter takes care of BufferOrVal stuff)
+		buf.SetVal(m_susVal);
+		m_filt.ProcessLowpass(buf, k_adsrApproxEqualThreshold);
+		return;
+	}
+
 	eventBuf_t<gateEvent_t>::const_iterator it = gateEvents.begin();
 
 	size_t nextEvent = (it != gateEvents.end()) ? it->time : size_t(-1);
 
-	float* bp = buf.Get();
+	buf.SetBuffer();
+	float* bp = buf.GetBuf().Get();
 	for (size_t n = 0; n < buf.GetLength(); ++n) {
 
 		// while loop is in case multiple events at same timestamp
@@ -287,6 +312,7 @@ void AdsrEnvelope::TransitionTo_(State_t toState) {
 		m_filt.SetVal(1.0f);
 		break;
 	case state_sus:
+		// TODO: do we actually want to do this?!
 		m_filt.SetVal(m_susVal);
 		break;
 	case state_rel:

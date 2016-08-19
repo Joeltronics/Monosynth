@@ -68,6 +68,15 @@ public:
 		filterModel_t model /*in*/,
 		uint8_t nPoles /*in*/);
 
+	// freq = normalized freq (0-0.5)
+	// res = in range [0, 1]
+	void Process(
+		Buffer& buf /*inOut*/,
+		sample_t freq /*in*/,
+		double res /*in*/,
+		filterModel_t model /*in*/,
+		uint8_t nPoles /*in*/);
+
 private:
 	
 	double m_sampleRate;

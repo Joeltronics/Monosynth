@@ -33,7 +33,7 @@ public:
 	Envelope() {}
 	virtual ~Envelope() {}
 
-	virtual void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) = 0;
+	virtual void Process(eventBuf_t<gateEvent_t> const& /*in*/, BufferOrVal& /*out*/) = 0;
 	virtual void PrepareToPlay(double sampleRate, int samplesPerBlock) = 0;
 
 private:
@@ -46,7 +46,7 @@ public:
 	GateEnvelope();
 	~GateEnvelope() {}
 
-	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
+	void Process(eventBuf_t<gateEvent_t> const& /*in*/, BufferOrVal& /*out*/) override;
 	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
 
 private:
@@ -60,7 +60,7 @@ public:
 	AdEnvelope();
 	~AdEnvelope() {}
 
-	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
+	void Process(eventBuf_t<gateEvent_t> const& /*in*/, BufferOrVal& /*out*/) override;
 	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
 
 	void SetVals(double attTime, double decTime, bool bLooped);
@@ -92,7 +92,7 @@ public:
 
 	~AdsrEnvelope() {}
 
-	void Process(eventBuf_t<gateEvent_t> /*in*/, Buffer& /*out*/) override;
+	void Process(eventBuf_t<gateEvent_t> const& /*in*/, BufferOrVal& /*out*/) override;
 	void PrepareToPlay(double sampleRate, int samplesPerBlock) override;
 
 	void SetVals(double attTime, double decTime, double susVal, double relVal);

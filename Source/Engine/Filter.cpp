@@ -83,7 +83,64 @@ void Filter::Process(Buffer& buf, Buffer& freqCv, double res, filterModel_t mode
 		break;
 
 	default:
-		DEBUG_ASSERT(false);
+		DEBUG_ASSERT_FAIL("Unknown filter model");
+		break;
+	}
+}
+
+void Filter::Process(Buffer& buf, sample_t freq, double res, filterModel_t model, uint8_t nPoles) {
+	DEBUG_ASSERT(m_sampleRate > 0.0);
+
+	if (model != m_model) {
+		m_model = model;
+		transFilt.reset();
+		diodeFilt.reset();
+	}
+
+	const size_t nSamp = buf.GetLength();
+
+	float const* inBuf = buf.GetConst();
+	float* outBuf = buf.Get();
+
+	switch (model)
+	{
+	case filterModel_none:
+		break;
+
+	case filterModel_transLadder:
+		switch (nPoles) {
+		case 4:
+			transFilt.transistorLadder<4>(freq, res, inBuf, outBuf, nSamp);
+			break;
+		case 2:
+			transFilt.transistorLadder<2>(freq, res, inBuf, outBuf, nSamp);
+			break;
+		default:
+			// TODO: log error
+			transFilt.transistorLadder<4>(freq, res, inBuf, outBuf, nSamp);
+			break;
+		}
+		break;
+
+	case filterModel_diodeLadder:
+		// Diode filter freqs are normalized so Nyquist = 1.0, so scale freqs accordingly
+		diodeFilt.set_q(res);
+		diodeFilt.set_feedback_hpf_cutoff(k_diodeResHpfCutoff_Hz / m_sampleRate * 2.0);
+
+		freq = Utils::Clip(2.0f*freq, 0.001f, 0.999f);
+
+		for (size_t n = 0; n < nSamp; ++n) {
+			outBuf[n] = float(diodeFilt.tick(double(inBuf[n]), freq));
+		}
+
+		break;
+
+	case filterModel_ota:
+		// TODO
+		break;
+
+	default:
+		DEBUG_ASSERT_FAIL("Unknown filter model");
 		break;
 	}
 }

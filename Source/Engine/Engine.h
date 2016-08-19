@@ -60,7 +60,7 @@ private:
 	void ProcessMod_(
 		eventBuf_t<gateEvent_t> const& gateEvents /*in*/,
 		Buffer& mod1Buf /*out*/,
-		Buffer& mod2Buf /*out*/);
+		BufferOrVal& mod2Buf /*out*/);
 	
 	void ProcessOscsAndMixer_(
 		Buffer& mainBuf /*out*/,
@@ -69,9 +69,9 @@ private:
 	
 	void ProcessFilter_(
 		Buffer& buf /*inout*/,
-		Buffer const& envBuf /*in*/,
+		BufferOrVal const& envBuf /*in*/,
 		Buffer const& mod1Buf /*in*/,
-		Buffer const& mod2Buf /*in*/);
+		BufferOrVal const& mod2Buf /*in*/);
 
 	void DownsampleAndCopyToStereo_(
 		Buffer const& overBuf /*in*/,
@@ -110,12 +110,12 @@ private:
 
 	// Buffers
 	Buffer m_mainBuf;
-	Buffer m_adsrBuf;
+	BufferOrVal m_adsrBuf;
 	Buffer m_mod1Buf;
-	Buffer m_mod2Buf;
+	BufferOrVal m_mod2Buf;
 	Buffer m_freqPhaseBuf1;
 	Buffer m_freqPhaseBuf2;
-	Buffer m_filtCv;
+	BufferOrVal m_filtCv;
 
 	BufferOrVal m_osc1ShapeBuf;
 
