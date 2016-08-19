@@ -368,7 +368,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label28->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (sli_mod2_a = new Slider ("Mod 2 Attack"));
-    sli_mod2_a->setRange (0, 10, 0);
+    sli_mod2_a->setRange (0, 1, 0);
     sli_mod2_a->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_mod2_a->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mod2_a->addListener (this);
@@ -884,7 +884,7 @@ MainGui::MainGui (MonosynthAudioProcessor& p)
     label48->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (sli_mod2_b = new Slider ("Mod 2 Decay"));
-    sli_mod2_b->setRange (0, 10, 0);
+    sli_mod2_b->setRange (0, 1, 0);
     sli_mod2_b->setSliderStyle (Slider::RotaryVerticalDrag);
     sli_mod2_b->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sli_mod2_b->addListener (this);
@@ -2550,7 +2550,7 @@ BEGIN_JUCER_METADATA
          bold="0" italic="0" justification="36"/>
   <SLIDER name="Mod 2 Attack" id="320ebe3eb3fc4ddf" memberName="sli_mod2_a"
           virtualName="" explicitFocusOrder="0" pos="102 161 48 48" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ef22716764130697" memberName="label29" virtualName=""
          explicitFocusOrder="0" pos="102 143 48 16" textCol="ffffffff"
@@ -2850,7 +2850,7 @@ BEGIN_JUCER_METADATA
          fontsize="12" bold="0" italic="0" justification="36"/>
   <SLIDER name="Mod 2 Decay" id="fcbb3ebf60decb49" memberName="sli_mod2_b"
           virtualName="" explicitFocusOrder="0" pos="164 161 48 48" min="0"
-          max="10" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          max="1" int="0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="8854676ee05c0d17" memberName="label31" virtualName=""
          explicitFocusOrder="0" pos="164 143 48 16" textCol="ffffffff"

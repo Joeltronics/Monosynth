@@ -66,9 +66,23 @@ public:
 	void SetVals(double attTime, double decTime, bool bLooped);
 
 private:
-	// TODO: implementation
+
+	enum State_t {
+		state_off = 0,
+		state_rise,
+		state_fall
+	};
+
+	float ProcessSample_();
+
 	double m_sampleRate;
+
 	bool m_bLooped;
+	float m_riseRate;
+	float m_fallRate;
+
+	float m_z;
+	State_t m_state;
 };
 
 // Full ADSR envelope

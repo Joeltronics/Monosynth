@@ -61,7 +61,8 @@ void GateEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& bu
 // ********** AdEnvelope ***********
 
 AdEnvelope::AdEnvelope() :
-	m_sampleRate(0.0)
+	m_sampleRate(0.0),
+	m_state(state_off)
 {}
 
 void AdEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
@@ -69,13 +70,114 @@ void AdEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
 }
 
 void AdEnvelope::SetVals(double attTime, double decTime, bool bLooped) {
-	// TODO
+	DEBUG_ASSERT(m_sampleRate > 0.0);
+
 	m_bLooped = bLooped;
+
+	// If we just turned looped on
+	if (m_bLooped && m_state == state_off) {
+		m_z = 0.0f;
+		m_state = state_rise;
+	}
+
+	// Clip to range 1ms to 100 s
+	attTime = Utils::Clip(attTime, 1./1000.0, 100.0);
+	decTime = Utils::Clip(decTime, 1./1000.0, 100.0);
+
+	m_riseRate = 1.0f / (m_sampleRate * attTime);
+	m_fallRate = 1.0f / (m_sampleRate * decTime);
+
+	DEBUG_ASSERT(m_riseRate > 0.0f && m_riseRate < 1.0f);
+	DEBUG_ASSERT(m_fallRate > 0.0f && m_fallRate < 1.0f);
 }
 
 void AdEnvelope::Process(eventBuf_t<gateEvent_t> gateEvents /*in*/, Buffer& buf /*out*/) {
-	// TODO
-	buf.Set(1.0f);
+	DEBUG_ASSERT(m_sampleRate > 0.0);
+
+	// TODO: input should be BufferOrVal
+
+	if (m_state == state_off && gateEvents.empty())
+	{
+		buf.Set(0.0f);
+		return;
+	}
+
+	eventBuf_t<gateEvent_t>::const_iterator it = gateEvents.begin();
+
+	size_t nextEvent = (it != gateEvents.end()) ? it->time : size_t(-1);
+	float* bp = buf.Get();
+	for (size_t n = 0; n < buf.GetLength(); ++n) {
+
+		// while loop is in case multiple events at same timestamp
+		while (n == nextEvent) {
+			switch (it->ev) {
+			case gateEvent_on_trig:
+			case gateEvent_retrig:
+			case gateEvent_on_legato:
+				// reset
+				m_state = state_rise;
+				m_z = 0.0f;
+				break;
+			case gateEvent_off:
+			case gateEvent_legato:
+				break; // do nothing
+			default:
+				break;
+			}
+
+			++it;
+			nextEvent = (it != gateEvents.end()) ? it->time : size_t(-1);
+		}
+
+		bp[n] = ProcessSample_();
+	}
+}
+
+float AdEnvelope::ProcessSample_()
+{
+	switch (m_state) {
+
+	case state_off:
+		return 0.0f;
+
+	case state_rise:
+		m_z += m_riseRate;
+		if (m_z > 1.0f) {
+
+			m_state = state_fall;
+
+			/*
+			Fold back around 1.0
+			
+			Not 100% perfect as the part above 1.0 should be subject to the fall rate instead
+			of the rise rate, but close enough for the low rates we're dealing with
+
+			Also assumes signal never goes above 2 (which is impossible given the above code)
+			*/
+			m_z = 2.0f - m_z;
+			
+		}
+		return m_z;
+
+	case state_fall:
+		m_z -= m_fallRate;
+		if (m_z <= 0.0f)
+		{
+			if (m_bLooped) {
+				m_state = state_rise;
+				m_z = -m_z; // fold back around 0.0 (see above)
+			}
+			else {
+				m_z = 0.0f;
+				m_state = state_off;
+			}
+		}
+		return m_z;
+
+	default:
+		DEBUG_ASSERT_FAIL("Invalid state");
+		return 0.0f;
+	}
 }
 
 // ********** AdsrEnvelope ***********
@@ -129,6 +231,7 @@ void AdsrEnvelope::PrepareToPlay(double sampleRate, int /*samplesPerBlock*/) {
 }
 
 void AdsrEnvelope::SetVals(double attTime, double decTime, double susVal, double relTime) {
+	DEBUG_ASSERT(m_sampleRate > 0.0);
 
 	// Clip to range 0.01 ms to 100 s
 	attTime = Utils::Clip(attTime, 0.01/1000.0, 100.0);

@@ -245,6 +245,7 @@ void SynthEngine::ResizeBufsNoRealloc_(size_t nSamp) {
 	if (nSamp != currLen) {
 
 		if (nSamp > currAllocLen) {
+			// TODO: avoid reallocating - instead break into smaller vectors
 			LOG(juce::String::formatted(
 				"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
 				currLen, nSamp));
@@ -385,10 +386,6 @@ void SynthEngine::ProcessMod_(
 		Utils::LogInterp<double>(20., 1000., m_params.mod1freq->getValue()) / m_sampleRateOver :
 		Utils::LogInterp<double>(0.1, 20., m_params.mod1freq->getValue()) / m_sampleRateOver );
 
-	// Not used if mod2wave is envelope
-	sample_t lfo2freq = sample_t(
-		Utils::LogInterp<double>(0.1, 20., mod2attack) / m_sampleRateOver);
-
 	if (blfo1KbTrack) {
 		mod1Buf.Clear();
 		// TODO: put keyboard tracking data into mod1Buf
@@ -407,6 +404,7 @@ void SynthEngine::ProcessMod_(
 
 	double mod2AttTime = Detail::EnvValToTime(mod2attack);
 	double mod2DecTime = Detail::EnvValToTime(mod2decay);
+
 	m_mod2.SetVals(mod2AttTime, mod2DecTime, bLooped);
 	m_mod2.Process(gateEvents, mod2Buf);
 
