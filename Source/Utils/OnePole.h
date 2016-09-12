@@ -52,6 +52,7 @@ public:
 	// Value to use will depend on expected signal range
 	// Too big and there could be jumps (essentially, this value is the largest jump we will allow)
 	// Too small and it will do unnecessary processing when given a non-buffer value (so might as well have just used a buffer)
+	// TODO: Create better type of smoothing filter for BufferOrVal, where a constant value will be reached quickly (i.e. FIR)
 	void ProcessLowpass  (BufferOrVal& /*inout*/, sample_t approxEqualThreshold=k_defaultApproxEqualThresh);
 	void ProcessHighpass (BufferOrVal& /*inout*/, sample_t approxEqualThreshold=k_defaultApproxEqualThresh);
 

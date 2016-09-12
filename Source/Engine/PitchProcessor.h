@@ -56,7 +56,7 @@ private:
 	double m_sampleRate;
 	uint16_t m_lastPitchBend;
 	Utils::OnePole m_pitchBendFilt;
-	Buffer m_pitchBendBuf;
+	BufferOrVal m_pitchBendBuf;
 };
 
 }

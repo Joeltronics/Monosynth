@@ -25,6 +25,7 @@
 #include "Types.h"
 
 #include "Utils/Logger.h"
+#include "Utils/ApproxEqual.h"
 
 #include <cmath>
 
@@ -48,23 +49,14 @@ void PitchProcessor::PrepareToPlay(double sampleRate, int samplesPerBlock) {
 	m_sampleRate = sampleRate;
 	m_pitchBendFilt.SetFreq(k_pbLowpassFreq / sampleRate);
 
-	m_pitchBendBuf.Resize(samplesPerBlock, true);
+	m_pitchBendBuf.SetBuffer();
+	m_pitchBendBuf.GetBuf().Resize(samplesPerBlock, true);
 }
 
 void PitchProcessor::ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uint16_t> const& pbEvents, uint32_t pbAmt) {
 	DEBUG_ASSERT(m_sampleRate > 0.0);
 
 	size_t const nSamp = pitchBuf.GetLength();
-
-	if (nSamp > m_pitchBendBuf.GetAllocLength()) {
-		LOG(juce::String::formatted(
-			"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
-			m_pitchBendBuf.GetAllocLength(), nSamp));
-	}
-
-	if (m_pitchBendBuf.GetLength() != nSamp) {
-		m_pitchBendBuf.Resize(nSamp, false);
-	}
 
 	std::function<float(uint16_t)> mappingFunc =
 		[pbAmt](uint16_t pb) -> float
@@ -82,20 +74,44 @@ void PitchProcessor::ProcessPitchBend(Buffer& pitchBuf /*inout*/, eventBuf_t<uin
 
 		// Convert [0,0x3FFF] to [0.0f,1.0f]
 		float val = float(pb) / float(0x3FFF);
-		
+
 		// Convert [0.0f,1.0f] to [-1.0f,1.0f]
 		val = (val - 0.5f) * 2.0f;
 
 		val *= float(pbAmt);
 		return val;
 	};
-	
-	m_lastPitchBend = Utils::EventBufToBuf<uint16_t, float>(
-		m_lastPitchBend, pbEvents, nSamp, m_pitchBendBuf.Get(), mappingFunc);
+
+	if (pbEvents.empty()) {
+		m_pitchBendBuf.SetVal(mappingFunc(m_lastPitchBend));
+		
+	}
+	else {
+
+		m_pitchBendBuf.SetBuffer();
+
+		if (nSamp > m_pitchBendBuf.GetAllocLength()) {
+			LOG(juce::String::formatted(
+				"WARNING: Unexpected buffer size increase, was %u, now %u - reallocating from audio thread!",
+				m_pitchBendBuf.GetAllocLength(), nSamp));
+		}
+
+		if (m_pitchBendBuf.GetLength() != nSamp) {
+			m_pitchBendBuf.Resize(nSamp, false);
+		}
+
+		m_lastPitchBend = Utils::EventBufToBuf<uint16_t, float>(
+			m_lastPitchBend, pbEvents, nSamp, m_pitchBendBuf.GetBuf().Get(), mappingFunc);
+	}
 
 	m_pitchBendFilt.ProcessLowpass(m_pitchBendBuf);
 
-	pitchBuf += m_pitchBendBuf;
+	if (m_pitchBendBuf.IsVal() && Utils::ApproxEqual(0.0f, m_pitchBendBuf.GetVal())) {
+		// Buffer is zero; do nothing
+	}
+	else {
+		pitchBuf += m_pitchBendBuf;
+	}
 }
 
 void PitchProcessor::PitchToFreq(Buffer& buf) {
