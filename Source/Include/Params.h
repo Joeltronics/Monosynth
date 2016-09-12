@@ -414,6 +414,8 @@ public:
 
 	EnumParam* osc1wave;
 	FloatParam* osc1shape;
+	FloatParam* osc1shapeMod;
+	EnumParam* osc1shapeModSrc;
 	EnumParam* osc2wave;
 	IntParam* osc2oct;
 	FloatParam* osc2coarse;
@@ -469,6 +471,8 @@ public:
 	{
 		AP(osc1wave = new EnumParam("Osc 1 Wave", { "Tri","Rect","Saw" }, 2));
 		AP(osc1shape = new FloatParam("Osc 1 Shape"));
+		AP(osc1shapeMod = new FloatParam("Osc 1 Shape Mod"));
+		AP(osc1shapeModSrc = new EnumParam("Osc 1 Shape Mod Source", {"Mod 1", "Mod 2"}, 0));
 		AP(osc2wave = new EnumParam("Osc 2 Wave", { "Tri","Rect","Saw" }, 2));
 		AP(osc2oct = new IntParam("Osc 2 Octave", 0, { 0, 1 }));
 		AP(osc2coarse = new FloatParam("Osc 2 Coarse Tune", 0, { -7.09f, 7.07f }));

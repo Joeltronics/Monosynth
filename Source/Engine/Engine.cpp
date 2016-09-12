@@ -451,7 +451,24 @@ void SynthEngine::ProcessOscsAndMixer_(Buffer& mainBuf /*out*/, Buffer& freqPhas
 
 	m_osc1ShapeBuf.SetVal(m_params.osc1shape->GetActualValue());
 
-	// TODO: add Mod1/Mod2 to shape
+	float shapeModAmt = m_params.osc1shapeMod->GetActualValue();
+	shapeModAmt *= shapeModAmt;
+
+	if (!Utils::ApproxEqual(shapeModAmt, 0.0f)) {
+		switch (m_params.osc1shapeModSrc->GetInt()) {
+		case 0:
+			m_osc1ShapeBuf.AddWithMultiply(m_mod1Buf, shapeModAmt);
+			break;
+		case 1:
+			m_osc1ShapeBuf.AddWithMultiply(m_mod2Buf, shapeModAmt);
+			break;
+		default:
+			LOG(juce::String::formatted("osc1shapeModSrc, unknown source %u", m_params.osc1shapeModSrc->GetInt()));
+			DEBUG_ASSERT_FAIL("Unknown osc1shapeModSrc");
+			break;
+		}
+		// TODO: clip to [0, 1]?
+	}
 
 	m_osc1ShapeCvFilt.ProcessLowpass(m_osc1ShapeBuf, 0.0001f);
 
