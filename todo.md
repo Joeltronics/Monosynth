@@ -37,6 +37,7 @@
   * Compensate resonance volume drop
 * Can hear "clicks" when VCA set to envelope
 * Look into using higher internal upsampling
+* Add oscillator waveshape imperfections
 
 ### Performance
 
