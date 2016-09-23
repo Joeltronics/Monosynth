@@ -32,7 +32,6 @@
 * Add quality setting
   * Determines upsampling, filter accuracy, possibly a few other things
 * Improve filter algorithm
-* Add resonance volume drop compensation
 * Better analog-style VCO tuning drift
 * Consistent volume across waveshapes & settings
   * Currently square wave sounds louder than other two
