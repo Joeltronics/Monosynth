@@ -24,12 +24,15 @@
 * "Under the hood" controls
 * State saving & patch management
   * Move params into new class PatchState
+* Mod wheel controls
+* Knob "arcs" to show how they're being modulated
 
 ### Quality
 
 * Add quality setting
   * Determines upsampling, filter accuracy, possibly a few other things
 * Improve filter algorithm
+* Add resonance volume drop compensation
 * Better analog-style VCO tuning drift
 * Consistent volume across waveshapes & settings
   * Currently square wave sounds louder than other two

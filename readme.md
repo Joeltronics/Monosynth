@@ -9,7 +9,7 @@ Inspired by analog synths such as:
 * Sequential Pro-One
 * Arp Odyssey
 
-Besides sound quality, the main goal is for this to be super accessible and easy to get a good sound out of - much like many classic analog monosynths. Of course, I also don't want it to only have 1 or 2 good sounds with no variation, so the aim is a good tradeoff between accessibility and versatility. One thing's for sure: it's not meant to be a powerful "do everything" monster synth (though that might be coming later...).
+Besides sound quality, the main goal is for this to be super accessible and easy to get a good sound out of - much like many classic analog monosynths. Of course, I also don't want it to only have 1 or 2 good sounds with no variation, so the aim is a good tradeoff between accessibility and versatility. One thing's for sure: it's not meant to be a powerful "do everything" monster synth.
 
 ## Synthesis Features
 
@@ -23,7 +23,7 @@ Besides sound quality, the main goal is for this to be super accessible and easy
 * Dirtiness:
   * Ring mod
   * Filter overdrive
-  * Post-filter distortion
+  * VCA distortion
 * High quality:
   * Anti-aliased oscillators
   * High-quality filters (without unit delay in the feedback path)
@@ -31,9 +31,11 @@ Besides sound quality, the main goal is for this to be super accessible and easy
 
 ## Status
 
-The core features are all implemented, and most quality features are in place although there's still room for some improvements. But several parts aren't implemented yet (their GUI controls won't do anything). It could also use a lot of optimization, both in terms of general CPU usage and possible audio dropouts (currently the audio callback has some memory allocation and other non-realtime-safe behavior). The filter algorithm needs a little bit of work too, to fix the volume drop with resonance (an issue that affects many synths).
+(See [todo.md](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/todo.md) for a detailed list of what needs to be done)
 
-The GUI is not final. Hopefully the layout should be final by now. It could still use some visual cleanup, though. I also want to add some visual aids you wouldn't see on a real hardware synth, like an arc on the various knobs to show how they're being modulated.
+The core features are all implemented, and most quality features are in place - although there's still room for some improvements. But a few parts aren't implemented yet (their GUI controls won't do anything). It could also use a lot of optimization, both in terms of general CPU usage and possible audio dropouts (currently the audio callback has some memory allocation and other non-realtime-safe behavior). The filter algorithm needs a little bit of work too.
+
+The GUI is not final. Hopefully the layout should be somewhat final, but it could still use some visual cleanup and a few things added. I also want to add some visual aids you wouldn't see on a real hardware synth, like an arc on the various knobs to show how they're being modulated.
 
 Here is what the GUI looks like at the moment: *(click to enlarge)*  
 [<img src="Docs/monosynth.png" width="400px">](https://raw.githubusercontent.com/Joeltronics/Monosynth/master/Docs/monosynth.png)
