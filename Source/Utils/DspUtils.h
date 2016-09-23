@@ -40,9 +40,22 @@
 namespace Utils
 {
 	template <typename I>
-	static inline int RoundTo(float f) { return static_cast<I>(std::round(f)); }
+	static inline I RoundTo(float f) { return static_cast<I>(std::round(f)); }
 	template <typename I>
-	static inline int RoundTo(double d) { return static_cast<I>(std::round(d)); }
+	static inline I RoundTo(double d) { return static_cast<I>(std::round(d)); }
+
+	/**
+	 Calculates (x * y) + z
+	 Uses fma if it would be faster
+	 */
+	template <typename T>
+	static forcedinline T MultiplyAdd(T x, T y, T z) {
+#ifdef FP_FAST_FMA
+		return fma(x, y, z);
+#else
+		return (x * y) + z;
+#endif
+	}
 
     static inline float  AmpTodB(float  amp) {return 20.0f * log10f(amp);}
 	static inline double AmpTodB(double amp) {return 20.0  * log10 (amp);}
@@ -55,7 +68,7 @@ namespace Utils
 
 	template <typename T>
 	static inline T PitchToFreqHz(T pitch) {
-		return T(440.0 * pow(2.0, (double(pitch) - 69.0) / 12.0));
+		return T(440.0 * exp2((double(pitch) - 69.0) / 12.0));
 	}
 
 	template <typename T>
@@ -89,19 +102,19 @@ namespace Utils
     }
     
     /**
-     * Simulates typical logarithmic pot (which actually uses piecewise approximation)
-     * Piecewise linear function:
-     * (0,0) (0.5,0.2) (1,1)
-     * Pos = position, 0-1
+     Simulates typical logarithmic pot (which actually uses piecewise approximation)
+     Piecewise linear function:
+     (0,0) (0.5,0.2) (1,1)
+     Pos = position, 0-1
      */
     static inline float LogPot(float pos) {
         return ((pos < 0.5f) ? (0.2f*pos) : (1.8f*pos - 0.8f));
     }
     
     /**
-     * Simulates "W" pot taper
-     * Piecewise linear function:
-     * (0,0) (0.3,0.1) (0.7,0.9) (1,1)
+     Simulates "W" pot taper
+     Piecewise linear function:
+     (0,0) (0.3,0.1) (0.7,0.9) (1,1)
      */
     static inline float WPot(float pos) {
         if (pos < 0.3f)
@@ -113,21 +126,21 @@ namespace Utils
     }
     
     /**
-     * Calculates RC filter cutoff (in kohms and farads)
+     Calculates RC filter cutoff (in kohms and farads)
      */
     static inline double RcCutoff(double r_kohm, double c_farad) {
         return 1.0 / (M_2_PI * r_kohm * 1000.0 * c_farad);
     }
     
     /**
-     * Calculates RC filter cutoff (in kohms and microfarads)
+     Calculates RC filter cutoff (in kohms and microfarads)
      */
     static inline double RcCutoff_uF(double r_kohm, double c_uFarad) {
         return 1000.0 / (M_2_PI * r_kohm * c_uFarad);
     }
     
     /*
-     * Sgn: returns sign of value (-1, 0, or 1)
+     Returns sign of value (-1, 0, or 1)
      */
     template <typename T>
     int Sgn(T val) {
@@ -135,34 +148,35 @@ namespace Utils
     }
     
     /*
-     * Clipping:
-     *
-     * Branch-free
-     * Will only work for floating-point types
+     * Clipping
      *
      * Example usage:
      * y = Clip(x, 1.0); // clips x between -1 and 1
      * y = Clip(x, 0.5, 1.0); // clips x between 0.5 and 1
      */
     
-    // Symmetric
+	 /**
+	 Clip between -thresh and thresh
+	 */
     template<typename T>
-    static inline T Clip(T val, T thresh)
-    {
+    static inline T Clip(T val, T thresh) {
         T const valAbs = std::fabs(val);
         T const clippedAbs = std::min(valAbs, thresh);
         return copysign(clippedAbs, val);
     }
     
-    // Asymmetric
+	/**
+	 Clip between minThresh and maxThresh
+	 */
     template<typename T>
-    static inline T Clip(T val, T minThresh, T maxThresh)
-    {
+    static inline T Clip(T val, T minThresh, T maxThresh) {
         return std::max(std::min(val, maxThresh), minThresh);
     }
     
-    static void Clip(juce::AudioSampleBuffer& buf, float thresh)
-    {
+	/**
+	 Clip (in-place) between -thresh and thresh
+	 */
+    static void Clip(juce::AudioSampleBuffer& buf, float thresh) {
         size_t const nSamp = buf.getNumSamples();
         size_t const nChan = buf.getNumChannels();
         
@@ -171,8 +185,11 @@ namespace Utils
             juce::FloatVectorOperations::clip(pBuf, pBuf, -thresh, thresh, nSamp);
         }
     }
-    static void Clip(juce::AudioSampleBuffer& buf, float minThresh, float maxThresh)
-    {
+
+	/**
+	 Clip (in-place) between minThresh and maxThresh
+	 */
+    static void Clip(juce::AudioSampleBuffer& buf, float minThresh, float maxThresh) {
 		size_t const nSamp = buf.getNumSamples();
 		size_t const nChan = buf.getNumChannels();
 
@@ -182,44 +199,51 @@ namespace Utils
         }
     }
 
-	static void Clip(Buffer& buf, float thresh)
-	{
+	/**
+	 Clip (in-place) between -thresh and thresh
+	 */
+	static void Clip(Buffer& buf, float thresh) {
 		float* pBuf = buf.Get();
 		juce::FloatVectorOperations::clip(pBuf, pBuf, -thresh, thresh, buf.GetLength());
 	}
-	static void Clip(Buffer& buf, float minThresh, float maxThresh)
-	{
+
+	/**
+	 Clip (in-place) between minThresh and maxThresh
+	 */
+	static void Clip(Buffer& buf, float minThresh, float maxThresh) {
 		float* pBuf = buf.Get();
 		juce::FloatVectorOperations::clip(pBuf, pBuf, minThresh, maxThresh, buf.GetLength());
 	}
     
     
-    /*
-     * Interpolate between val0 and val1
-     * by x in range[0,1]
-     *
-     * Does not check if x is in range - if not, will extrapolate
-     *
-     * Example usage:
-     * y = Interp(10.0, 20.0, 0.5) // returns 15
+    /**
+     Interpolate between val0 and val1
+     by x in range[0,1]
+     
+     Does not check if x is in range (if not, will extrapolate)
+     
+	 Example usage:
+     y = Interp(10.0, 20.0, 0.5) // returns 15
      */
     template<typename T>
-    static inline T Interp(T val0, T val1, T x)
-    {
-        return ((val1 - val0) * x) + val0;
-        
+    static inline T Interp(T val0, T val1, T x) {
+#if 1
+		//return ((val1 - val0) * x) + val0;
+		return MultiplyAdd(val1 - val0, x, val0);
+#else   
         // Alternative implementation - might be slightly slower
         // likely exactly the same speed
 		// however, I think this one is numerically stable and the other might not be
         //return x*val1 + (static_cast<T>(1.0)-x)*val0;
+		return MultiplyAdd(x, v1, MultiplyAdd(-x, v0, v0));
+#endif
     }
 
-	/*
-	 * Takes x in range [min,max], and returns value in range[0,1]
+	/**
+	 Takes x in range [min,max], and returns value in range[0,1]
 	 */
 	template<typename T>
-	static inline T ReverseInterp(T min, T max, T x)
-	{
+	static forcedinline T ReverseInterp(T min, T max, T x) {
 		return (x - min) / (max - min);
 	}
     
@@ -246,7 +270,8 @@ namespace Utils
             InterpInPlace(pOut, pVal1, x, nSamp);
             return;
             
-        } else if (pVal1 == (float const*)pOut) {
+        }
+		else if (pVal1 == (float const*)pOut) {
             // val1 == out
             // Call in-place on val1
             InterpInPlace(pOut, pVal0, 1.0f-x, nSamp);
@@ -260,8 +285,12 @@ namespace Utils
         juce::FloatVectorOperations::addWithMultiply(pOut, pVal1, x, nSamp);
     }
     
-    static void Interp(juce::AudioSampleBuffer const& val0, juce::AudioSampleBuffer const& val1, juce::AudioSampleBuffer& outBuf, float x)
-    {
+    static void Interp(
+		juce::AudioSampleBuffer const& val0,
+		juce::AudioSampleBuffer const& val1,
+		juce::AudioSampleBuffer& outBuf,
+		float x)
+	{
         size_t const nChan = outBuf.getNumChannels();
         size_t const nSamp = outBuf.getNumSamples();
         
@@ -270,6 +299,7 @@ namespace Utils
         DEBUG_ASSERT(size_t(val0.getNumChannels()) == nChan);
         DEBUG_ASSERT(size_t(val1.getNumChannels()) == nChan);
         
+		// TODO: SIMD
         for(uint8_t chan = 0; chan < nChan; ++chan) {
             Interp(
                    val0.getReadPointer(chan),
@@ -280,17 +310,38 @@ namespace Utils
         }
     }
 
+	static void InterpInPlace(
+		juce::AudioSampleBuffer& val0out,
+		juce::AudioSampleBuffer const& val1,
+		float x)
+	{
+		size_t const nChan = val0out.getNumChannels();
+		size_t const nSamp = val0out.getNumSamples();
+
+		DEBUG_ASSERT(size_t(val1.getNumSamples()) == nSamp);
+		DEBUG_ASSERT(size_t(val1.getNumChannels()) == nChan);
+
+		// TODO: SIMD
+		for (uint8_t chan = 0; chan < nChan; ++chan) {
+			InterpInPlace(
+				val0out.getWritePointer(chan),
+				val1.getReadPointer(chan),
+				x,
+				nSamp);
+		}
+	}
+
 	template<typename T>
 	static inline T LogInterp(T val0, T val1, T x) {
 		DEBUG_ASSERT(val0 > 0);
 		DEBUG_ASSERT(val1 > 0);
 
 		double valLog = Interp<T>(
-			log10(val0),
-			log10(val1),
+			log2(val0),
+			log2(val1),
 			x);
 
-		return pow(10.0, valLog);
+		return exp2(valLog);
 	}
     
 	static inline void LogInterp(sample_t val0, sample_t val1, Buffer& x /*inout*/) {
@@ -308,33 +359,47 @@ namespace Utils
 		}
 	}
 
-	static inline int FloatPunToInt(float x) {
-		union { float f; int i; } u;
+	static forcedinline int32_t FloatPunToInt(float x) {
+		union { float f; int32_t i; } u;
 		u.f = x;
 		return u.i;
 	}
 
-	static inline float IntPunToFloat(int x) {
-		union { float f; int i; } u;
+	static forcedinline float IntPunToFloat(int32_t x) {
+		union { float f; int32_t i; } u;
 		u.i = x;
 		return u.f;
 	}
 
+	static forcedinline int64_t DoublePunToInt64(double x) {
+		union { double f; int64_t i; } u;
+		u.f = x;
+		return u.i;
+	}
+
+	static forcedinline float Int64PunToDouble(int64_t x) {
+		union { double f; int64_t i; } u;
+		u.i = x;
+		return u.f;
+	}
+
+	// No FastLogInterp is provided for double, as this isn't precise enough to warrant using doubles
+
 	static inline float FastLogInterp(float val0, float val1, float x) {
-		int ia = FloatPunToInt(val0);
-		int ib = FloatPunToInt(val1);
-		float diff = float(ib - ia);
+		int32_t i0 = FloatPunToInt(val0);
+		int32_t i1 = FloatPunToInt(val1);
+		float diff = float(i1 - i0);
 		
-		int interp = ia + int(x * diff);
+		int32_t interp = i0 + int32_t(x * diff);
 		return IntPunToFloat(interp);
 	}
 
 	static inline void FastLogInterp(sample_t val0, sample_t val1, Buffer const& x, Buffer& y /*out*/) {
 		DEBUG_ASSERT(x.GetLength() == y.GetLength());
 		
-		int ia = FloatPunToInt(val0);
-		int ib = FloatPunToInt(val1);
-		float diff = float(ib - ia);
+		int32_t i0 = FloatPunToInt(val0);
+		int32_t i1 = FloatPunToInt(val1);
+		float diff = float(i1 - i0);
 
 		size_t nSamp = x.GetLength();
 		sample_t const* xp = x.GetConst();
@@ -344,16 +409,16 @@ namespace Utils
 
 		// TODO: SIMD this (both the add and the cast)
 		for (size_t n = 0; n < nSamp; ++n) {
-			int interp = ia + int(yp[n]);
+			int32_t interp = i0 + int32_t(yp[n]);
 			yp[n] = IntPunToFloat(interp);
 		}
 	}
 
-	// in place
+	// in-place
 	static inline void FastLogInterp(sample_t val0, sample_t val1, Buffer& x /*inout*/) {
-		int ia = FloatPunToInt(val0);
-		int ib = FloatPunToInt(val1);
-		float diff = float(ib - ia);
+		int32_t i0 = FloatPunToInt(val0);
+		int32_t i1 = FloatPunToInt(val1);
+		float diff = float(i1 - i0);
 
 		size_t nSamp = x.GetLength();
 		sample_t* xp = x.Get();
@@ -362,27 +427,10 @@ namespace Utils
 
 		// TODO: SIMD this (both the add and the cast)
 		for (size_t n = 0; n < nSamp; ++n) {
-			int interp = ia + int(xp[n]);
+			int32_t interp = i0 + int32_t(xp[n]);
 			xp[n] = IntPunToFloat(interp);
 		}
 	}
-
-    static void InterpInPlace(juce::AudioSampleBuffer& val0out, juce::AudioSampleBuffer const& val1, float x)
-    {
-        size_t const nChan = val0out.getNumChannels();
-        size_t const nSamp = val0out.getNumSamples();
-        
-        DEBUG_ASSERT(size_t(val1.getNumSamples()) == nSamp);
-        DEBUG_ASSERT(size_t(val1.getNumChannels()) == nChan);
-        
-        for(uint8_t chan = 0; chan < nChan; ++chan) {
-            InterpInPlace(
-                   val0out.getWritePointer(chan),
-                   val1.getReadPointer(chan),
-                   x,
-                   nSamp);
-        }
-    }
     
     static float GenerateSine(float* outBuf, uint32_t nSamp, float freq, float phase = 0.0f) {
         // TODO: compare, see which is faster
@@ -408,18 +456,22 @@ namespace Utils
         return phase;
     }
     
-	// freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
-	// phase = normalized, 0-1
-	// returns phase value
+	/**
+	freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
+	phase = normalized, 0-1
+	returns phase value
+	 */
 	static float GenerateSine(Buffer& outBuf, float freq, float phase = 0.0f) {
 		size_t const nSamp = outBuf.GetLength();
 		phase = GenerateSine(outBuf.Get(), nSamp, freq, phase);
 		return phase;
 	}
 
-    // freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
-    // phase = normalized, 0-1
-    // returns phase value
+	/**
+    freq = normalized frequency (cycles per sample, i.e. freq/sampleRate)
+    phase = normalized, 0-1
+    returns phase value
+	 */
     static float GenerateSine(juce::AudioSampleBuffer& outBuf, float freq, float phase = 0.0f) {
         size_t const nChan = outBuf.getNumChannels();
         size_t const nSamp = outBuf.getNumSamples();
@@ -446,9 +498,9 @@ namespace Utils
 		return sqrtf(sum / float(nSamp));
 	}
 
-	/*
-	 * Accumulates frequency buffer (i.e. converts frequency to phase)
-	 * Returns starting phase of next buffer
+	/**
+	 Accumulates frequency buffer (i.e. converts frequency to phase)
+	 Returns starting phase of next buffer
 	 */
 	static float FreqToPhase(Buffer& buf, float phase) {
 		
@@ -465,8 +517,8 @@ namespace Utils
 		return phase;
 	}
 
-	/*
-	 * Determines starting phase of next buffer without modifying buffer
+	/**
+	 Determines starting phase of next buffer without modifying buffer
 	 */
 	static float FreqToPhaseNoProcess(Buffer const& buf, float phase) {
 
