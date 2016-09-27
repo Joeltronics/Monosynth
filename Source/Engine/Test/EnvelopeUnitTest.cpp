@@ -55,7 +55,14 @@ EnvelopeUnitTest::EnvelopeUnitTest()
 	} while(0)
 
 #define EXPRANGE(n1, n2, val, T) \
-	for (size_t n = n1; n < n2; ++n) { EXPEQT(buf[n], val, T); }
+	if (buf.IsVal()) {\
+		EXPEQT(buf.GetVal(), val, T);\
+	} \
+	else {\
+		for (size_t n = n1; n < n2; ++n) { \
+			EXPEQT(buf.GetBuf()[n], val, T);\
+		}\
+	}
 
 #define EXPSUS(n1, n2, val) EXPRANGE(n1, n2, val, 0.0001f)
 
@@ -105,7 +112,7 @@ void EnvelopeUnitTest::runTest() {
 		size_t nSamp = 512;
 		Engine::GateEnvelope env;
 		eventBuf_t<gateEvent_t> gateEvents;
-		Buffer buf(nSamp);
+		BufferOrVal buf(nSamp);
 
 		env.PrepareToPlay(44100.0, nSamp);
 
@@ -158,7 +165,7 @@ void EnvelopeUnitTest::runTest() {
 		Engine::AdsrEnvelope env;
 		eventBuf_t<gateEvent_t> gateEvents;
 		juce::AudioSampleBuffer juceBuf(nChan, sampPerBlock);
-		Buffer buf(juceBuf.getWritePointer(0), sampPerBlock);
+		BufferOrVal buf(sampPerBlock);
 
 		std::cout << "Opening wav file to write" << std::endl;
 
@@ -205,6 +212,7 @@ void EnvelopeUnitTest::runTest() {
 
 		env.Process(gateEvents, buf);
 
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), buf.GetBufPtr(), sampPerBlock);
 		writer->writeFromAudioSampleBuffer(juceBuf, 0, sampPerBlock);
 
 		/*
@@ -232,6 +240,8 @@ void EnvelopeUnitTest::runTest() {
 		
 		env.Process(gateEvents, buf);
 
+		buf.ConvertValToBuf(); // not that efficient, but good enough for test
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), buf.GetBufPtr(), sampPerBlock);
 		writer->writeFromAudioSampleBuffer(juceBuf, 0, sampPerBlock);
 
 		// Not going to be exact because of quirks with changing sustain value during sustain phase
@@ -243,6 +253,8 @@ void EnvelopeUnitTest::runTest() {
 		gateEvents.push_back(Utils::timedEvent_t<gateEvent_t>(150, gateEvent_off));
 		env.Process(gateEvents, buf);
 
+		buf.ConvertValToBuf();
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), buf.GetBufPtr(), sampPerBlock);
 		writer->writeFromAudioSampleBuffer(juceBuf, 0, sampPerBlock);
 
 		// TODO
@@ -254,6 +266,8 @@ void EnvelopeUnitTest::runTest() {
 		gateEvents.clear();
 		env.Process(gateEvents, buf);
 
+		buf.ConvertValToBuf();
+		juce::FloatVectorOperations::copy(juceBuf.getWritePointer(0), buf.GetBufPtr(), sampPerBlock);
 		writer->writeFromAudioSampleBuffer(juceBuf, 0, sampPerBlock);
 
 		EXPRANGE(0, sampPerBlock - 1, 0.0f, 0.0001f);
