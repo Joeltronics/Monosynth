@@ -23,6 +23,8 @@
 #ifndef BUFFER_H_INCLUDED
 #define BUFFER_H_INCLUDED
 
+#include "JuceHeader.h"
+
 #include "Utils/Types.h"
 
 // We must avoid allocating in the audio thread in order to guarantee real-time
