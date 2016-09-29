@@ -46,12 +46,12 @@ namespace Utils
 
 	/**
 	 Calculates (x * y) + z
-	 Uses fma if it would be faster
+	 Uses std::fma if it would be faster
 	 */
 	template <typename T>
 	static forcedinline T MultiplyAdd(T x, T y, T z) {
 #ifdef FP_FAST_FMA
-		return fma(x, y, z);
+		return std::fma(x, y, z);
 #else
 		return (x * y) + z;
 #endif
@@ -160,9 +160,14 @@ namespace Utils
 	 */
     template<typename T>
     static inline T Clip(T val, T thresh) {
+#if 1
+		return std::max(std::min(val, thresh), -thresh);
+#else
+		// In testing, this method was way slower
         T const valAbs = std::fabs(val);
         T const clippedAbs = std::min(valAbs, thresh);
         return copysign(clippedAbs, val);
+#endif
     }
     
 	/**
@@ -213,6 +218,26 @@ namespace Utils
 	static void Clip(Buffer& buf, float minThresh, float maxThresh) {
 		float* pBuf = buf.Get();
 		juce::FloatVectorOperations::clip(pBuf, pBuf, minThresh, maxThresh, buf.GetLength());
+	}
+
+	/**
+	Clip (out of place) between -thresh and thresh
+	*/
+	static void Clip(Buffer const& bufIn, float thresh, Buffer& bufOut /*out*/) {
+		DEBUG_ASSERT(bufIn.GetLength() == bufOut.GetLength());
+		float const* px = bufIn.GetConst();
+		float* py = bufOut.Get();
+		juce::FloatVectorOperations::clip(py, px, -thresh, thresh, bufIn.GetLength());
+	}
+
+	/**
+	Clip (out of place) between minThresh and maxThresh
+	*/
+	static void Clip(Buffer const& bufIn, float minThresh, float maxThresh, Buffer& bufOut /*out*/) {
+		DEBUG_ASSERT(bufIn.GetLength() == bufOut.GetLength());
+		float const* px = bufIn.GetConst();
+		float* py = bufOut.Get();
+		juce::FloatVectorOperations::clip(py, px, minThresh, maxThresh, bufIn.GetLength());
 	}
     
     
@@ -529,6 +554,99 @@ namespace Utils
 		}
 
 		return fmod(phase, 1.0f);
+	}
+
+	static double k_tanhApproxDomain = 4.6334310850;
+
+	/**
+	 tanh approximation (3rd-order Pade)
+	 
+	 If bClip == false, valid in domain +/- k_tanhApproxDomain (~4.63)
+	 * If x exceeds domain, result will start to fold back slightly - though error is still very low below about abs(x)=10
+	 
+	 If bClip == true, will clip x to domain
+	 * If x exceeds domain, result should be very close to +/- 1
+	 */
+	template<typename T, bool bClip>
+	static inline T TanhApprox(T x) {
+
+		/*
+		3rd-order Pade approximant of tanh
+		http://math.stackexchange.com/questions/107292/rapid-approximation-of-tanhx
+
+		  x * (x^2 + 10) * (x^2 + 60)           x*(600 + x^2*70 + x^4)
+		-------------------------------  =  -------------------------------
+		600 + x^2*270 + x^4*11 + x^6/24     600 + x^2*270 + x^4*11 + x^6/24
+		*/
+
+		// Note: clipping actually seems to be the slowest part of this
+		if (bClip) {
+			x = Clip<T>(x, k_tanhApproxDomain);
+		}
+
+		// 8 multiply, 5 add, 1 divide
+		// (4 mult+add can be replaced by MAC, where supported)
+
+		// Possibly some read-after-write pipeline hazards. Out-of-order execution
+		// should take care of most of them, although waiting for results before
+		// final divide is probably unavoidable
+
+		T x2 = x*x;
+		T x4 = x2*x2;
+		T x6 = x2*x4;
+
+		// num = x*(600 + 70*x2 + x4);
+
+		T num = MultiplyAdd<T>(70.0, x2, 600.0);
+		num += x4;
+		num *= x;
+
+		// den = 600 + x2*270 + x4*11 + x6/24
+
+		T den = MultiplyAdd<T>(270.0, x2, 600.0);
+		den = MultiplyAdd<T>(11.0, x4, den);
+		den = MultiplyAdd<T>(1.0 / 24.0, x6, den);
+
+		return num / den;
+	}
+
+	/**
+	 tanh approximation (3rd-order Pade)
+	 */
+	template<typename T>
+	static T TanhApprox(T x) {
+		return TanhApprox<T, true>(x);
+	}
+
+	/**
+	 tanh approximation (3rd-order Pade)
+	 in-place
+	 */
+	static void TanhApprox(Buffer& buf /*inout*/) {
+		
+		Clip(buf, k_tanhApproxDomain);
+
+		// TODO: SIMD
+		sample_t* p = buf.Get();
+		for (size_t n = 0; n < buf.GetLength(); ++n) {
+			p[n] = TanhApprox<sample_t, false>(p[n]);
+		}
+	}
+
+	/**
+	 tanh approximation (3rd-order Pade)
+	 out of place
+	 */
+	static void TanhApprox(Buffer const& bufIn, Buffer& bufOut /*out*/) {
+		
+		// Clip x into y, then handle y in-place
+		Clip(bufIn, k_tanhApproxDomain, bufOut);
+
+		// TODO: SIMD
+		sample_t* p = bufOut.Get();
+		for (size_t n = 0; n < bufOut.GetLength(); ++n) {
+			p[n] = TanhApprox<sample_t, false>(p[n]);
+		}
 	}
 }
 

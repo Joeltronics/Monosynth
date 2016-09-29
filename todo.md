@@ -59,4 +59,3 @@
 * Use SIMD for more things that can be vectorized
   * Possibly even one-pole filters used in various places (vectorizing IIR filters is tricky but possible)
   * Even if not vectorizing one-pole filters, can process 2-4 in parallel
-* Come up with fast tanh approximation

@@ -25,8 +25,25 @@
 #include "ResamplingUnitTest.h"
 #include "Utils/Utils.h"
 
+#include <ctime>
+
 namespace Test {
     
+	std::clock_t startTime;
+
+	double TimerDiff(std::clock_t endTime) {
+		return double(endTime - startTime) / double(CLOCKS_PER_SEC);
+	}
+
+	void __forceinline StartTimer() {
+		startTime = std::clock();
+	}
+
+	double __forceinline StopTimer() {
+		std::clock_t endTime = std::clock();
+		return TimerDiff(endTime);
+	}
+
     static bool ApproxEqualTest(double x, double y, bool expected) {
         bool passed = true;
         
@@ -427,6 +444,101 @@ namespace Test {
 				expect(Utils::ApproxEqual(buf[n], expVals2[n]));
 
 			expect(Utils::ApproxEqual(ph, expFinal2));
+		}
+
+		beginTest("Testing TanhApprox");
+		{
+			const double range = 10.0;
+			const double incr = 0.0125;
+
+			double maxErr = 0.0;
+
+			bool bPass = true;
+			for (double x = -range; x < range; x += incr) {
+
+				double yExact = tanh(x);
+				double yApprox = Utils::TanhApprox<double, true>(x);
+				
+				double err = abs(1.0 - yApprox / yExact);
+
+				maxErr = std::max(err, maxErr);
+
+				if (!Utils::ApproxEqual(yApprox, yExact, 0.001)) {
+					std::cout << "x: " << x << ", yExact: " << yExact << ", yApprox: " << yApprox << std::endl;
+					bPass = false;
+					break;
+				}
+			}
+			std::cout << "Max error: " << maxErr << std::endl;
+			expect(bPass);
+		}
+
+		beginTest("Performance testing TanhApprox");
+		{
+			size_t const nSamp = 4096;
+			size_t const nReps = 1024;
+
+			Utils::Buffer inBuf(nSamp);
+			Utils::Buffer outBuf(nSamp);
+
+			float* pIn = inBuf.Get();
+			float* pOut = outBuf.Get();
+
+			for (uint32_t n = 0; n < nSamp; ++n) {
+				float randVal = float(rand()) / float(RAND_MAX);
+				randVal -= 0.5f;
+				pIn[n] = randVal * 5.0f;
+			}
+
+			double duration;
+
+			
+			duration = 0.0;
+			for (size_t rep = 0; rep < nReps; ++rep) {
+				StartTimer();
+				for (size_t n = 0; n < nSamp; ++n) {
+					pOut[n] = tanh(pIn[n]);
+				}
+				duration += StopTimer();
+			}
+			double const timeActual_s = duration;
+
+			duration = 0.0;
+			for (size_t rep = 0; rep < nReps; ++rep) {
+				StartTimer();
+				for (size_t n = 0; n < nSamp; ++n) {
+					pOut[n] = Utils::TanhApprox(pIn[n]);
+				}
+				duration += StopTimer();
+			}
+			double const timeApprox_s = duration;
+
+			duration = 0.0;
+			for (size_t rep = 0; rep < nReps; ++rep) {
+				StartTimer();
+				for (size_t n = 0; n < nSamp; ++n) {
+					pOut[n] = Utils::TanhApprox<float, false>(pIn[n]);
+				}
+				duration += StopTimer();
+			}
+			double const timeApproxNoClip_s = duration;
+
+			duration = 0.0;
+			for (size_t rep = 0; rep < nReps; ++rep) {
+				StartTimer();
+				Utils::TanhApprox(inBuf, outBuf);
+				duration += StopTimer();
+			}
+			double const timeVector_s = duration;
+
+			std::cout << "tanh              total time: " << timeActual_s << " s" << std::endl;
+			std::cout << "TanhApprox        total time: " << timeApprox_s << " s" << std::endl;
+			std::cout << "TanhApprox noclip total time: " << timeApproxNoClip_s << " s" << std::endl;
+			std::cout << "TanhApprox vector total time: " << timeVector_s << " s" << std::endl;
+
+			expect(timeApprox_s < timeActual_s);
+			expect(timeApproxNoClip_s < timeActual_s);
+			expect(timeVector_s < timeActual_s);
 		}
     }
 
